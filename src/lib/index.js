@@ -1,8 +1,8 @@
 'use strict';
 
 const
-	server = require('./server'),
-	handler = require('./handler');
+	server = require('./index/server'),
+	handler = require('./index/handler');
 
 module.exports = {
 	server,
