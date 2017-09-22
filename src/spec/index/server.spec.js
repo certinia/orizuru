@@ -3,6 +3,7 @@
 const
 	root = require('app-root-path'),
 	{ expect } = require('chai'),
+	request = require('supertest'),
 
 	Server = require(root + '/src/lib/index/server');
 
@@ -34,7 +35,7 @@ describe('index/server.js', () => {
 				};
 
 			// when - then
-			expect(() => new Server(input)).to.throw('Schema name: testSchema schema could not be compiled.');
+			expect(() => new Server(input)).to.throw('Schema name: \'testSchema\' schema could not be compiled.');
 
 		});
 
@@ -56,6 +57,44 @@ describe('index/server.js', () => {
 
 			// when - then
 			expect(new Server(input)).to.be.instanceof(Server);
+
+		});
+
+		describe('should construct a server that', () => {
+
+			let server;
+
+			beforeEach(() => {
+				server = new Server({
+					schemaNameToDefinition: {
+						testSchema1: {
+							type: 'record',
+							fields: [{
+								name: 'f',
+								type: 'string'
+							}]
+						}
+					}
+				});
+			});
+
+			it('fails for an invalid schema', () => {
+
+				// given - when - then
+				return request(server.server)
+					.post('/api/testSchemaUnknown')
+					.expect(400, 'No schema for \'testSchemaUnknown\' found.');
+
+			});
+
+			it('fails for a valid schema with no post body', () => {
+
+				// given - when - then
+				return request(server.server)
+					.post('/api/testSchema1')
+					.expect(400, 'Error encoding post body for schema: \'testSchema1\'.');
+
+			});
 
 		});
 

@@ -18,11 +18,23 @@ const
 			schema = schemaNameToDefinition[schemaName],
 			body = request.body;
 
-		if (schema && body) {
-			//TODO check schema compliance
-			publish.send({ schema, body });
+		if (!schema) {
+			response.status(400).send(`No schema for '${schemaName}' found.`);
 		} else {
-			response.sendStatus(400);
+
+			try {
+
+				const buffer = schema.toBuffer(body);
+
+				publish
+					.send({ schema, buffer })
+					.then(() => response.status(200).send('Ok.'))
+					.catch(() => response.status(400).send('Error propogating event.'));
+
+			} catch (err) {
+				response.status(400).send(`Error encoding post body for schema: '${schemaName}'.`);
+			}
+
 		}
 
 	},
@@ -36,7 +48,7 @@ const
 					avro.Type.forSchema(value);
 					schemaNameToDefinition[key] = value;
 				} catch (err) {
-					throw new Error(`Schema name: ${key} schema could not be compiled.`);
+					throw new Error(`Schema name: '${key}' schema could not be compiled.`);
 				}
 			});
 		}
@@ -59,7 +71,7 @@ module.exports = class {
 		server.use(helmet());
 
 		// api wiring
-		server.use(API, api(schemaNameToDefinition));
+		server.post(API, api(schemaNameToDefinition));
 
 	}
 
