@@ -1,0 +1,29 @@
+{
+  "name": "@ffdc/nozomi",
+  "version": "0.0.0",
+  "description": "Webhooks for heroku web -> worker dyno",
+  "main": "src/lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@stash.dev.financialforce.com:29418/~bslater_financialforce.com/nozomi.git"
+  },
+  "keywords": [
+    "webhook",
+    "web",
+    "heroku",
+    "worker",
+    "dyno"
+  ],
+  "author": "financialforce",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.1",
+    "express": "^4.15.4"
+  },
+  "devDependencies": {
+    "eslint": "^4.7.2"
+  }
+}
