@@ -19,6 +19,7 @@ const
 			body = request.body;
 
 		if (schema && body) {
+			//TODO check schema compliance
 			publish.send({ schema, body });
 		} else {
 			response.sendStatus(400);
@@ -31,25 +32,25 @@ const
 			throw new Error('Server init argument must be an object of: schemaName -> avroSchema.');
 		} else {
 			_.each(schemaNameToDefinition, (value, key) => {
-				if (!_.isString(key)) {
-					throw new Error('Schema name must be a string.');
-				} else {
-					try {
-						avro.Type.forSchema(value);
-						schemaNameToDefinition[key] = value;
-					} catch (err) {
-						throw new Error(`Schema name: ${key} schema could not be compiled.`);
-					}
+				try {
+					avro.Type.forSchema(value);
+					schemaNameToDefinition[key] = value;
+				} catch (err) {
+					throw new Error(`Schema name: ${key} schema could not be compiled.`);
 				}
 			});
 		}
-	},
+	};
 
-	init = (schemaNameToDefinition) => {
+module.exports = class {
+
+	constructor({ schemaNameToDefinition }) {
 
 		compileSchemas(schemaNameToDefinition);
 
-		const server = express();
+		this.server = express();
+
+		const server = this.server;
 
 		// body parser
 		server.use(bodyParser.json());
@@ -60,10 +61,13 @@ const
 		// api wiring
 		server.use(API, api(schemaNameToDefinition));
 
-		// start server
-		server.listen(process.env.PORT);
-	};
+	}
 
-module.exports = {
-	init
+	listen({ port }) {
+
+		// start server
+		this.server.listen(port);
+
+	}
+
 };
