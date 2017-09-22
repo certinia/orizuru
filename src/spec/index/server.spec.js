@@ -7,6 +7,7 @@ const
 	{ calledOnce, calledWith } = sinon.assert,
 	request = require('supertest'),
 
+	avro = require('avsc'),
 	Publish = require(root + '/src/lib/index/server/publish'),
 	Server = require(root + '/src/lib/index/server');
 
@@ -65,18 +66,19 @@ describe('index/server.js', () => {
 
 		describe('should construct a server that', () => {
 
-			let server;
+			let schema, server;
 
 			beforeEach(() => {
+				schema = {
+					type: 'record',
+					fields: [{
+						name: 'f',
+						type: 'string'
+					}]
+				};
 				server = new Server({
 					schemaNameToDefinition: {
-						testSchema1: {
-							type: 'record',
-							fields: [{
-								name: 'f',
-								type: 'string'
-							}]
-						}
+						testSchema1: schema
 					}
 				});
 			});
@@ -120,12 +122,17 @@ describe('index/server.js', () => {
 					return request(server.server)
 						.post('/api/testSchema1')
 						.send({
-							f: 'test'
+							f: 'test1'
 						})
 						.expect(400, 'Error propogating event for \'testSchema1\'.')
 						.then(() => {
 							calledOnce(Publish.send);
-							calledWith(Publish.send, { schemaName: 'testSchema1' });
+							calledWith(Publish.send, {
+								schemaName: 'testSchema1',
+								buffer: avro.Type.forSchema(schema).toBuffer({
+									f: 'test1'
+								})
+							});
 						});
 
 				});
@@ -139,12 +146,17 @@ describe('index/server.js', () => {
 					return request(server.server)
 						.post('/api/testSchema1')
 						.send({
-							f: 'test'
+							f: 'test2'
 						})
 						.expect(200, 'Ok.')
 						.then(() => {
 							calledOnce(Publish.send);
-							calledWith(Publish.send, { schemaName: 'testSchema1' });
+							calledWith(Publish.send, {
+								schemaName: 'testSchema1',
+								buffer: avro.Type.forSchema(schema).toBuffer({
+									f: 'test2'
+								})
+							});
 						});
 
 				});
