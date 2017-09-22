@@ -27,6 +27,7 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
+    "app-root-path": "^2.0.1",
     "chai": "^4.1.2",
     "eslint": "^4.7.2",
     "mocha": "^3.5.3",
