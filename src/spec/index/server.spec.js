@@ -66,6 +66,10 @@ describe('index/server.js', () => {
 
 		describe('should construct a server that', () => {
 
+			const
+				sandbox = sinon.sandbox.create(),
+				restore = sandbox.restore.bind(sandbox);
+
 			let schema, server;
 
 			beforeEach(() => {
@@ -81,6 +85,20 @@ describe('index/server.js', () => {
 						testSchema1: schema
 					}
 				});
+			});
+
+			afterEach(restore);
+
+			it('has a listen method that calls this.server.listen with the supplied port', () => {
+
+				// given
+				server.server.listen = sandbox.spy();
+
+				// when - then
+				expect(server.listen({ port: 8080 })).to.eql(undefined);
+				calledOnce(server.server.listen);
+				calledWith(server.server.listen, 8080);
+
 			});
 
 			it('fails for an invalid schema', () => {
@@ -103,15 +121,9 @@ describe('index/server.js', () => {
 
 			describe('calls publish for a valid schema with a conforming post body and', () => {
 
-				const
-					sandbox = sinon.sandbox.create(),
-					restore = sandbox.restore.bind(sandbox);
-
 				beforeEach(() => {
 					sandbox.stub(Publish, 'send');
 				});
-
-				afterEach(restore);
 
 				it('fails if publish rejects', () => {
 
