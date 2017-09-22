@@ -7,7 +7,7 @@ const
 	bodyParser = require('body-parser'),
 	helmet = require('helmet'),
 
-	publish = require('./server/publish'),
+	Publish = require('./server/publish'),
 
 	API = '/api/:schemaName',
 
@@ -23,13 +23,12 @@ const
 		} else {
 
 			try {
-
 				const buffer = schema.toBuffer(body);
 
-				publish
-					.send({ schema, buffer })
+				Publish
+					.send({ schemaName, buffer })
 					.then(() => response.status(200).send('Ok.'))
-					.catch(() => response.status(400).send('Error propogating event.'));
+					.catch(() => response.status(400).send(`Error propogating event for '${schemaName}'.`));
 
 			} catch (err) {
 				response.status(400).send(`Error encoding post body for schema: '${schemaName}'.`);
@@ -45,8 +44,7 @@ const
 		} else {
 			_.each(schemaNameToDefinition, (value, key) => {
 				try {
-					avro.Type.forSchema(value);
-					schemaNameToDefinition[key] = value;
+					schemaNameToDefinition[key] = avro.Type.forSchema(value);
 				} catch (err) {
 					throw new Error(`Schema name: '${key}' schema could not be compiled.`);
 				}

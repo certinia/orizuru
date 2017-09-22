@@ -2,9 +2,12 @@
 
 const
 	root = require('app-root-path'),
+	sinon = require('sinon'),
 	{ expect } = require('chai'),
+	{ calledOnce, calledWith } = sinon.assert,
 	request = require('supertest'),
 
+	Publish = require(root + '/src/lib/index/server/publish'),
 	Server = require(root + '/src/lib/index/server');
 
 describe('index/server.js', () => {
@@ -93,6 +96,58 @@ describe('index/server.js', () => {
 				return request(server.server)
 					.post('/api/testSchema1')
 					.expect(400, 'Error encoding post body for schema: \'testSchema1\'.');
+
+			});
+
+			describe('calls publish for a valid schema with a conforming post body and', () => {
+
+				const
+					sandbox = sinon.sandbox.create(),
+					restore = sandbox.restore.bind(sandbox);
+
+				beforeEach(() => {
+					sandbox.stub(Publish, 'send');
+				});
+
+				afterEach(restore);
+
+				it('fails if publish rejects', () => {
+
+					// given 
+					Publish.send.rejects();
+
+					// when - then
+					return request(server.server)
+						.post('/api/testSchema1')
+						.send({
+							f: 'test'
+						})
+						.expect(400, 'Error propogating event for \'testSchema1\'.')
+						.then(() => {
+							calledOnce(Publish.send);
+							calledWith(Publish.send, { schemaName: 'testSchema1' });
+						});
+
+				});
+
+				it('succeeds if publish resolves', () => {
+
+					// given
+					Publish.send.resolves();
+
+					// when - then
+					return request(server.server)
+						.post('/api/testSchema1')
+						.send({
+							f: 'test'
+						})
+						.expect(200, 'Ok.')
+						.then(() => {
+							calledOnce(Publish.send);
+							calledWith(Publish.send, { schemaName: 'testSchema1' });
+						});
+
+				});
 
 			});
 

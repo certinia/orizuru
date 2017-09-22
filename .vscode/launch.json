@@ -7,5 +7,20 @@
 		"runtimeArgs": [
 			"heroku/src/lib/index.js"
 		]
+	}, {
+		"type": "node",
+		"request": "launch",
+		"name": "Debug Tests",
+		"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+		"args": [
+			"-u",
+			"tdd",
+			"--timeout",
+			"999999",
+			"--colors",
+			"--recursive",
+			"${workspaceRoot}/src/spec"
+		],
+		"internalConsoleOptions": "openOnSessionStart"
 	}]
 }

@@ -1,8 +1,9 @@
 'use strict';
 
-const send = ({ schema, body }) => {
-	console.log(schema);
-	console.log(body);
+const send = ({ schemaName, buffer }) => {
+	console.log(schemaName);
+	console.log(buffer);
+	return Promise.resolve();
 };
 
 module.exports = {
