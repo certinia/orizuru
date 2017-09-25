@@ -19,8 +19,8 @@ describe('index.js', () => {
 			});
 
 		// then
-		expect(index.server).to.eql(mockServer);
-		expect(index.handler).to.eql(mockHandler);
+		expect(index.Server).to.eql(mockServer);
+		expect(index.Handler).to.eql(mockHandler);
 
 	});
 
