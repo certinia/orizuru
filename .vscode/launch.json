@@ -10,9 +10,16 @@
 	}, {
 		"type": "node",
 		"request": "launch",
-		"name": "Debug worker harness",
+		"name": "Debug worker harness 1",
 		"runtimeArgs": [
-			"src/harness/worker.js"
+			"src/harness/worker1.js"
+		]
+	}, {
+		"type": "node",
+		"request": "launch",
+		"name": "Debug worker harness 2",
+		"runtimeArgs": [
+			"src/harness/worker2.js"
 		]
 	}, {
 		"type": "node",

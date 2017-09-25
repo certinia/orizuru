@@ -2,19 +2,21 @@
 
 const
 	root = require('app-root-path'),
+	_ = require('lodash'),
 	{ Handler } = require(root + '/src/lib/index'),
 
 	// get schemas
-	schemaNameToDefinition = require('./schemas'),
+	schemaName = 'firstAndLastName',
+	schemaNameToDefinition = _.pick(require('./schemas'), schemaName),
 
 	// create a simple callback
 	callback = ({ body }) => {
+		console.log('worker 1');
 		console.log(body);
 	},
 
 	// create a handler with the schemas we want to handle. You could _.pick to be specific
 	handler = new Handler({ schemaNameToDefinition });
 
-// you could distribute these handlers across different dyno types if you wanted
-handler.handle({ schemaName: 'firstAndLastName', callback });
-handler.handle({ schemaName: 'ageAndDob', callback });
+// wire handler
+handler.handle({ schemaName, callback });
