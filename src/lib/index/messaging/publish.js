@@ -1,7 +1,7 @@
 'use strict';
 
 const
-	Amqp = require('../messaging/amqp'),
+	Amqp = require('./amqp'),
 
 	send = ({ schemaName, buffer }) => {
 		return Amqp.apply(channel => channel.sendToQueue(schemaName, buffer));

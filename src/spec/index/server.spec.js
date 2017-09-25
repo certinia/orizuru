@@ -8,7 +8,7 @@ const
 	request = require('supertest'),
 
 	avro = require('avsc'),
-	Publish = require(root + '/src/lib/index/server/publish'),
+	Publish = require(root + '/src/lib/index/messaging/publish'),
 	Server = require(root + '/src/lib/index/server');
 
 describe('index/server.js', () => {

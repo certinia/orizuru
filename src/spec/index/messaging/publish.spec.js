@@ -8,7 +8,7 @@ const
 
 	Amqp = require(root + '/src/lib/index/messaging/amqp'),
 
-	Publisher = require(root + '/src/lib/index/server/publish'),
+	Publisher = require(root + '/src/lib/index/messaging/publish'),
 
 	mocks = {},
 
@@ -17,7 +17,7 @@ const
 
 chai.use(chaiSinon);
 
-describe('index/server/publish', () => {
+describe('index/messaging/publish.js', () => {
 
 	beforeEach(() => {
 		mocks.Amqp = {

@@ -7,7 +7,7 @@ const
 	bodyParser = require('body-parser'),
 	helmet = require('helmet'),
 
-	Publish = require('./server/publish'),
+	Publish = require('./messaging/publish'),
 
 	API = '/api/:schemaName',
 
