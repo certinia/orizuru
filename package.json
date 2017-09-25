@@ -20,6 +20,7 @@
   "author": "financialforce",
   "license": "ISC",
   "dependencies": {
+    "amqplib": "^0.5.1",
     "avsc": "^5.0.6",
     "body-parser": "^1.18.1",
     "express": "^4.15.4",
@@ -28,7 +29,9 @@
   },
   "devDependencies": {
     "app-root-path": "^2.0.1",
-    "chai": "^4.1.2",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-sinon": "^2.8.1",
     "eslint": "^4.7.2",
     "mocha": "^3.5.3",
     "nyc": "^11.2.1",
