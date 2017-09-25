@@ -20,7 +20,7 @@ const
 chai.use(chaiSinon);
 chai.use(chaiAsPromised);
 
-describe('messaging/subscriber', () => {
+describe('index/messaging/subscribe.js', () => {
 
 	beforeEach(() => {
 		mocks.Amqp = {

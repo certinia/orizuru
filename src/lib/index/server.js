@@ -1,8 +1,6 @@
 'use strict';
 
 const
-	_ = require('lodash'),
-	avro = require('avsc'),
 	express = require('express'),
 	bodyParser = require('body-parser'),
 	helmet = require('helmet'),
@@ -10,6 +8,8 @@ const
 	Publish = require('./messaging/publish'),
 
 	API = '/api/:schemaName',
+
+	{ compileSchemas } = require('./shared/compileSchemas'),
 
 	api = schemaNameToDefinition => (request, response) => {
 
@@ -36,20 +36,6 @@ const
 
 		}
 
-	},
-
-	compileSchemas = schemaNameToDefinition => {
-		if (!_.isObject(schemaNameToDefinition)) {
-			throw new Error('Server init argument must be an object of: schemaName -> avroSchema.');
-		} else {
-			_.each(schemaNameToDefinition, (value, key) => {
-				try {
-					schemaNameToDefinition[key] = avro.Type.forSchema(value);
-				} catch (err) {
-					throw new Error(`Schema name: '${key}' schema could not be compiled.`);
-				}
-			});
-		}
 	};
 
 module.exports = class {

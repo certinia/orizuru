@@ -2,23 +2,9 @@
 
 const
 	_ = require('lodash'),
-	avro = require('avsc'),
 
 	Subscribe = require('./messaging/subscribe'),
-
-	compileSchemas = schemaNameToDefinition => {
-		if (!_.isObject(schemaNameToDefinition)) {
-			throw new Error('Server init argument must be an object of: schemaName -> avroSchema.');
-		} else {
-			_.each(schemaNameToDefinition, (value, key) => {
-				try {
-					schemaNameToDefinition[key] = avro.Type.forSchema(value);
-				} catch (err) {
-					throw new Error(`Schema name: '${key}' schema could not be compiled.`);
-				}
-			});
-		}
-	};
+	{ compileSchemas } = require('./shared/compileSchemas');
 
 module.exports = class {
 
