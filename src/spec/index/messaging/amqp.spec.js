@@ -52,7 +52,7 @@ describe('index/messaging/amqp.js', () => {
 
 	describe('apply', () => {
 
-		describe('should handles error', () => {
+		describe('should handle error', () => {
 
 			it('from amqp.connect', () => {
 				// given
