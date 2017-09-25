@@ -23,7 +23,7 @@ const
 chai.use(chaiSinon);
 chai.use(chaiAsPromised);
 
-describe('service/amqp', () => {
+describe('index/messaging/amqp.js', () => {
 
 	let AmqpService;
 

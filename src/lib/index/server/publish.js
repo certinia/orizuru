@@ -1,10 +1,11 @@
 'use strict';
 
-const send = ({ schemaName, buffer }) => {
-	console.log(schemaName);
-	console.log(buffer);
-	return Promise.resolve();
-};
+const
+	Amqp = require('../messaging/amqp'),
+
+	send = ({ schemaName, buffer }) => {
+		return Amqp.apply(channel => channel.sendToQueue(schemaName, buffer));
+	};
 
 module.exports = {
 	send
