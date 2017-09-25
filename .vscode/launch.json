@@ -3,9 +3,16 @@
 	"configurations": [{
 		"type": "node",
 		"request": "launch",
-		"name": "Debug",
+		"name": "Debug web harness",
 		"runtimeArgs": [
-			"heroku/src/lib/index.js"
+			"src/harness/web.js"
+		]
+	}, {
+		"type": "node",
+		"request": "launch",
+		"name": "Debug worker harness",
+		"runtimeArgs": [
+			"src/harness/worker.js"
 		]
 	}, {
 		"type": "node",
