@@ -44,36 +44,6 @@ const
 
 module.exports = class {
 
-	constructor({ schemaNameToDefinition }) {
-
-		compileSchemas(schemaNameToDefinition);
-
-		this.server = express();
-
-		const server = this.server;
-
-		// body parser
-		server.use(bodyParser.json());
-
-		// Header security
-		server.use(helmet());
-
-		// api wiring
-		server.post(API, api(schemaNameToDefinition));
-
-	}
-
-	listen({ port }) {
-
-		// start server
-		this.server.listen(port);
-
-	}
-
-};
-
-module.exports = class {
-
 	constructor() {
 
 		// create server
