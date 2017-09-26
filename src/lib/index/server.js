@@ -1,15 +1,19 @@
 'use strict';
 
 const
+	_ = require('lodash'),
 	express = require('express'),
+	expressRouter = express.Router,
 	bodyParser = require('body-parser'),
 	helmet = require('helmet'),
 
 	Publish = require('./messaging/publish'),
 
-	API = '/api/:schemaName',
+	SCHEMA_API_PARAM = '/:schemaName',
 
 	{ compileSchemas } = require('./shared/compileSchemas'),
+
+	serverStore = new WeakMap(),
 
 	api = schemaNameToDefinition => (request, response) => {
 
@@ -64,6 +68,62 @@ module.exports = class {
 		// start server
 		this.server.listen(port);
 
+	}
+
+};
+
+module.exports = class {
+
+	constructor() {
+
+		// create server
+		const server = express();
+
+		// body parser
+		server.use(bodyParser.json());
+
+		// Header security
+		server.use(helmet());
+
+		// add server to private store
+		serverStore[this] = server;
+
+	}
+
+	addRoute({ schemaNameToDefinition, middlewares, apiEndpoint }) {
+
+		// create router
+		const router = expressRouter();
+
+		// validate
+		if (!_.isString(apiEndpoint)) {
+			apiEndpoint = '';
+		}
+		if (!_.isArray(middlewares)) {
+			middlewares = [];
+		}
+
+		// compile schemas
+		compileSchemas(schemaNameToDefinition);
+
+		// apply middlewares
+		_.each(middlewares, middleware => {
+			if (_.isFunction(middleware)) {
+				router.use(middleware);
+			}
+		});
+
+		// add post method
+		router.post(SCHEMA_API_PARAM, api(schemaNameToDefinition));
+
+		serverStore[this].use(apiEndpoint, router);
+
+		return this;
+
+	}
+
+	getServer() {
+		return serverStore[this];
 	}
 
 };
