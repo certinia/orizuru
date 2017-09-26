@@ -1,5 +1,5 @@
 {
-  "name": "@ffdc/nozomi",
+  "name": "@ffres/nozomi",
   "version": "0.0.0",
   "description": "Webhooks for heroku web -> worker dyno",
   "main": "src/lib/index.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@stash.dev.financialforce.com:29418/~bslater_financialforce.com/nozomi.git"
+    "url": "https://stash.dev.financialforce.com/projects/RESEARCH/repos/ffres--nozomi/"
   },
   "keywords": [
     "webhook",
