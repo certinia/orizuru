@@ -11,7 +11,9 @@ const
 
 	// create a simple callback
 	callback = ({ body }) => {
+		// eslint-disable-next-line no-console
 		console.log('worker 1');
+		// eslint-disable-next-line no-console
 		console.log(body);
 	},
 
