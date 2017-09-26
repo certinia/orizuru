@@ -8,8 +8,24 @@ const
 
 	schemaMap = new WeakMap();
 
-module.exports = class {
+/** Class representing a handler. */
+class Handler {
 
+	/**
+	 * Constructs a new Handler
+	 * 
+	 * @example
+	 * // creates a handler for schemas
+	 * new Handler({
+	 * 	schemaNameToDefinition: {
+	 * 		test: {} // an avro compliant schema (see avro schema API)
+	 * 	}
+	 * });
+	 * 
+	 * @param {*} - { schemaNameToDefinition }
+	 * 
+	 * @returns {Handler}
+	 */
 	constructor({ schemaNameToDefinition }) {
 
 		compileSchemas(schemaNameToDefinition);
@@ -18,6 +34,18 @@ module.exports = class {
 
 	}
 
+	/**
+	 * Sets the handler function for a schema provided in the constructor
+	 * 
+	 * @example
+	 * handler.handle({ schemaName: 'test', callback: (message) => {
+	 * 	console.log(message);
+	 * }})
+	 * 
+	 * @param {*} - { schemaName, callback } 
+	 * 
+	 * @returns {Promise}
+	 */
 	handle({ schemaName, callback }) {
 
 		const schema = schemaMap[this][schemaName];
@@ -39,3 +67,5 @@ module.exports = class {
 	}
 
 };
+
+module.exports = Handler;

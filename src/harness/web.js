@@ -13,6 +13,8 @@ const
 
 	// define middlewares (in order of usage)
 	middlewares = [(req, res, next) => {
+		// just sets auth on the body for transport, should in reality authenticate
+		// and then send a 403 if authentication fails first
 		req.body.auth = 'test auth token or whatever, object containing id, name, etc';
 		next();
 	}],

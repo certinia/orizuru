@@ -42,8 +42,18 @@ const
 
 	};
 
-module.exports = class {
+/** Class representing a server. */
+class Server {
 
+	/**
+	 * Constructs a new 'Server'
+	 * 
+	 * @example
+	 * // returns serverInstance
+	 * new Server();
+	 * 
+	 * @returns {Server}
+	 */
 	constructor() {
 
 		// create server
@@ -60,6 +70,27 @@ module.exports = class {
 
 	}
 
+	/**
+	 * Adds a 'route' to the server
+	 * 
+	 * @example
+	 * // adds schemas to the default ( http://host/{schemaName} ) route
+	 * server.addRoute({
+	 * 	schemaNameToDefinition: {
+	 * 		test: {} // an avro compliant schema (see avro schema API)
+	 * 	}
+	 * });
+	 * @example
+	 * // adds schemas to a route at ( http://host/api/test/{schemaName} )
+	 * server.addRoute({ schemaNameToDefinition, apiEndpoint: '/api/test' });
+	 * @example
+	 * // adds middleware functions contained in the middlewares array (see express middleware API)
+	 * server.addRoute({ schemaNameToDefinition, middlewares: [...] });
+	 * 
+	 * @param {*} input - { schemaNameToDefinition [, middlewares] [, apiEndpoint] }
+	 * 
+	 * @returns {Server}
+	 */
 	addRoute({ schemaNameToDefinition, middlewares, apiEndpoint }) {
 
 		// create router
@@ -92,8 +123,18 @@ module.exports = class {
 
 	}
 
+	/**
+	 * Returns the express server
+	 * 
+	 * @example
+	 * // returns the express server
+	 * server.getServer().listen('8080');
+	 * @returns {express}
+	 */
 	getServer() {
 		return serverStore[this];
 	}
 
-};
+}
+
+module.exports = Server;

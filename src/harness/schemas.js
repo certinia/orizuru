@@ -1,6 +1,6 @@
 'use strict';
 
-// schema names to avro schema
+// schema names to avro schemas
 module.exports = {
 	firstAndLastName: {
 		type: 'record',

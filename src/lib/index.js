@@ -2,9 +2,21 @@
 
 const
 	Server = require('./index/server'),
-	Handler = require('./index/handler');
+	Handler = require('./index/handler'),
 
-module.exports = {
-	Server,
-	Handler
-};
+	/**
+	 * Index file for project
+	 * 
+	 * @example
+	 * // returns a Server
+	 * require('@ffdc/nozomi').Server
+	 * @example
+	 * // returns a Handler
+	 * require('@ffdc/nozomi').Handler
+	 */
+	Index = {
+		Server,
+		Handler
+	};
+
+module.exports = Index;
