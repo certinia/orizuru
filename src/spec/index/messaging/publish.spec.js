@@ -3,7 +3,7 @@
 const
 	root = require('app-root-path'),
 	chai = require('chai'),
-	chaiSinon = require('chai-sinon'),
+	chaiSinon = require('sinon-chai'),
 	sinon = require('sinon'),
 
 	Amqp = require(root + '/src/lib/index/messaging/amqp'),

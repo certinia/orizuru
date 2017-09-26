@@ -3,7 +3,7 @@
 const
 	root = require('app-root-path'),
 	chai = require('chai'),
-	chaiSinon = require('chai-sinon'),
+	chaiSinon = require('sinon-chai'),
 	chaiAsPromised = require('chai-as-promised'),
 	sinon = require('sinon'),
 

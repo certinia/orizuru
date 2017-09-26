@@ -4,8 +4,8 @@
   "description": "Webhooks for heroku web -> worker dyno",
   "main": "src/lib/index.js",
   "scripts": {
-	"doc": "jsdoc src/lib -r -d doc",
-	"pretest": "eslint src",
+    "doc": "jsdoc src/lib -r -d doc",
+    "pretest": "eslint src",
     "test": "nyc --exclude src/example mocha --recursive src/spec"
   },
   "repository": {
@@ -33,13 +33,13 @@
     "app-root-path": "2.0.1",
     "chai": "3.5.0",
     "chai-as-promised": "7.1.1",
-    "chai-sinon": "2.8.1",
     "eslint": "4.7.2",
     "jsdoc": "3.5.5",
     "mocha": "3.5.3",
     "nyc": "11.2.1",
     "proxyquire": "1.8.0",
     "sinon": "3.3.0",
+    "sinon-chai": "2.13.0",
     "supertest": "3.0.0"
   },
   "nyc": {
