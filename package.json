@@ -5,6 +5,7 @@
   "main": "src/lib/index.js",
   "scripts": {
 	"doc": "jsdoc src/lib -r -d doc",
+	"pretest": "eslint src",
     "test": "nyc --exclude src/harness mocha --recursive src/spec"
   },
   "repository": {
