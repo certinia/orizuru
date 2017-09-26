@@ -4,7 +4,9 @@ const
 	_ = require('lodash'),
 
 	Subscribe = require('./messaging/subscribe'),
-	{ compileSchemas } = require('./shared/compileSchemas');
+	{ compileSchemas } = require('./shared/compileSchemas'),
+
+	schemaMap = new WeakMap();
 
 module.exports = class {
 
@@ -12,13 +14,13 @@ module.exports = class {
 
 		compileSchemas(schemaNameToDefinition);
 
-		this.schemas = schemaNameToDefinition;
+		schemaMap[this] = schemaNameToDefinition;
 
 	}
 
 	handle({ schemaName, callback }) {
 
-		const schema = this.schemas[schemaName];
+		const schema = schemaMap[this][schemaName];
 
 		if (!schema) {
 			throw new Error(`Schema name: '${schemaName}' not found.`);
