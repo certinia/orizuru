@@ -6,7 +6,7 @@
   "scripts": {
 	"doc": "jsdoc src/lib -r -d doc",
 	"pretest": "eslint src",
-    "test": "nyc --exclude src/harness mocha --recursive src/spec"
+    "test": "nyc --exclude src/example mocha --recursive src/spec"
   },
   "repository": {
     "type": "git",

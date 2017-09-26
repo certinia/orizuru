@@ -3,23 +3,23 @@
 	"configurations": [{
 		"type": "node",
 		"request": "launch",
-		"name": "Debug web harness",
+		"name": "Debug web example",
 		"runtimeArgs": [
-			"src/harness/web.js"
+			"src/example/web.js"
 		]
 	}, {
 		"type": "node",
 		"request": "launch",
-		"name": "Debug worker harness 1",
+		"name": "Debug worker example 1",
 		"runtimeArgs": [
-			"src/harness/worker1.js"
+			"src/example/worker1.js"
 		]
 	}, {
 		"type": "node",
 		"request": "launch",
-		"name": "Debug worker harness 2",
+		"name": "Debug worker example 2",
 		"runtimeArgs": [
-			"src/harness/worker2.js"
+			"src/example/worker2.js"
 		]
 	}, {
 		"type": "node",
