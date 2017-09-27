@@ -3,7 +3,7 @@
 const
 	root = require('app-root-path'),
 	chai = require('chai'),
-	chaiSinon = require('sinon-chai'),
+	sinonChai = require('sinon-chai'),
 	sinon = require('sinon'),
 
 	Amqp = require(root + '/src/lib/index/messaging/amqp'),
@@ -15,7 +15,7 @@ const
 	sandbox = sinon.sandbox.create(),
 	expect = chai.expect;
 
-chai.use(chaiSinon);
+chai.use(sinonChai);
 
 describe('index/messaging/publish.js', () => {
 
