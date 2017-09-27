@@ -1,4 +1,9 @@
 'use strict';
+/**
+ * The Handler for consuming messages in a worker dyno created by Server.
+ * @module index/handler
+ * @see module:index/server
+ */
 
 const
 	_ = require('lodash'),
@@ -22,7 +27,7 @@ class Handler {
 	 * 	}
 	 * });
 	 * 
-	 * @param {*} - { schemaNameToDefinition }
+	 * @param {object} config - { schemaNameToDefinition }
 	 * 
 	 * @returns {Handler}
 	 */
@@ -42,7 +47,7 @@ class Handler {
 	 * 	console.log(message);
 	 * }})
 	 * 
-	 * @param {*} - { schemaName, callback } 
+	 * @param {object} config - { schemaName, callback } 
 	 * 
 	 * @returns {Promise}
 	 */
