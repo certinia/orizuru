@@ -1,22 +1,25 @@
 'use strict';
+/**
+ * The Index file for project.
+ * Returns the Server and Handler classes.
+ * @module index
+ * @see module:index/server
+ * @see module:index/handler
+ */
 
 const
 	Server = require('./index/server'),
-	Handler = require('./index/handler'),
+	Handler = require('./index/handler');
 
+module.exports = {
 	/**
-	 * Index file for project
-	 * 
-	 * @example
-	 * // returns a Server
-	 * require('@ffdc/nozomi').Server
-	 * @example
-	 * // returns a Handler
-	 * require('@ffdc/nozomi').Handler
+	 * Server
+	 * @see module:index/server~Server
 	 */
-	Index = {
-		Server,
-		Handler
-	};
-
-module.exports = Index;
+	Server,
+	/**
+	 * Handler
+	 * @see module:index/handler~Handler
+	 */
+	Handler
+};

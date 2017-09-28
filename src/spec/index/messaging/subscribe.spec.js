@@ -3,7 +3,7 @@
 const
 	root = require('app-root-path'),
 	chai = require('chai'),
-	chaiSinon = require('sinon-chai'),
+	sinonChai = require('sinon-chai'),
 	chaiAsPromised = require('chai-as-promised'),
 	sinon = require('sinon'),
 
@@ -17,7 +17,7 @@ const
 	expect = chai.expect,
 	anyFunction = sinon.match.func;
 
-chai.use(chaiSinon);
+chai.use(sinonChai);
 chai.use(chaiAsPromised);
 
 describe('index/messaging/subscribe.js', () => {

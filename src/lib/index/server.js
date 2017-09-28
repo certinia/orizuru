@@ -1,4 +1,10 @@
 'use strict';
+/**
+ * The Server for creating routes in a web dyno based on Avro schemas. 
+ * Messages are consumed by Handler
+ * @module index/server
+ * @see module:index/handler
+ */
 
 const
 	_ = require('lodash'),
@@ -87,7 +93,7 @@ class Server {
 	 * // adds middleware functions contained in the middlewares array (see express middleware API)
 	 * server.addRoute({ schemaNameToDefinition, middlewares: [...] });
 	 * 
-	 * @param {*} input - { schemaNameToDefinition [, middlewares] [, apiEndpoint] }
+	 * @param {object} config - { schemaNameToDefinition [, middlewares] [, apiEndpoint] }
 	 * 
 	 * @returns {Server}
 	 */
