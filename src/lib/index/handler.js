@@ -35,7 +35,7 @@ class Handler {
 
 		return Subscribe.handle({
 			schemaName,
-			handler: ({ content }) => callback(fromTransport(content))
+			handler: (content) => callback(fromTransport(content))
 		});
 	}
 

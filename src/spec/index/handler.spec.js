@@ -16,59 +16,6 @@ chai.use(chaiAsPromised);
 
 describe('index/handler.js', () => {
 
-	describe('constructor', () => {
-
-		it('should throw an exception if schemaNameToDefinition isn\'t an object', () => {
-
-			// given
-			const
-				input = {
-					schemaNameToDefinition: null
-				};
-
-			// when - then
-			expect(() => new Handler(input)).to.throw('Server init argument must be an object of: schemaName -> avroSchema.');
-
-		});
-
-		it('should throw an exception if schemaNameToDefinition values aren\'t valid schemas', () => {
-
-			// given
-			const
-				input = {
-					schemaNameToDefinition: {
-						testSchema: []
-					}
-				};
-
-			// when - then
-			expect(() => new Handler(input)).to.throw('Schema name: \'testSchema\' schema could not be compiled.');
-
-		});
-
-		it('should construct a handler if schemaNameToDefinition map is correct', () => {
-
-			// given
-			const
-				input = {
-					schemaNameToDefinition: {
-						testSchema: {
-							type: 'record',
-							fields: [{
-								name: 'f',
-								type: 'string'
-							}]
-						}
-					}
-				};
-
-			// when - then
-			expect(new Handler(input)).to.be.instanceof(Handler);
-
-		});
-
-	});
-
 	describe('handle', () => {
 
 		const
