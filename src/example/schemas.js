@@ -5,7 +5,6 @@ module.exports = {
 	firstAndLastName: {
 		type: 'record',
 		fields: [
-			{ name: 'auth', type: 'string' }, // from middleware
 			{ name: 'firstName', type: 'string' },
 			{ name: 'lastName', type: 'string' }
 		]
@@ -13,7 +12,6 @@ module.exports = {
 	ageAndDob: {
 		type: 'record',
 		fields: [
-			{ name: 'auth', type: 'string' }, // from middleware
 			{ name: 'age', type: 'string' },
 			{ name: 'dob', type: 'string' }
 		]

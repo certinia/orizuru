@@ -9,35 +9,11 @@ const
 	_ = require('lodash'),
 
 	Subscribe = require('./messaging/subscribe'),
-	{ compileSchemas } = require('./shared/compileSchemas'),
-
-	schemaMap = new WeakMap();
+	transport = require('./messaging/transportSchema'),
+	{ schemaForJson } = require('./shared/schema');
 
 /** Class representing a handler. */
 class Handler {
-
-	/**
-	 * Constructs a new Handler
-	 * 
-	 * @example
-	 * // creates a handler for schemas
-	 * new Handler({
-	 * 	schemaNameToDefinition: {
-	 * 		test: {} // an avro compliant schema (see avro schema API)
-	 * 	}
-	 * });
-	 * 
-	 * @param {object} config - { schemaNameToDefinition }
-	 * 
-	 * @returns {Handler}
-	 */
-	constructor({ schemaNameToDefinition }) {
-
-		compileSchemas(schemaNameToDefinition);
-
-		schemaMap[this] = schemaNameToDefinition;
-
-	}
 
 	/**
 	 * Sets the handler function for a schema provided in the constructor
@@ -53,11 +29,7 @@ class Handler {
 	 */
 	handle({ schemaName, callback }) {
 
-		const schema = schemaMap[this][schemaName];
-
-		if (!schema) {
-			throw new Error(`Schema name: '${schemaName}' not found.`);
-		}
+		const transportSchema = schemaForJson(transport);
 
 		if (!_.isFunction(callback)) {
 			throw new Error(`Please provide a valid callback function for schema: '${schemaName}'`);
@@ -66,7 +38,10 @@ class Handler {
 		return Subscribe.handle({
 			schemaName,
 			handler: ({ content }) => {
-				callback({ body: schema.fromBuffer(content) });
+
+				const transportObject = transportSchema.fromBuffer(content);
+
+				callback({ body: transportObject });
 			}
 		});
 	}
