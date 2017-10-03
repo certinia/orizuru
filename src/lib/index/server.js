@@ -18,24 +18,9 @@ const
 	SCHEMA_API_PARAM = '/:schemaName',
 
 	{ compileSchemas } = require('./shared/compileSchemas'),
-	{ schemaForType, schemaForJson } = require('./shared/schema'),
-	transport = require('./messaging/transportSchema'),
+	{ toTransport } = require('./shared/transport'),
 
 	serverStore = new WeakMap(),
-
-	createTransport = (schema, body, other) => {
-		const
-			transportSchema = schemaForJson(transport),
-			nozomi = other || {},
-			nozomiSchema = schemaForType(nozomi),
-			message = {
-				nozomiSchema: JSON.stringify(nozomiSchema.toJSON()),
-				nozomiBuffer: nozomiSchema.toBuffer(nozomi),
-				bodySchema: JSON.stringify(schema.toJSON()),
-				bodyBuffer: schema.toBuffer(body)
-			};
-		return transportSchema.toBuffer(message);
-	},
 
 	api = (path, schemaNameToDefinition) => (request, response) => {
 
@@ -50,7 +35,7 @@ const
 		} else {
 
 			try {
-				const buffer = createTransport(schema, body, nozomi);
+				const buffer = toTransport(schema, body, nozomi);
 
 				Publish
 					.send({ schemaName: `${path}/${schemaName}`, buffer })

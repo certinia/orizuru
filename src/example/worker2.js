@@ -8,11 +8,13 @@ const
 	schemaName = '/api/ageAndDob',
 
 	// create a simple callback
-	callback = ({ body }) => {
+	callback = ({ body, nozomi }) => {
 		// eslint-disable-next-line no-console
 		console.log('worker 1');
 		// eslint-disable-next-line no-console
 		console.log(body);
+		// eslint-disable-next-line no-console
+		console.log(nozomi);
 	};
 
 // wire handler

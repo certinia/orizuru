@@ -9,18 +9,18 @@ const
 	_ = require('lodash'),
 
 	Subscribe = require('./messaging/subscribe'),
-	transport = require('./messaging/transportSchema'),
-	{ schemaForJson } = require('./shared/schema');
+	{ fromTransport } = require('./shared/transport');
 
 /** Class representing a handler. */
 class Handler {
 
 	/**
-	 * Sets the handler function for a schema provided in the constructor
+	 * Sets the handler function for a fully qualified event
 	 * 
 	 * @example
-	 * handler.handle({ schemaName: 'test', callback: (message) => {
-	 * 	console.log(message);
+	 * handler.handle({ schemaName: '/api/test', callback: ({ nozomi, body }) => {
+	 * 	console.log(nozomi);
+	 * 	console.log(body);
 	 * }})
 	 * 
 	 * @param {object} config - { schemaName, callback } 
@@ -29,20 +29,13 @@ class Handler {
 	 */
 	handle({ schemaName, callback }) {
 
-		const transportSchema = schemaForJson(transport);
-
 		if (!_.isFunction(callback)) {
 			throw new Error(`Please provide a valid callback function for schema: '${schemaName}'`);
 		}
 
 		return Subscribe.handle({
 			schemaName,
-			handler: ({ content }) => {
-
-				const transportObject = transportSchema.fromBuffer(content);
-
-				callback({ body: transportObject });
-			}
+			handler: ({ content }) => callback(fromTransport(content))
 		});
 	}
 
