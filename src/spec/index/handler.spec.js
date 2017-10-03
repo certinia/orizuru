@@ -8,9 +8,10 @@ const
 	{ expect } = chai,
 	{ calledOnce, calledWith } = sinon.assert,
 
-	avro = require('avsc'),
 	Subscribe = require(root + '/src/lib/index/messaging/subscribe'),
-	Handler = require(root + '/src/lib/index/handler');
+	Handler = require(root + '/src/lib/index/handler'),
+	{ schemaForJson } = require(root + '/src/lib/index/shared/schema'),
+	{ toTransport } = require(root + '/src/lib/index/shared/transport');
 
 chai.use(chaiAsPromised);
 
@@ -22,32 +23,14 @@ describe('index/handler.js', () => {
 			sandbox = sinon.sandbox.create(),
 			restore = sandbox.restore.bind(sandbox);
 
-		let input, handlerInstance, handleStub;
+		let handlerInstance, handleStub;
 
 		beforeEach(() => {
-			input = {
-				schemaNameToDefinition: {
-					testSchema: {
-						type: 'record',
-						fields: [{
-							name: 'f',
-							type: 'string'
-						}]
-					}
-				}
-			};
-			handlerInstance = new Handler(input);
+			handlerInstance = new Handler();
 			handleStub = sandbox.stub(Subscribe, 'handle');
 		});
 
 		afterEach(restore);
-
-		it('should throw an exception if schema for name isn\'t found', () => {
-
-			// given - when - then
-			expect(() => handlerInstance.handle({ schemaName: null })).to.throw('Schema name: \'null\' not found.');
-
-		});
 
 		it('should throw an exception if a valid callback function is not supplied', () => {
 
@@ -61,11 +44,17 @@ describe('index/handler.js', () => {
 			// given
 			const spy = sandbox.spy();
 			handleStub.callsFake(obj => {
-				obj.handler({
-					content: avro.Type.forSchema(input.schemaNameToDefinition.testSchema).toBuffer({
-						f: 'test1'
-					})
-				});
+				obj.handler(toTransport(schemaForJson({
+					type: 'record',
+					fields: [{
+						name: 'f',
+						type: 'string'
+					}]
+				}), {
+					f: 'test1'
+				}, {
+					auth: 'testAuth'
+				}));
 				return Promise.resolve('a');
 			});
 
@@ -75,7 +64,7 @@ describe('index/handler.js', () => {
 					calledOnce(handleStub);
 					calledWith(handleStub, { schemaName: 'testSchema', handler: sinon.match.func });
 					calledOnce(spy);
-					calledWith(spy, { body: { f: 'test1' } });
+					calledWith(spy, { body: { f: 'test1' }, nozomi: { auth: 'testAuth' } });
 				});
 		});
 
