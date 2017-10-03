@@ -21,7 +21,7 @@ const
 
 	serverStore = new WeakMap(),
 
-	api = schemaNameToDefinition => (request, response) => {
+	api = (path, schemaNameToDefinition) => (request, response) => {
 
 		const
 			schemaName = request.params.schemaName,
@@ -29,19 +29,19 @@ const
 			body = request.body;
 
 		if (!schema) {
-			response.status(400).send(`No schema for '${schemaName}' found.`);
+			response.status(400).send(`No schema for '${path}/${schemaName}' found.`);
 		} else {
 
 			try {
 				const buffer = schema.toBuffer(body);
 
 				Publish
-					.send({ schemaName, buffer })
+					.send({ schemaName: `${path}/${schemaName}`, buffer })
 					.then(() => response.status(200).send('Ok.'))
-					.catch(() => response.status(400).send(`Error propogating event for '${schemaName}'.`));
+					.catch(() => response.status(400).send(`Error propogating event for '${path}/${schemaName}'.`));
 
 			} catch (err) {
-				response.status(400).send(`Error encoding post body for schema: '${schemaName}'.`);
+				response.status(400).send(`Error encoding post body for schema: '${path}/${schemaName}'.`);
 			}
 
 		}
@@ -121,7 +121,7 @@ class Server {
 		});
 
 		// add post method
-		router.post(SCHEMA_API_PARAM, api(schemaNameToDefinition));
+		router.post(SCHEMA_API_PARAM, api(apiEndpoint, schemaNameToDefinition));
 
 		serverStore[this].use(apiEndpoint, router);
 

@@ -269,7 +269,8 @@ describe('index/server.js', () => {
 				server = new Server().addRoute({
 					schemaNameToDefinition: {
 						testSchema1: schema
-					}
+					},
+					apiEndpoint: '/api'
 				});
 			});
 
@@ -277,8 +278,8 @@ describe('index/server.js', () => {
 
 				// given - when - then
 				return request(server.getServer())
-					.post('/testSchemaUnknown')
-					.expect(400, 'No schema for \'testSchemaUnknown\' found.');
+					.post('/api/testSchemaUnknown')
+					.expect(400, 'No schema for \'/api/testSchemaUnknown\' found.');
 
 			});
 
@@ -286,8 +287,8 @@ describe('index/server.js', () => {
 
 				// given - when - then
 				return request(server.getServer())
-					.post('/testSchema1')
-					.expect(400, 'Error encoding post body for schema: \'testSchema1\'.');
+					.post('/api/testSchema1')
+					.expect(400, 'Error encoding post body for schema: \'/api/testSchema1\'.');
 
 			});
 
@@ -304,15 +305,15 @@ describe('index/server.js', () => {
 
 					// when - then
 					return request(server.getServer())
-						.post('/testSchema1')
+						.post('/api/testSchema1')
 						.send({
 							f: 'test1'
 						})
-						.expect(400, 'Error propogating event for \'testSchema1\'.')
+						.expect(400, 'Error propogating event for \'/api/testSchema1\'.')
 						.then(() => {
 							calledOnce(Publish.send);
 							calledWith(Publish.send, {
-								schemaName: 'testSchema1',
+								schemaName: '/api/testSchema1',
 								buffer: avro.Type.forSchema(schema).toBuffer({
 									f: 'test1'
 								})
@@ -328,7 +329,7 @@ describe('index/server.js', () => {
 
 					// when - then
 					return request(server.getServer())
-						.post('/testSchema1')
+						.post('/api/testSchema1')
 						.send({
 							f: 'test2'
 						})
@@ -336,7 +337,7 @@ describe('index/server.js', () => {
 						.then(() => {
 							calledOnce(Publish.send);
 							calledWith(Publish.send, {
-								schemaName: 'testSchema1',
+								schemaName: '/api/testSchema1',
 								buffer: avro.Type.forSchema(schema).toBuffer({
 									f: 'test2'
 								})
