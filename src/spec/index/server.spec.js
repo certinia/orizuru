@@ -9,9 +9,10 @@ const
 	{ calledOnce, calledTwice, calledThrice, calledWith, notCalled } = sinon.assert,
 	request = require('supertest'),
 
-	avro = require('avsc'),
 	Publish = require(root + '/src/lib/index/messaging/publish'),
 	serverPath = root + '/src/lib/index/server',
+	{ schemaForJson } = require(root + '/src/lib/index/shared/schema'),
+	{ toTransport } = require(root + '/src/lib/index/shared/transport'),
 
 	sandbox = sinon.sandbox.create(),
 	restore = sandbox.restore.bind(sandbox);
@@ -314,7 +315,13 @@ describe('index/server.js', () => {
 							calledOnce(Publish.send);
 							calledWith(Publish.send, {
 								schemaName: '/api/testSchema1',
-								buffer: avro.Type.forSchema(schema).toBuffer({
+								buffer: toTransport(schemaForJson({
+									type: 'record',
+									fields: [{
+										name: 'f',
+										type: 'string'
+									}]
+								}), {
 									f: 'test1'
 								})
 							});
@@ -338,7 +345,13 @@ describe('index/server.js', () => {
 							calledOnce(Publish.send);
 							calledWith(Publish.send, {
 								schemaName: '/api/testSchema1',
-								buffer: avro.Type.forSchema(schema).toBuffer({
+								buffer: toTransport(schemaForJson({
+									type: 'record',
+									fields: [{
+										name: 'f',
+										type: 'string'
+									}]
+								}), {
 									f: 'test2'
 								})
 							});
