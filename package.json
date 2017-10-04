@@ -1,5 +1,5 @@
 {
-  "name": "@ffres/nozomi",
+  "name": "@financialforcedev/nozomi",
   "version": "1.0.0",
   "description": "Webhooks for heroku web -> worker dyno",
   "main": "src/lib/index.js",
@@ -10,13 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://stash.dev.financialforce.com/projects/RESEARCH/repos/ffres--nozomi/"
+    "url": "https://stash.dev.financialforce.com/projects/RESEARCH/repos/financialforcedev--nozomi-server/"
   },
   "keywords": [
     "webhook",
     "web",
     "heroku",
-    "worker",
+	"worker",
+	"nozomi",
     "dyno"
   ],
   "author": "financialforce",
