@@ -9,42 +9,18 @@ const
 	_ = require('lodash'),
 
 	Subscribe = require('./messaging/subscribe'),
-	{ compileSchemas } = require('./shared/compileSchemas'),
-
-	schemaMap = new WeakMap();
+	{ fromTransport } = require('./shared/transport');
 
 /** Class representing a handler. */
 class Handler {
 
 	/**
-	 * Constructs a new Handler
+	 * Sets the handler function for a fully qualified event
 	 * 
 	 * @example
-	 * // creates a handler for schemas
-	 * new Handler({
-	 * 	schemaNameToDefinition: {
-	 * 		test: {} // an avro compliant schema (see avro schema API)
-	 * 	}
-	 * });
-	 * 
-	 * @param {object} config - { schemaNameToDefinition }
-	 * 
-	 * @returns {Handler}
-	 */
-	constructor({ schemaNameToDefinition }) {
-
-		compileSchemas(schemaNameToDefinition);
-
-		schemaMap[this] = schemaNameToDefinition;
-
-	}
-
-	/**
-	 * Sets the handler function for a schema provided in the constructor
-	 * 
-	 * @example
-	 * handler.handle({ schemaName: 'test', callback: (message) => {
-	 * 	console.log(message);
+	 * handler.handle({ schemaName: '/api/test', callback: ({ nozomi, body }) => {
+	 * 	console.log(nozomi);
+	 * 	console.log(body);
 	 * }})
 	 * 
 	 * @param {object} config - { schemaName, callback } 
@@ -53,21 +29,13 @@ class Handler {
 	 */
 	handle({ schemaName, callback }) {
 
-		const schema = schemaMap[this][schemaName];
-
-		if (!schema) {
-			throw new Error(`Schema name: '${schemaName}' not found.`);
-		}
-
 		if (!_.isFunction(callback)) {
 			throw new Error(`Please provide a valid callback function for schema: '${schemaName}'`);
 		}
 
 		return Subscribe.handle({
 			schemaName,
-			handler: ({ content }) => {
-				callback({ body: schema.fromBuffer(content) });
-			}
+			handler: (content) => callback(fromTransport(content))
 		});
 	}
 

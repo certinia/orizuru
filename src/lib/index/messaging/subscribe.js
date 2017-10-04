@@ -12,7 +12,7 @@ const
 			return Promise.resolve()
 				.then(() => {
 					// Invoke the handler with the message
-					return handler(message);
+					return handler(message.content);
 				})
 				.then(
 					result => channel.ack(message),

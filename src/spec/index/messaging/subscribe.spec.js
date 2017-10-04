@@ -45,7 +45,7 @@ describe('index/messaging/subscribe.js', () => {
 			// given
 			const
 				topic = 'TestTopic',
-				message = 'TestMessage';
+				message = { content: 'TestMessage' };
 
 			mocks.channel.consume.callsFake((topic, callback) => {
 				return callback(message);
@@ -69,7 +69,7 @@ describe('index/messaging/subscribe.js', () => {
 					expect(mocks.channel.consume).to.have.been.calledOnce;
 					expect(mocks.channel.consume).to.have.been.calledWith(topic, anyFunction);
 					expect(mocks.handler).to.have.been.calledOnce;
-					expect(mocks.handler).to.have.been.calledWith(message);
+					expect(mocks.handler).to.have.been.calledWith(message.content);
 				});
 		});
 
@@ -78,7 +78,7 @@ describe('index/messaging/subscribe.js', () => {
 			// given
 			const
 				topic = 'TestTopic',
-				message = 'TestMessage';
+				message = { content: 'TestMessage' };
 
 			mocks.channel.consume.callsFake((topic, callback) => {
 				return callback(message);
@@ -102,7 +102,7 @@ describe('index/messaging/subscribe.js', () => {
 					expect(mocks.channel.consume).to.have.been.calledOnce;
 					expect(mocks.channel.consume).to.have.been.calledWith(topic, anyFunction);
 					expect(mocks.handler).to.have.been.calledOnce;
-					expect(mocks.handler).to.have.been.calledWith(message);
+					expect(mocks.handler).to.have.been.calledWith(message.content);
 				});
 		});
 

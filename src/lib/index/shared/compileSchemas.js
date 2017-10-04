@@ -2,7 +2,7 @@
 
 const
 	_ = require('lodash'),
-	avro = require('avsc');
+	{ schemaForJson } = require('./schema');
 
 module.exports = {
 	compileSchemas: schemaNameToDefinition => {
@@ -11,7 +11,7 @@ module.exports = {
 		} else {
 			_.each(schemaNameToDefinition, (value, key) => {
 				try {
-					schemaNameToDefinition[key] = avro.Type.forSchema(value);
+					schemaNameToDefinition[key] = schemaForJson(value);
 				} catch (err) {
 					throw new Error(`Schema name: '${key}' schema could not be compiled.`);
 				}
