@@ -1,6 +1,7 @@
 'use strict';
 
 const
+	_ = require('lodash'),
 	root = require('app-root-path'),
 	{ expect } = require('chai'),
 	{ validate } = require(root + '/src/lib/index/shared/configValidator');
@@ -33,7 +34,7 @@ describe('index/shared/configValidator.js', () => {
 		it('should throw an error if config.transport.subscribe is not a function', () => {
 
 			//given - when - then
-			expect(() => validate({ transport: { publish: () => {} } })).to.throw('Invalid parameter: config.transport.subscribe not an function');
+			expect(() => validate({ transport: { publish: _.noop } })).to.throw('Invalid parameter: config.transport.subscribe not an function');
 
 		});
 
@@ -42,8 +43,8 @@ describe('index/shared/configValidator.js', () => {
 			//given - when - then
 			expect(validate({
 				transport: {
-					publish: () => {},
-					subscribe: () => {}
+					publish: _.noop,
+					subscribe: _.noop
 				}
 			})).to.eql(undefined);
 

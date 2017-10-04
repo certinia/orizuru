@@ -1,6 +1,7 @@
 'use strict';
 
 const
+	_ = require('lodash'),
 	root = require('app-root-path'),
 	chai = require('chai'),
 	chaiAsPromised = require('chai-as-promised'),
@@ -8,7 +9,6 @@ const
 	{ expect } = chai,
 	{ calledOnce, calledWith } = sinon.assert,
 
-	Subscribe = require(root + '/src/lib/index/messaging/subscribe'),
 	Handler = require(root + '/src/lib/index/handler'),
 	{ schemaForJson } = require(root + '/src/lib/index/shared/schema'),
 	{ toTransport } = require(root + '/src/lib/index/shared/transport');
@@ -23,11 +23,17 @@ describe('index/handler.js', () => {
 			sandbox = sinon.sandbox.create(),
 			restore = sandbox.restore.bind(sandbox);
 
-		let handlerInstance, handleStub;
+		let handlerInstance, config;
 
 		beforeEach(() => {
-			handlerInstance = new Handler();
-			handleStub = sandbox.stub(Subscribe, 'handle');
+			config = {
+				transport: {
+					publish: _.noop,
+					subscribe: sandbox.stub()
+				},
+				transportConfig: 'testTransportConfig'
+			};
+			handlerInstance = new Handler(config);
 		});
 
 		afterEach(restore);
@@ -43,7 +49,7 @@ describe('index/handler.js', () => {
 
 			// given
 			const spy = sandbox.spy();
-			handleStub.callsFake(obj => {
+			config.transport.subscribe.callsFake(obj => {
 				obj.handler(toTransport(schemaForJson({
 					type: 'record',
 					fields: [{
@@ -61,8 +67,8 @@ describe('index/handler.js', () => {
 			// when - then
 			return expect(handlerInstance.handle({ schemaName: 'testSchema', callback: spy })).to.eventually.be.eql('a')
 				.then(() => {
-					calledOnce(handleStub);
-					calledWith(handleStub, { schemaName: 'testSchema', handler: sinon.match.func });
+					calledOnce(config.transport.subscribe);
+					calledWith(config.transport.subscribe, { eventName: 'testSchema', handler: sinon.match.func, config: config.transportConfig });
 					calledOnce(spy);
 					calledWith(spy, { body: { f: 'test1' }, nozomi: { auth: 'testAuth' } });
 				});
