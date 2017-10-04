@@ -8,11 +8,27 @@
 const
 	_ = require('lodash'),
 
-	Subscribe = require('./messaging/subscribe'),
-	{ fromTransport } = require('./shared/transport');
+	{ validate } = require('./shared/configValidator'),
+	{ fromTransport } = require('./shared/transport'),
+
+	privateConfig = new WeakMap();
 
 /** Class representing a handler. */
 class Handler {
+
+	/**
+	 * Constructs a new 'Handler'
+	 * 
+	 * @param {object} config - { transport [, transportConfig] }
+	 * @returns {Handler}
+	 */
+	constructor(config) {
+
+		// validate config
+		validate(config);
+		privateConfig[this] = config;
+
+	}
 
 	/**
 	 * Sets the handler function for a fully qualified event
@@ -29,13 +45,16 @@ class Handler {
 	 */
 	handle({ schemaName, callback }) {
 
+		const config = privateConfig[this];
+
 		if (!_.isFunction(callback)) {
 			throw new Error(`Please provide a valid callback function for schema: '${schemaName}'`);
 		}
 
-		return Subscribe.handle({
-			schemaName,
-			handler: (content) => callback(fromTransport(content))
+		return config.transport.subscribe({
+			eventName: schemaName,
+			handler: (content) => callback(fromTransport(content)),
+			config: config.transportConfig
 		});
 	}
 

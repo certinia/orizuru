@@ -13,16 +13,16 @@ const
 	bodyParser = require('body-parser'),
 	helmet = require('helmet'),
 
-	Publish = require('./messaging/publish'),
-
 	SCHEMA_API_PARAM = '/:schemaName',
 
 	{ compileSchemas } = require('./shared/compileSchemas'),
+	{ validate } = require('./shared/configValidator'),
 	{ toTransport } = require('./shared/transport'),
 
 	serverStore = new WeakMap(),
+	privateConfig = new WeakMap(),
 
-	api = (path, schemaNameToDefinition) => (request, response) => {
+	api = (path, schemaNameToDefinition, config) => (request, response) => {
 
 		const
 			schemaName = request.params.schemaName,
@@ -37,8 +37,8 @@ const
 			try {
 				const buffer = toTransport(schema, body, nozomi);
 
-				Publish
-					.send({ schemaName: `${path}/${schemaName}`, buffer })
+				config.transport
+					.publish({ eventName: `${path}/${schemaName}`, buffer, config: config.transportConfig })
 					.then(() => response.status(200).send('Ok.'))
 					.catch(() => response.status(400).send(`Error propogating event for '${path}/${schemaName}'.`));
 
@@ -56,13 +56,14 @@ class Server {
 	/**
 	 * Constructs a new 'Server'
 	 * 
-	 * @example
-	 * // returns serverInstance
-	 * new Server();
-	 * 
+	 * @param {object} config - { transport [, transportConfig] }
 	 * @returns {Server}
 	 */
-	constructor() {
+	constructor(config) {
+
+		// validate config
+		validate(config);
+		privateConfig[this] = config;
 
 		// create server
 		const server = express();
@@ -102,7 +103,9 @@ class Server {
 	addRoute({ schemaNameToDefinition, middlewares, apiEndpoint }) {
 
 		// create router
-		const router = expressRouter();
+		const
+			config = privateConfig[this],
+			router = expressRouter();
 
 		// validate
 		if (!_.isString(apiEndpoint)) {
@@ -123,7 +126,7 @@ class Server {
 		});
 
 		// add post method
-		router.post(SCHEMA_API_PARAM, api(apiEndpoint, schemaNameToDefinition));
+		router.post(SCHEMA_API_PARAM, api(apiEndpoint, schemaNameToDefinition, config));
 
 		serverStore[this].use(apiEndpoint, router);
 
