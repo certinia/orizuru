@@ -16,13 +16,13 @@ const
 	schemaName = '/api/ageAndDob',
 
 	// create a simple callback
-	callback = ({ body, nozomi }) => {
+	callback = ({ typed, untyped }) => {
 		// eslint-disable-next-line no-console
 		console.log('worker 2');
 		// eslint-disable-next-line no-console
-		console.log(body);
+		console.log(typed);
 		// eslint-disable-next-line no-console
-		console.log(nozomi);
+		console.log(untyped);
 	};
 
 // wire handler

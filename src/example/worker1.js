@@ -16,13 +16,13 @@ const
 	schemaName = '/api/firstAndLastName',
 
 	// create a simple callback
-	callback = ({ body, nozomi }) => {
+	callback = ({ typed, untyped }) => {
 		// eslint-disable-next-line no-console
 		console.log('worker 1');
 		// eslint-disable-next-line no-console
-		console.log(body);
+		console.log(typed);
 		// eslint-disable-next-line no-console
-		console.log(nozomi);
+		console.log(untyped);
 	};
 
 // wire handler

@@ -2,34 +2,37 @@
 
 const
 	transport = require('./transport/schema'),
-	{ schemaForType, schemaForJson } = require('./schema'),
-	transportSchema = schemaForJson(transport),
+	{ compileFromPlainObject, compileFromSchemaDefinition } = require('./schema'),
 
-	toTransport = (bodySchema, bodyObject, metaObject) => {
+	compiledTransportSchema = compileFromSchemaDefinition(transport),
+
+	toBuffer = (compiledTypedSchema, typed, untyped) => {
 		const
-			nozomi = metaObject || {},
-			nozomiSchema = schemaForType(nozomi),
+			untypedOrEmpty = untyped || {},
+			compiledUntypedSchema = compileFromPlainObject(untypedOrEmpty),
 			message = {
-				nozomiSchema: JSON.stringify(nozomiSchema.toJSON()),
-				nozomiBuffer: nozomiSchema.toBuffer(nozomi),
-				bodySchema: JSON.stringify(bodySchema.toJSON()),
-				bodyBuffer: bodySchema.toBuffer(bodyObject)
+				untypedSchema: JSON.stringify(compiledUntypedSchema.toJSON()),
+				untypedBuffer: compiledUntypedSchema.toBuffer(untypedOrEmpty),
+				typedSchema: JSON.stringify(compiledTypedSchema.toJSON()),
+				typedBuffer: compiledTypedSchema.toBuffer(typed)
 			};
-		return transportSchema.toBuffer(message);
+		return compiledTransportSchema.toBuffer(message);
 	},
 
-	fromTransport = (buffer) => {
+	fromBuffer = (buffer) => {
 		const
-			transportObject = transportSchema.fromBuffer(buffer),
-			metaSchema = schemaForJson(JSON.parse(transportObject.nozomiSchema)),
-			bodySchema = schemaForJson(JSON.parse(transportObject.bodySchema)),
-			nozomi = metaSchema.fromBuffer(transportObject.nozomiBuffer),
-			body = bodySchema.fromBuffer(transportObject.bodyBuffer);
+			decompiledTransportObject = compiledTransportSchema.fromBuffer(buffer),
 
-		return { nozomi, body };
+			compiledUntypedSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.untypedSchema)),
+			compiledTypedSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.typedSchema)),
+
+			untyped = compiledUntypedSchema.fromBuffer(decompiledTransportObject.untypedBuffer),
+			typed = compiledTypedSchema.fromBuffer(decompiledTransportObject.typedBuffer);
+
+		return { untyped, typed };
 	};
 
 module.exports = {
-	toTransport,
-	fromTransport
+	toBuffer,
+	fromBuffer
 };

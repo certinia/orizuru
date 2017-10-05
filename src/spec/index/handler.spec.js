@@ -10,8 +10,8 @@ const
 	{ calledOnce, calledWith } = sinon.assert,
 
 	Handler = require(root + '/src/lib/index/handler'),
-	{ schemaForJson } = require(root + '/src/lib/index/shared/schema'),
-	{ toTransport } = require(root + '/src/lib/index/shared/transport');
+	{ compileFromSchemaDefinition } = require(root + '/src/lib/index/shared/schema'),
+	{ toBuffer } = require(root + '/src/lib/index/shared/transport');
 
 chai.use(chaiAsPromised);
 
@@ -50,7 +50,7 @@ describe('index/handler.js', () => {
 			// given
 			const spy = sandbox.spy();
 			config.transport.subscribe.callsFake(obj => {
-				obj.handler(toTransport(schemaForJson({
+				obj.handler(toBuffer(compileFromSchemaDefinition({
 					type: 'record',
 					fields: [{
 						name: 'f',
@@ -70,8 +70,9 @@ describe('index/handler.js', () => {
 					calledOnce(config.transport.subscribe);
 					calledWith(config.transport.subscribe, { eventName: 'testSchema', handler: sinon.match.func, config: config.transportConfig });
 					calledOnce(spy);
-					calledWith(spy, { body: { f: 'test1' }, nozomi: { auth: 'testAuth' } });
+					calledWith(spy, { typed: { f: 'test1' }, untyped: { auth: 'testAuth' } });
 				});
+
 		});
 
 	});

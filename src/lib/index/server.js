@@ -17,7 +17,7 @@ const
 
 	{ compileSchemas } = require('./shared/compileSchemas'),
 	{ validate } = require('./shared/configValidator'),
-	{ toTransport } = require('./shared/transport'),
+	{ toBuffer } = require('./shared/transport'),
 
 	serverStore = new WeakMap(),
 	privateConfig = new WeakMap(),
@@ -35,7 +35,7 @@ const
 		} else {
 
 			try {
-				const buffer = toTransport(schema, body, nozomi);
+				const buffer = toBuffer(schema, body, nozomi);
 
 				config.transport
 					.publish({ eventName: `${path}/${schemaName}`, buffer, config: config.transportConfig })

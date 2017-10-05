@@ -10,8 +10,8 @@ const
 	request = require('supertest'),
 
 	serverPath = root + '/src/lib/index/server',
-	{ schemaForJson } = require(root + '/src/lib/index/shared/schema'),
-	{ toTransport } = require(root + '/src/lib/index/shared/transport'),
+	{ compileFromSchemaDefinition } = require(root + '/src/lib/index/shared/schema'),
+	{ toBuffer } = require(root + '/src/lib/index/shared/transport'),
 
 	sandbox = sinon.sandbox.create(),
 	restore = sandbox.restore.bind(sandbox);
@@ -322,7 +322,7 @@ describe('index/server.js', () => {
 							calledOnce(config.transport.publish);
 							calledWith(config.transport.publish, {
 								eventName: '/api/testSchema1',
-								buffer: toTransport(schemaForJson({
+								buffer: toBuffer(compileFromSchemaDefinition({
 									type: 'record',
 									fields: [{
 										name: 'f',
@@ -353,7 +353,7 @@ describe('index/server.js', () => {
 							calledOnce(config.transport.publish);
 							calledWith(config.transport.publish, {
 								eventName: '/api/testSchema1',
-								buffer: toTransport(schemaForJson({
+								buffer: toBuffer(compileFromSchemaDefinition({
 									type: 'record',
 									fields: [{
 										name: 'f',

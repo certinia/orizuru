@@ -9,7 +9,7 @@ const
 	_ = require('lodash'),
 
 	{ validate } = require('./shared/configValidator'),
-	{ fromTransport } = require('./shared/transport'),
+	{ fromBuffer } = require('./shared/transport'),
 
 	privateConfig = new WeakMap();
 
@@ -53,7 +53,7 @@ class Handler {
 
 		return config.transport.subscribe({
 			eventName: schemaName,
-			handler: (content) => callback(fromTransport(content)),
+			handler: (content) => callback(fromBuffer(content)),
 			config: config.transportConfig
 		});
 	}
