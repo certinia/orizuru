@@ -16,8 +16,8 @@
     "webhook",
     "web",
     "heroku",
-	"worker",
-	"nozomi",
+    "worker",
+    "nozomi",
     "dyno"
   ],
   "author": "financialforce",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@ffres/eslint-config": "1.0.0",
+    "@financialforcedev/nozomi-transport-rabbitmq": "^1.0.0",
     "app-root-path": "2.0.1",
     "chai": "3.5.0",
     "chai-as-promised": "7.1.1",
