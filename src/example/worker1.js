@@ -4,6 +4,14 @@ const
 	root = require('app-root-path'),
 	{ Handler } = require(root + '/src/lib/index'),
 
+	// get the transport
+	transport = require('@financialforcedev/nozomi-transport-rabbitmq'),
+
+	// configure the transport
+	transportConfig = {
+		cloudamqpUrl: 'amqp://localhost'
+	},
+
 	// get schemas
 	schemaName = '/api/firstAndLastName',
 
@@ -18,4 +26,4 @@ const
 	};
 
 // wire handler
-new Handler().handle({ schemaName, callback });
+new Handler({ transport, transportConfig }).handle({ schemaName, callback });

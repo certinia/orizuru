@@ -1,9 +1,18 @@
 'use strict';
 
 const
-	// get the server
 	root = require('app-root-path'),
+
+	// get the server
 	{ Server } = require(root + '/src/lib/index'),
+
+	// get the transport
+	transport = require('@financialforcedev/nozomi-transport-rabbitmq'),
+
+	// configure the transport
+	transportConfig = {
+		cloudamqpUrl: 'amqp://localhost'
+	},
 
 	// get schemas
 	schemaNameToDefinition = require('./schemas'),
@@ -25,7 +34,7 @@ const
 // listen using the schemas
 // you could call 'addRoute' multiple times to add different sets of schemas on different endpoints with different middlewares, etc
 // apiEndpoint defaults to '/{schemaname}', middlewares defaults to []
-new Server()
+new Server({ transport, transportConfig })
 	.addRoute({ schemaNameToDefinition, apiEndpoint, middlewares })
 	.getServer()
 	// getServer returns the express server, you could push other routes on to it (public folders, etc) at this point
