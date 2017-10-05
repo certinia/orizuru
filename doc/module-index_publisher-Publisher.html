@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Server</title>
+    <title>JSDoc: Class: Publisher</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Server</h1>
+    <h1 class="page-title">Class: Publisher</h1>
 
     
 
@@ -29,9 +29,9 @@
 <header>
     
         <h2><span class="attribs"><span class="type-signature"></span></span>
-            <span class="ancestors"><a href="module-index_server.html">index/server</a>~</span>Server<span class="signature">(config)</span><span class="type-signature"></span></h2>
+            <span class="ancestors"><a href="module-index_publisher.html">index/publisher</a>~</span>Publisher<span class="signature">(config)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">Class representing a server.</div>
+            <div class="class-description">Class representing a publisher.</div>
         
     
 </header>
@@ -46,7 +46,7 @@
     
 
     
-    <h4 class="name" id="Server"><span class="type-signature"></span>new Server<span class="signature">(config)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Publisher"><span class="type-signature"></span>new Publisher<span class="signature">(config)</span><span class="type-signature"></span></h4>
     
 
     
@@ -54,7 +54,7 @@
 
 
 <div class="description">
-    Constructs a new 'Server'
+    Constructs a new 'Publisher'
 </div>
 
 
@@ -219,7 +219,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index_server.js.html">index/server.js</a>, <a href="index_server.js.html#line50">line 50</a>
+        <a href="index_publisher.js.html">index/publisher.js</a>, <a href="index_publisher.js.html#line18">line 18</a>
     </li></ul></dd>
     
 
@@ -273,7 +273,7 @@
     
 
     
-    <h4 class="name" id="addRoute"><span class="type-signature"></span>addRoute<span class="signature">(config)</span><span class="type-signature"> &rarr; {Server}</span></h4>
+    <h4 class="name" id="publish"><span class="type-signature"></span>publish<span class="signature">(config)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
 
     
@@ -281,7 +281,7 @@
 
 
 <div class="description">
-    Adds a 'route' to the server
+    Publishes a message
 </div>
 
 
@@ -333,7 +333,7 @@
 
             
 
-            <td class="description last">{ schemaNameToDefinition [, middlewares] [, apiEndpoint] }
+            <td class="description last">{ eventName, schema, message [, context] }
                 <h6>Properties</h6>
                 
 
@@ -359,7 +359,7 @@
 
         <tr>
             
-                <td class="name"><code>schemaNameToDefinition</code></td>
+                <td class="name"><code>eventName</code></td>
             
 
             <td class="type">
@@ -375,14 +375,14 @@
 
             
 
-            <td class="description last">schema name to definition map</td>
+            <td class="description last">event name (non empty string)</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>middlewares</code></td>
+                <td class="name"><code>schema</code></td>
             
 
             <td class="type">
@@ -398,14 +398,14 @@
 
             
 
-            <td class="description last">middleware functions (optional)</td>
+            <td class="description last">schema (compiled or uncompiled schema object)</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>apiEndpoint</code></td>
+                <td class="name"><code>message</code></td>
             
 
             <td class="type">
@@ -421,7 +421,30 @@
 
             
 
-            <td class="description last">api endpoint (optional, default: /)</td>
+            <td class="description last">message (must match schema)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">untyped context (optional)</td>
         </tr>
 
     
@@ -469,7 +492,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index_server.js.html">index/server.js</a>, <a href="index_server.js.html#line103">line 103</a>
+        <a href="index_publisher.js.html">index/publisher.js</a>, <a href="index_publisher.js.html#line54">line 54</a>
     </li></ul></dd>
     
 
@@ -503,7 +526,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Server</span>
+<span class="param-type">Promise</span>
 
 
     </dd>
@@ -516,128 +539,11 @@
 
     <h5>Examples</h5>
     
-    <pre class="prettyprint"><code>// adds schemas to the default ( http://host/{schemaName} ) route
-server.addRoute({
-	schemaNameToDefinition: {
-		test: {} // an avro compliant schema (see avro schema API)
-	}
-});</code></pre>
+    <pre class="prettyprint"><code>// publishes a message
+publisher.publish({ eventName, schema, message });</code></pre>
 
-    <pre class="prettyprint"><code>// adds schemas to a route at ( http://host/api/test/{schemaName} )
-server.addRoute({ schemaNameToDefinition, apiEndpoint: '/api/test' });</code></pre>
-
-    <pre class="prettyprint"><code>// adds middleware functions contained in the middlewares array (see express middleware API)
-server.addRoute({ schemaNameToDefinition, middlewares: [...] });</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getServer"><span class="type-signature"></span>getServer<span class="signature">()</span><span class="type-signature"> &rarr; {express}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Returns the express server
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index_server.js.html">index/server.js</a>, <a href="index_server.js.html#line145">line 145</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">express</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>// returns the express server
-server.getServer().listen('8080');</code></pre>
+    <pre class="prettyprint"><code>// publishes a message
+publisher.publish({ eventName, schema, message, context });</code></pre>
 
 
 

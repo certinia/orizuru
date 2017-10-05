@@ -5,6 +5,7 @@
  * @module index
  * @see module:index/server
  * @see module:index/handler
+ * @see module:index/publisher
  */
 
 const
