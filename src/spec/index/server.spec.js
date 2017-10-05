@@ -300,7 +300,7 @@ describe('index/server.js', () => {
 				// given - when - then
 				return request(server.getServer())
 					.post('/api/testSchema1')
-					.expect(400, 'Error encoding post body for schema: \'/api/testSchema1\'.');
+					.expect(400, 'Error encoding message for schema.');
 
 			});
 
@@ -317,7 +317,7 @@ describe('index/server.js', () => {
 						.send({
 							f: 'test1'
 						})
-						.expect(400, 'Error propogating event for \'/api/testSchema1\'.')
+						.expect(400, 'Error publishing message on transport.')
 						.then(() => {
 							calledOnce(config.transport.publish);
 							calledWith(config.transport.publish, {

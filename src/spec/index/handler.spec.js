@@ -41,11 +41,11 @@ describe('index/handler.js', () => {
 		it('should throw an exception if a valid callback function is not supplied', () => {
 
 			// given - when - then
-			expect(() => handlerInstance.handle({ schemaName: 'testSchema', callback: null })).to.throw('Please provide a valid callback function for schema: \'testSchema\'');
+			expect(() => handlerInstance.handle({ eventName: 'testSchema', callback: null })).to.throw('Please provide a valid callback function for event: \'testSchema\'');
 
 		});
 
-		it('should call subscribe handle with schemaName and the handler function wrapped in a helper to deserialize the message to its schema and return its result', () => {
+		it('should call subscribe handle with eventName and the handler function wrapped in a helper to deserialize the message to its schema and return its result', () => {
 
 			// given
 			const spy = sandbox.spy();
@@ -65,7 +65,7 @@ describe('index/handler.js', () => {
 			});
 
 			// when - then
-			return expect(handlerInstance.handle({ schemaName: 'testSchema', callback: spy })).to.eventually.be.eql('a')
+			return expect(handlerInstance.handle({ eventName: 'testSchema', callback: spy })).to.eventually.be.eql('a')
 				.then(() => {
 					calledOnce(config.transport.subscribe);
 					calledWith(config.transport.subscribe, { eventName: 'testSchema', handler: sinon.match.func, config: config.transportConfig });
