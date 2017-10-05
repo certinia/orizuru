@@ -1,0 +1,29 @@
+'use strict';
+
+const
+	root = require('app-root-path'),
+	{ Handler } = require(root + '/src/lib/index'),
+
+	// get the transport
+	transport = require('@financialforcedev/nozomi-transport-rabbitmq'),
+
+	// configure the transport
+	transportConfig = {
+		cloudamqpUrl: 'amqp://localhost'
+	},
+
+	// get schemas
+	schemaName = 'testEvent',
+
+	// create a simple callback
+	callback = ({ message, context }) => {
+		// eslint-disable-next-line no-console
+		console.log('worker 3');
+		// eslint-disable-next-line no-console
+		console.log(message);
+		// eslint-disable-next-line no-console
+		console.log(context);
+	};
+
+// wire handler
+new Handler({ transport, transportConfig }).handle({ schemaName, callback });

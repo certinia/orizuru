@@ -9,7 +9,8 @@
 
 const
 	Server = require('./index/server'),
-	Handler = require('./index/handler');
+	Handler = require('./index/handler'),
+	Publisher = require('./index/publisher');
 
 module.exports = {
 	/**
@@ -21,5 +22,10 @@ module.exports = {
 	 * Handler
 	 * @see module:index/handler~Handler
 	 */
-	Handler
+	Handler,
+	/**
+	 * Publisher
+	 * @see module:index/publisher~Publisher
+	 */
+	Publisher
 };

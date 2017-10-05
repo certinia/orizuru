@@ -13,14 +13,17 @@ describe('index.js', () => {
 		const
 			mockServer = { mock: 'mockServer' },
 			mockHandler = { mock: 'mockHandler' },
+			mockPublisher = { mock: 'mockPublisher' },
 			index = proxyquire(root + '/src/lib/index', {
 				['./index/server']: mockServer,
-				['./index/handler']: mockHandler
+				['./index/handler']: mockHandler,
+				['./index/publisher']: mockPublisher
 			});
 
 		// then
 		expect(index.Server).to.eql(mockServer);
 		expect(index.Handler).to.eql(mockHandler);
+		expect(index.Publisher).to.eql(mockPublisher);
 
 	});
 
