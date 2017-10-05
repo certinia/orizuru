@@ -11,7 +11,6 @@ const
 
 	serverPath = root + '/src/lib/index/server',
 	Publisher = require(root + '/src/lib/index/publisher'),
-	{ compileFromSchemaDefinition } = require(root + '/src/lib/index/shared/schema'),
 
 	sandbox = sinon.sandbox.create(),
 	restore = sandbox.restore.bind(sandbox);
@@ -269,9 +268,9 @@ describe('index/server.js', () => {
 			let schema, server, publisherStub;
 
 			beforeEach(() => {
+				publisherStub = sandbox.stub(Publisher.prototype, 'publish');
 				delete require.cache[require.resolve(serverPath)];
 				const Server = require(serverPath);
-				publisherStub = sandbox.stub(Publisher.prototype, 'publish');
 				schema = {
 					type: 'record',
 					fields: [{
@@ -312,7 +311,7 @@ describe('index/server.js', () => {
 						calledOnce(publisherStub);
 						calledWith(publisherStub, {
 							eventName: '/api/testSchema1',
-							schema: compileFromSchemaDefinition(schema),
+							schema: sinon.match.object,
 							message: {
 								f: 'test1'
 							},
@@ -338,7 +337,7 @@ describe('index/server.js', () => {
 						calledOnce(publisherStub);
 						calledWith(publisherStub, {
 							eventName: '/api/testSchema1',
-							schema: compileFromSchemaDefinition(schema),
+							schema: sinon.match.object,
 							message: {
 								f: 'test1'
 							},

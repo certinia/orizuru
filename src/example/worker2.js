@@ -13,7 +13,7 @@ const
 	},
 
 	// get schemas
-	schemaName = '/api/ageAndDob',
+	eventName = '/api/ageAndDob',
 
 	// create a simple callback
 	callback = ({ message, context }) => {
@@ -26,4 +26,4 @@ const
 	};
 
 // wire handler
-new Handler({ transport, transportConfig }).handle({ schemaName, callback });
+new Handler({ transport, transportConfig }).handle({ eventName, callback });
