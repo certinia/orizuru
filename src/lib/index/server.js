@@ -1,3 +1,29 @@
+/**
+ * Copyright (c) 2017, FinancialForce.com, inc
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, 
+ *   are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, 
+ *      this list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, 
+ *      this list of conditions and the following disclaimer in the documentation 
+ *      and/or other materials provided with the distribution.
+ * - Neither the name of the FinancialForce.com, inc nor the names of its contributors 
+ *      may be used to endorse or promote products derived from this software without 
+ *      specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
+ *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
+ *  THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+ *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ **/
+
 'use strict';
 /**
  * The Server for creating routes in a web dyno based on Avro schemas. 
@@ -13,16 +39,15 @@ const
 	bodyParser = require('body-parser'),
 	helmet = require('helmet'),
 
-	Publish = require('./messaging/publish'),
-
 	SCHEMA_API_PARAM = '/:schemaName',
 
 	{ compileSchemas } = require('./shared/compileSchemas'),
-	{ toTransport } = require('./shared/transport'),
+	Publisher = require('./publisher'),
 
 	serverStore = new WeakMap(),
+	publisherStore = new WeakMap(),
 
-	api = (path, schemaNameToDefinition) => (request, response) => {
+	api = (path, schemaNameToDefinition, publisher) => (request, response) => {
 
 		const
 			schemaName = request.params.schemaName,
@@ -33,19 +58,16 @@ const
 		if (!schema) {
 			response.status(400).send(`No schema for '${path}/${schemaName}' found.`);
 		} else {
-
-			try {
-				const buffer = toTransport(schema, body, nozomi);
-
-				Publish
-					.send({ schemaName: `${path}/${schemaName}`, buffer })
-					.then(() => response.status(200).send('Ok.'))
-					.catch(() => response.status(400).send(`Error propogating event for '${path}/${schemaName}'.`));
-
-			} catch (err) {
-				response.status(400).send(`Error encoding post body for schema: '${path}/${schemaName}'.`);
-			}
-
+			publisher.publish({
+				eventName: `${path}/${schemaName}`,
+				schema: schema,
+				message: body,
+				context: nozomi
+			}).then(() => {
+				response.status(200).send('Ok.');
+			}).catch(err => {
+				response.status(400).send(err.message);
+			});
 		}
 
 	};
@@ -56,13 +78,15 @@ class Server {
 	/**
 	 * Constructs a new 'Server'
 	 * 
-	 * @example
-	 * // returns serverInstance
-	 * new Server();
-	 * 
+	 * @param {object} config - { transport [, transportConfig] }
+	 * @param {transport} config.transport - the transport object
+	 * @param {object} config.transportConfig - config for the transport object
 	 * @returns {Server}
 	 */
-	constructor() {
+	constructor(config) {
+
+		// create publisher
+		publisherStore[this] = new Publisher(config);
 
 		// create server
 		const server = express();
@@ -96,13 +120,18 @@ class Server {
 	 * server.addRoute({ schemaNameToDefinition, middlewares: [...] });
 	 * 
 	 * @param {object} config - { schemaNameToDefinition [, middlewares] [, apiEndpoint] }
+	 * @param {object} config.schemaNameToDefinition - schema name to definition map
+	 * @param {object} config.middlewares - middleware functions (optional)
+	 * @param {object} config.apiEndpoint - api endpoint (optional, default: /)
 	 * 
 	 * @returns {Server}
 	 */
 	addRoute({ schemaNameToDefinition, middlewares, apiEndpoint }) {
 
 		// create router
-		const router = expressRouter();
+		const
+			publisher = publisherStore[this],
+			router = expressRouter();
 
 		// validate
 		if (!_.isString(apiEndpoint)) {
@@ -123,7 +152,7 @@ class Server {
 		});
 
 		// add post method
-		router.post(SCHEMA_API_PARAM, api(apiEndpoint, schemaNameToDefinition));
+		router.post(SCHEMA_API_PARAM, api(apiEndpoint, schemaNameToDefinition, publisher));
 
 		serverStore[this].use(apiEndpoint, router);
 

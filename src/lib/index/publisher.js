@@ -26,24 +26,25 @@
 
 'use strict';
 /**
- * The Handler for consuming messages in a worker dyno created by Server.
- * @module index/handler
- * @see module:index/server
+ * The Publisher for publishing messages based on Avro schemas. 
+ * Messages are consumed by Handler
+ * @module index/publisher
+ * @see module:index/handler
  */
 
 const
 	_ = require('lodash'),
-
+	{ compileFromSchemaDefinition } = require('./shared/schema'),
 	{ validate } = require('./shared/configValidator'),
-	{ fromBuffer } = require('./shared/transport'),
+	{ toBuffer } = require('./shared/transport'),
 
 	privateConfig = new WeakMap();
 
-/** Class representing a handler. */
-class Handler {
+/** Class representing a publisher. */
+class Publisher {
 
 	/**
-	 * Constructs a new 'Handler'
+	 * Constructs a new 'Publisher'
 	 * 
 	 * @param {object} config - { transport [, transportConfig] }
 	 * @param {transport} config.transport - the transport object
@@ -59,35 +60,62 @@ class Handler {
 	}
 
 	/**
-	 * Sets the handler function for a fully qualified event
+	 * Publishes a message
 	 * 
 	 * @example
-	 * handler.handle({ eventName: '/api/test', callback: ({ message, context }) => {
-	 * 	console.log(message);
-	 * 	console.log(context);
-	 * }})
+	 * // publishes a message
+	 * publisher.publish({ eventName, schema, message });
+	 * @example
+	 * // publishes a message
+	 * publisher.publish({ eventName, schema, message, context });
 	 * 
-	 * @param {object} config - { eventName, callback } 
-	 * @param {object} config.eventName - the event name to listen to ('/schemaName' for server with no API endpoint specified)
-	 * @param {object} config.callback - the callback (called with { message, context })
+	 * @param {object} config - { eventName, schema, message [, context] }
+	 * @param {object} config.eventName - event name (non empty string)
+	 * @param {object} config.schema - schema (compiled or uncompiled schema object)
+	 * @param {object} config.message - message (must match schema)
+	 * @param {object} config.context - untyped context (optional)
 	 * 
 	 * @returns {Promise}
 	 */
-	handle({ eventName, callback }) {
+	publish({ eventName, schema, message, context }) {
 
+		// get config
 		const config = privateConfig[this];
 
-		if (!_.isFunction(callback)) {
-			throw new Error(`Please provide a valid callback function for event: '${eventName}'`);
+		// check event name
+		if (!_.isString(eventName) || _.size(eventName) < 1) {
+			return Promise.reject(new Error('Event name must be an non empty string.'));
 		}
 
-		return config.transport.subscribe({
-			eventName,
-			handler: (content) => callback(fromBuffer(content)),
-			config: config.transportConfig
-		});
+		let compiledSchema,
+			buffer;
+
+		// compile schema if required
+		if (!_.hasIn(schema, 'toBuffer')) {
+			try {
+				compiledSchema = compileFromSchemaDefinition(schema);
+			} catch (err) {
+				return Promise.reject(new Error('Schema could not be compiled.'));
+			}
+		} else {
+			compiledSchema = schema;
+		}
+
+		// generate transport buffer
+		try {
+			buffer = toBuffer(compiledSchema, message, context);
+		} catch (err) {
+			return Promise.reject(new Error('Error encoding message for schema.'));
+		}
+
+		// publish buffer on transport
+		return Promise.resolve(config.transport.publish({ eventName, buffer, config: config.transportConfig }))
+			.catch(() => {
+				throw new Error('Error publishing message on transport.');
+			});
+
 	}
 
 }
 
-module.exports = Handler;
+module.exports = Publisher;

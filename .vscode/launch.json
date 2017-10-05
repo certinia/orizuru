@@ -10,6 +10,13 @@
 	}, {
 		"type": "node",
 		"request": "launch",
+		"name": "Debug publisher example",
+		"runtimeArgs": [
+			"src/example/publisher.js"
+		]
+	}, {
+		"type": "node",
+		"request": "launch",
 		"name": "Debug worker example 1",
 		"runtimeArgs": [
 			"src/example/worker1.js"
@@ -20,6 +27,13 @@
 		"name": "Debug worker example 2",
 		"runtimeArgs": [
 			"src/example/worker2.js"
+		]
+	}, {
+		"type": "node",
+		"request": "launch",
+		"name": "Debug worker example 3",
+		"runtimeArgs": [
+			"src/example/worker3.js"
 		]
 	}, {
 		"type": "node",

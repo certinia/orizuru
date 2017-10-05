@@ -1,3 +1,29 @@
+/**
+ * Copyright (c) 2017, FinancialForce.com, inc
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, 
+ *   are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, 
+ *      this list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, 
+ *      this list of conditions and the following disclaimer in the documentation 
+ *      and/or other materials provided with the distribution.
+ * - Neither the name of the FinancialForce.com, inc nor the names of its contributors 
+ *      may be used to endorse or promote products derived from this software without 
+ *      specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
+ *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
+ *  THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+ *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ **/
+
 'use strict';
 
 const
@@ -9,15 +35,25 @@ const
 	{ calledOnce, calledTwice, calledThrice, calledWith, notCalled } = sinon.assert,
 	request = require('supertest'),
 
-	Publish = require(root + '/src/lib/index/messaging/publish'),
 	serverPath = root + '/src/lib/index/server',
-	{ schemaForJson } = require(root + '/src/lib/index/shared/schema'),
-	{ toTransport } = require(root + '/src/lib/index/shared/transport'),
+	Publisher = require(root + '/src/lib/index/publisher'),
 
 	sandbox = sinon.sandbox.create(),
 	restore = sandbox.restore.bind(sandbox);
 
 describe('index/server.js', () => {
+
+	let config;
+
+	beforeEach(() => {
+		config = {
+			transport: {
+				publish: _.noop,
+				subscribe: _.noop
+			},
+			transportConfig: 'testTransportConfig'
+		};
+	});
 
 	afterEach(restore);
 
@@ -48,7 +84,7 @@ describe('index/server.js', () => {
 
 			// given
 			const
-				server = new Server(),
+				server = new Server(config),
 				express = server.getServer();
 
 			// when - then
@@ -92,7 +128,7 @@ describe('index/server.js', () => {
 
 			// given
 			const
-				server = new Server(),
+				server = new Server(config),
 				input = {
 					schemaNameToDefinition: null
 				};
@@ -106,7 +142,7 @@ describe('index/server.js', () => {
 
 			// given
 			const
-				server = new Server(),
+				server = new Server(config),
 				input = {
 					schemaNameToDefinition: {
 						testSchema: []
@@ -122,7 +158,7 @@ describe('index/server.js', () => {
 
 			// given
 			const
-				server = new Server(),
+				server = new Server(config),
 				input = {
 					schemaNameToDefinition: {
 						testSchema: {
@@ -153,7 +189,7 @@ describe('index/server.js', () => {
 
 			// given
 			const
-				server = new Server(),
+				server = new Server(config),
 				input = {
 					schemaNameToDefinition: {
 						testSchema: {
@@ -185,7 +221,7 @@ describe('index/server.js', () => {
 
 			// given
 			const
-				server = new Server(),
+				server = new Server(config),
 				middleware = _.noop,
 				input = {
 					schemaNameToDefinition: {
@@ -219,7 +255,7 @@ describe('index/server.js', () => {
 
 			// given
 			const
-				server = new Server(),
+				server = new Server(config),
 				middleware = _.noop,
 				input = {
 					schemaNameToDefinition: {
@@ -255,9 +291,10 @@ describe('index/server.js', () => {
 
 		describe('should return a server that', () => {
 
-			let schema, server;
+			let schema, server, publisherStub;
 
 			beforeEach(() => {
+				publisherStub = sandbox.stub(Publisher.prototype, 'publish');
 				delete require.cache[require.resolve(serverPath)];
 				const Server = require(serverPath);
 				schema = {
@@ -267,7 +304,7 @@ describe('index/server.js', () => {
 						type: 'string'
 					}]
 				};
-				server = new Server().addRoute({
+				server = new Server(config).addRoute({
 					schemaNameToDefinition: {
 						testSchema1: schema
 					},
@@ -275,7 +312,7 @@ describe('index/server.js', () => {
 				});
 			});
 
-			it('fails for an invalid schema', () => {
+			it('fails for an invalid schema route', () => {
 
 				// given - when - then
 				return request(server.getServer())
@@ -284,80 +321,55 @@ describe('index/server.js', () => {
 
 			});
 
-			it('fails for a valid schema with no post body', () => {
+			it('should respond with 400 if publish rejects', () => {
 
-				// given - when - then
+				// given
+				publisherStub.rejects(new Error('Error test'));
+
+				// when - then
 				return request(server.getServer())
 					.post('/api/testSchema1')
-					.expect(400, 'Error encoding post body for schema: \'/api/testSchema1\'.');
+					.send({
+						f: 'test1'
+					})
+					.expect(400, 'Error test')
+					.then(() => {
+						calledOnce(publisherStub);
+						calledWith(publisherStub, {
+							eventName: '/api/testSchema1',
+							schema: sinon.match.object,
+							message: {
+								f: 'test1'
+							},
+							context: undefined
+						});
+					});
 
 			});
 
-			describe('calls publish for a valid schema with a conforming post body and', () => {
+			it('should respond with 200 if publish resolves', () => {
 
-				beforeEach(() => {
-					sandbox.stub(Publish, 'send');
-				});
+				// given
+				publisherStub.resolves();
 
-				it('fails if publish rejects', () => {
-
-					// given 
-					Publish.send.rejects();
-
-					// when - then
-					return request(server.getServer())
-						.post('/api/testSchema1')
-						.send({
-							f: 'test1'
-						})
-						.expect(400, 'Error propogating event for \'/api/testSchema1\'.')
-						.then(() => {
-							calledOnce(Publish.send);
-							calledWith(Publish.send, {
-								schemaName: '/api/testSchema1',
-								buffer: toTransport(schemaForJson({
-									type: 'record',
-									fields: [{
-										name: 'f',
-										type: 'string'
-									}]
-								}), {
-									f: 'test1'
-								})
-							});
+				// when - then
+				return request(server.getServer())
+					.post('/api/testSchema1')
+					.send({
+						f: 'test1'
+					})
+					.expect(200, 'Ok.')
+					.then(() => {
+						calledOnce(publisherStub);
+						calledWith(publisherStub, {
+							eventName: '/api/testSchema1',
+							schema: sinon.match.object,
+							message: {
+								f: 'test1'
+							},
+							context: undefined
 						});
-
-				});
-
-				it('succeeds if publish resolves', () => {
-
-					// given
-					Publish.send.resolves();
-
-					// when - then
-					return request(server.getServer())
-						.post('/api/testSchema1')
-						.send({
-							f: 'test2'
-						})
-						.expect(200, 'Ok.')
-						.then(() => {
-							calledOnce(Publish.send);
-							calledWith(Publish.send, {
-								schemaName: '/api/testSchema1',
-								buffer: toTransport(schemaForJson({
-									type: 'record',
-									fields: [{
-										name: 'f',
-										type: 'string'
-									}]
-								}), {
-									f: 'test2'
-								})
-							});
-						});
-
-				});
+					});
 
 			});
 

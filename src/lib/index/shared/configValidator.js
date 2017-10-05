@@ -27,30 +27,23 @@
 'use strict';
 
 const
-	root = require('app-root-path'),
-	proxyquire = require('proxyquire'),
-	{ expect } = require('chai');
+	_ = require('lodash'),
 
-describe('index.js', () => {
+	validate = (config) => {
+		if (config == null || !_.isObject(config)) {
+			throw new Error('Invalid parameter: config not an object');
+		}
+		if (config.transport == null || !_.isObject(config.transport)) {
+			throw new Error('Invalid parameter: config.transport not an object');
+		}
+		if (!_.isFunction(config.transport.publish)) {
+			throw new Error('Invalid parameter: config.transport.publish not an function');
+		}
+		if (!_.isFunction(config.transport.subscribe)) {
+			throw new Error('Invalid parameter: config.transport.subscribe not an function');
+		}
+	};
 
-	it('should load and expose apis correctly', () => {
-
-		// given - when
-		const
-			mockServer = { mock: 'mockServer' },
-			mockHandler = { mock: 'mockHandler' },
-			mockPublisher = { mock: 'mockPublisher' },
-			index = proxyquire(root + '/src/lib/index', {
-				['./index/server']: mockServer,
-				['./index/handler']: mockHandler,
-				['./index/publisher']: mockPublisher
-			});
-
-		// then
-		expect(index.Server).to.eql(mockServer);
-		expect(index.Handler).to.eql(mockHandler);
-		expect(index.Publisher).to.eql(mockPublisher);
-
-	});
-
-});
+module.exports = {
+	validate
+};

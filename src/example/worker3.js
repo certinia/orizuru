@@ -28,29 +28,28 @@
 
 const
 	root = require('app-root-path'),
-	proxyquire = require('proxyquire'),
-	{ expect } = require('chai');
+	{ Handler } = require(root + '/src/lib/index'),
 
-describe('index.js', () => {
+	// get the transport
+	transport = require('@financialforcedev/nozomi-transport-rabbitmq'),
 
-	it('should load and expose apis correctly', () => {
+	// configure the transport
+	transportConfig = {
+		cloudamqpUrl: 'amqp://localhost'
+	},
 
-		// given - when
-		const
-			mockServer = { mock: 'mockServer' },
-			mockHandler = { mock: 'mockHandler' },
-			mockPublisher = { mock: 'mockPublisher' },
-			index = proxyquire(root + '/src/lib/index', {
-				['./index/server']: mockServer,
-				['./index/handler']: mockHandler,
-				['./index/publisher']: mockPublisher
-			});
+	// get schemas
+	eventName = 'testEvent',
 
-		// then
-		expect(index.Server).to.eql(mockServer);
-		expect(index.Handler).to.eql(mockHandler);
-		expect(index.Publisher).to.eql(mockPublisher);
+	// create a simple callback
+	callback = ({ message, context }) => {
+		// eslint-disable-next-line no-console
+		console.log('worker 3');
+		// eslint-disable-next-line no-console
+		console.log(message);
+		// eslint-disable-next-line no-console
+		console.log(context);
+	};
 
-	});
-
-});
+// wire handler
+new Handler({ transport, transportConfig }).handle({ eventName, callback });

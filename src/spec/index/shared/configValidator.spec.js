@@ -27,29 +27,54 @@
 'use strict';
 
 const
+	_ = require('lodash'),
 	root = require('app-root-path'),
-	proxyquire = require('proxyquire'),
-	{ expect } = require('chai');
+	{ expect } = require('chai'),
+	{ validate } = require(root + '/src/lib/index/shared/configValidator');
 
-describe('index.js', () => {
+describe('index/shared/configValidator.js', () => {
 
-	it('should load and expose apis correctly', () => {
+	describe('send', () => {
 
-		// given - when
-		const
-			mockServer = { mock: 'mockServer' },
-			mockHandler = { mock: 'mockHandler' },
-			mockPublisher = { mock: 'mockPublisher' },
-			index = proxyquire(root + '/src/lib/index', {
-				['./index/server']: mockServer,
-				['./index/handler']: mockHandler,
-				['./index/publisher']: mockPublisher
-			});
+		it('should throw an error if config is not an object', () => {
 
-		// then
-		expect(index.Server).to.eql(mockServer);
-		expect(index.Handler).to.eql(mockHandler);
-		expect(index.Publisher).to.eql(mockPublisher);
+			//given - when - then
+			expect(() => validate(null)).to.throw('Invalid parameter: config not an object');
+
+		});
+
+		it('should throw an error if config.transport is not an object', () => {
+
+			//given - when - then
+			expect(() => validate({})).to.throw('Invalid parameter: config.transport not an object');
+
+		});
+
+		it('should throw an error if config.transport.publish is not a function', () => {
+
+			//given - when - then
+			expect(() => validate({ transport: {} })).to.throw('Invalid parameter: config.transport.publish not an function');
+
+		});
+
+		it('should throw an error if config.transport.subscribe is not a function', () => {
+
+			//given - when - then
+			expect(() => validate({ transport: { publish: _.noop } })).to.throw('Invalid parameter: config.transport.subscribe not an function');
+
+		});
+
+		it('should return undefined if everything is ok', () => {
+
+			//given - when - then
+			expect(validate({
+				transport: {
+					publish: _.noop,
+					subscribe: _.noop
+				}
+			})).to.eql(undefined);
+
+		});
 
 	});
 

@@ -28,29 +28,31 @@
 
 const
 	root = require('app-root-path'),
-	proxyquire = require('proxyquire'),
-	{ expect } = require('chai');
 
-describe('index.js', () => {
+	// get the server
+	{ Publisher } = require(root + '/src/lib/index'),
 
-	it('should load and expose apis correctly', () => {
+	// get the transport
+	transport = require('@financialforcedev/nozomi-transport-rabbitmq'),
 
-		// given - when
-		const
-			mockServer = { mock: 'mockServer' },
-			mockHandler = { mock: 'mockHandler' },
-			mockPublisher = { mock: 'mockPublisher' },
-			index = proxyquire(root + '/src/lib/index', {
-				['./index/server']: mockServer,
-				['./index/handler']: mockHandler,
-				['./index/publisher']: mockPublisher
-			});
+	// configure the transport
+	transportConfig = {
+		cloudamqpUrl: 'amqp://localhost'
+	},
 
-		// then
-		expect(index.Server).to.eql(mockServer);
-		expect(index.Handler).to.eql(mockHandler);
-		expect(index.Publisher).to.eql(mockPublisher);
+	// get schemas
+	schemaNameToDefinition = require('./schemas');
 
+// Publish using publisher, context is optional
+new Publisher({ transport, transportConfig })
+	.publish({
+		eventName: 'testEvent',
+		schema: schemaNameToDefinition.firstAndLastName,
+		message: {
+			firstName: 'testFirstName',
+			lastName: 'testLastName'
+		},
+		context: {
+			someVar: 'someValue'
+		}
 	});
-
-});

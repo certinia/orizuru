@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Handler</title>
+    <title>JSDoc: Class: Publisher</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Handler</h1>
+    <h1 class="page-title">Class: Publisher</h1>
 
     
 
@@ -29,9 +29,9 @@
 <header>
     
         <h2><span class="attribs"><span class="type-signature"></span></span>
-            <span class="ancestors"><a href="module-index_handler.html">index/handler</a>~</span>Handler<span class="signature">(config)</span><span class="type-signature"></span></h2>
+            <span class="ancestors"><a href="module-index_publisher.html">index/publisher</a>~</span>Publisher<span class="signature">(config)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">Class representing a handler.</div>
+            <div class="class-description">Class representing a publisher.</div>
         
     
 </header>
@@ -46,7 +46,7 @@
     
 
     
-    <h4 class="name" id="Handler"><span class="type-signature"></span>new Handler<span class="signature">(config)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Publisher"><span class="type-signature"></span>new Publisher<span class="signature">(config)</span><span class="type-signature"></span></h4>
     
 
     
@@ -54,7 +54,7 @@
 
 
 <div class="description">
-    Constructs a new 'Handler'
+    Constructs a new 'Publisher'
 </div>
 
 
@@ -219,7 +219,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index_handler.js.html">index/handler.js</a>, <a href="index_handler.js.html#line43">line 43</a>
+        <a href="index_publisher.js.html">index/publisher.js</a>, <a href="index_publisher.js.html#line44">line 44</a>
     </li></ul></dd>
     
 
@@ -273,7 +273,7 @@
     
 
     
-    <h4 class="name" id="handle"><span class="type-signature"></span>handle<span class="signature">(config)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="publish"><span class="type-signature"></span>publish<span class="signature">(config)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
 
     
@@ -281,7 +281,7 @@
 
 
 <div class="description">
-    Sets the handler function for a fully qualified event
+    Publishes a message
 </div>
 
 
@@ -333,7 +333,7 @@
 
             
 
-            <td class="description last">{ eventName, callback }
+            <td class="description last">{ eventName, schema, message [, context] }
                 <h6>Properties</h6>
                 
 
@@ -375,14 +375,14 @@
 
             
 
-            <td class="description last">the event name to listen to ('/schemaName' for server with no API endpoint specified)</td>
+            <td class="description last">event name (non empty string)</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>callback</code></td>
+                <td class="name"><code>schema</code></td>
             
 
             <td class="type">
@@ -398,7 +398,53 @@
 
             
 
-            <td class="description last">the callback (called with { message, context })</td>
+            <td class="description last">schema (compiled or uncompiled schema object)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">message (must match schema)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">untyped context (optional)</td>
         </tr>
 
     
@@ -446,7 +492,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index_handler.js.html">index/handler.js</a>, <a href="index_handler.js.html#line76">line 76</a>
+        <a href="index_publisher.js.html">index/publisher.js</a>, <a href="index_publisher.js.html#line80">line 80</a>
     </li></ul></dd>
     
 
@@ -491,12 +537,13 @@
 
 
 
-    <h5>Example</h5>
+    <h5>Examples</h5>
     
-    <pre class="prettyprint"><code>handler.handle({ eventName: '/api/test', callback: ({ message, context }) => {
-	console.log(message);
-	console.log(context);
-}})</code></pre>
+    <pre class="prettyprint"><code>// publishes a message
+publisher.publish({ eventName, schema, message });</code></pre>
+
+    <pre class="prettyprint"><code>// publishes a message
+publisher.publish({ eventName, schema, message, context });</code></pre>
 
 
 
