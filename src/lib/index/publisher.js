@@ -21,6 +21,8 @@ class Publisher {
 	 * Constructs a new 'Publisher'
 	 * 
 	 * @param {object} config - { transport [, transportConfig] }
+	 * @param {transport} config.transport - the transport object
+	 * @param {object} config.transportConfig - config for the transport object
 	 * @returns {Server}
 	 */
 	constructor(config) {
@@ -42,6 +44,10 @@ class Publisher {
 	 * publisher.publish({ eventName, schema, message, context });
 	 * 
 	 * @param {object} config - { eventName, schema, message [, context] }
+	 * @param {object} config.eventName - event name (non empty string)
+	 * @param {object} config.schema - schema (compiled or uncompiled schema object)
+	 * @param {object} config.message - message (must match schema)
+	 * @param {object} config.context - untyped context (optional)
 	 * 
 	 * @returns {Promise}
 	 */

@@ -20,7 +20,9 @@ class Handler {
 	 * Constructs a new 'Handler'
 	 * 
 	 * @param {object} config - { transport [, transportConfig] }
-	 * @returns {Handler}
+	 * @param {transport} config.transport - the transport object
+	 * @param {object} config.transportConfig - config for the transport object
+	 * @returns {Server}
 	 */
 	constructor(config) {
 
@@ -34,25 +36,27 @@ class Handler {
 	 * Sets the handler function for a fully qualified event
 	 * 
 	 * @example
-	 * handler.handle({ schemaName: '/api/test', callback: ({ message, context }) => {
+	 * handler.handle({ eventName: '/api/test', callback: ({ message, context }) => {
 	 * 	console.log(message);
 	 * 	console.log(context);
 	 * }})
 	 * 
-	 * @param {object} config - { schemaName, callback } 
+	 * @param {object} config - { eventName, callback } 
+	 * @param {object} config.eventName - the event name to listen to ('/schemaName' for server with no API endpoint specified)
+	 * @param {object} config.callback - the callback (called with { message, context })
 	 * 
 	 * @returns {Promise}
 	 */
-	handle({ schemaName, callback }) {
+	handle({ eventName, callback }) {
 
 		const config = privateConfig[this];
 
 		if (!_.isFunction(callback)) {
-			throw new Error(`Please provide a valid callback function for schema: '${schemaName}'`);
+			throw new Error(`Please provide a valid callback function for event: '${eventName}'`);
 		}
 
 		return config.transport.subscribe({
-			eventName: schemaName,
+			eventName,
 			handler: (content) => callback(fromBuffer(content)),
 			config: config.transportConfig
 		});

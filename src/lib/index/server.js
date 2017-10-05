@@ -16,13 +16,12 @@ const
 	SCHEMA_API_PARAM = '/:schemaName',
 
 	{ compileSchemas } = require('./shared/compileSchemas'),
-	{ validate } = require('./shared/configValidator'),
-	{ toBuffer } = require('./shared/transport'),
+	Publisher = require('./publisher'),
 
 	serverStore = new WeakMap(),
-	privateConfig = new WeakMap(),
+	publisherStore = new WeakMap(),
 
-	api = (path, schemaNameToDefinition, config) => (request, response) => {
+	api = (path, schemaNameToDefinition, publisher) => (request, response) => {
 
 		const
 			schemaName = request.params.schemaName,
@@ -33,19 +32,16 @@ const
 		if (!schema) {
 			response.status(400).send(`No schema for '${path}/${schemaName}' found.`);
 		} else {
-
-			try {
-				const buffer = toBuffer(schema, body, nozomi);
-
-				config.transport
-					.publish({ eventName: `${path}/${schemaName}`, buffer, config: config.transportConfig })
-					.then(() => response.status(200).send('Ok.'))
-					.catch(() => response.status(400).send(`Error propogating event for '${path}/${schemaName}'.`));
-
-			} catch (err) {
-				response.status(400).send(`Error encoding post body for schema: '${path}/${schemaName}'.`);
-			}
-
+			publisher.publish({
+				eventName: `${path}/${schemaName}`,
+				schema: schema,
+				message: body,
+				context: nozomi
+			}).then(() => {
+				response.status(200).send('Ok.');
+			}).catch(err => {
+				response.status(400).send(err);
+			});
 		}
 
 	};
@@ -57,13 +53,14 @@ class Server {
 	 * Constructs a new 'Server'
 	 * 
 	 * @param {object} config - { transport [, transportConfig] }
+	 * @param {transport} config.transport - the transport object
+	 * @param {object} config.transportConfig - config for the transport object
 	 * @returns {Server}
 	 */
 	constructor(config) {
 
-		// validate config
-		validate(config);
-		privateConfig[this] = config;
+		// create publisher
+		publisherStore[this] = new Publisher(config);
 
 		// create server
 		const server = express();
@@ -97,6 +94,9 @@ class Server {
 	 * server.addRoute({ schemaNameToDefinition, middlewares: [...] });
 	 * 
 	 * @param {object} config - { schemaNameToDefinition [, middlewares] [, apiEndpoint] }
+	 * @param {object} config.schemaNameToDefinition - schema name to definition map
+	 * @param {object} config.middlewares - middleware functions (optional)
+	 * @param {object} config.apiEndpoint - api endpoint (optional, default: /)
 	 * 
 	 * @returns {Server}
 	 */
@@ -104,7 +104,7 @@ class Server {
 
 		// create router
 		const
-			config = privateConfig[this],
+			publisher = publisherStore[this],
 			router = expressRouter();
 
 		// validate
@@ -126,7 +126,7 @@ class Server {
 		});
 
 		// add post method
-		router.post(SCHEMA_API_PARAM, api(apiEndpoint, schemaNameToDefinition, config));
+		router.post(SCHEMA_API_PARAM, api(apiEndpoint, schemaNameToDefinition, publisher));
 
 		serverStore[this].use(apiEndpoint, router);
 
