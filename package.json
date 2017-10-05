@@ -4,7 +4,7 @@
   "description": "Webhooks for heroku web -> worker dyno",
   "main": "src/lib/index.js",
   "scripts": {
-    "doc": "jsdoc src/lib -r -d doc",
+    "doc": "jsdoc src/lib -r -d doc --readme readme.md",
     "pretest": "eslint src",
     "test": "nyc --exclude src/example mocha --recursive src/spec"
   },
@@ -21,7 +21,7 @@
     "dyno"
   ],
   "author": "financialforce",
-  "license": "ISC",
+  "license": "BSD-3-Clause",
   "dependencies": {
     "amqplib": "0.5.1",
     "avsc": "5.0.6",
