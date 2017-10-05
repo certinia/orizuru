@@ -31,8 +31,8 @@
     "lodash": "4.17.4"
   },
   "devDependencies": {
-    "@ffres/eslint-config": "1.0.0",
-    "@financialforcedev/nozomi-transport-rabbitmq": "^1.0.0",
+    "@financialforcedev/eslint-config": "2.0.0",
+    "@financialforcedev/nozomi-transport-rabbitmq": "1.1.0",
     "app-root-path": "2.0.1",
     "chai": "3.5.0",
     "chai-as-promised": "7.1.1",
