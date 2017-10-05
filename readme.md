@@ -1,6 +1,6 @@
 # Nozomi.
 
-Nozomi is a library that streamlines strongly typed communication between heroku dynos (or other processes).
+Nozomi is a library that streamlines strongly typed communication between Heroku dynos (or other processes).
 It leverages [Apache Avro](https://avro.apache.org/) for schema validation and communication.
 
 ## Install
