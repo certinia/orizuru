@@ -10,8 +10,8 @@ const
 	request = require('supertest'),
 
 	serverPath = root + '/src/lib/index/server',
+	Publisher = require(root + '/src/lib/index/publisher'),
 	{ compileFromSchemaDefinition } = require(root + '/src/lib/index/shared/schema'),
-	{ toBuffer } = require(root + '/src/lib/index/shared/transport'),
 
 	sandbox = sinon.sandbox.create(),
 	restore = sandbox.restore.bind(sandbox);
@@ -23,7 +23,7 @@ describe('index/server.js', () => {
 	beforeEach(() => {
 		config = {
 			transport: {
-				publish: sandbox.stub(),
+				publish: _.noop,
 				subscribe: _.noop
 			},
 			transportConfig: 'testTransportConfig'
@@ -266,11 +266,12 @@ describe('index/server.js', () => {
 
 		describe('should return a server that', () => {
 
-			let schema, server;
+			let schema, server, publisherStub;
 
 			beforeEach(() => {
 				delete require.cache[require.resolve(serverPath)];
 				const Server = require(serverPath);
+				publisherStub = sandbox.stub(Publisher.prototype, 'publish');
 				schema = {
 					type: 'record',
 					fields: [{
@@ -286,7 +287,7 @@ describe('index/server.js', () => {
 				});
 			});
 
-			it('fails for an invalid schema', () => {
+			it('fails for an invalid schema route', () => {
 
 				// given - when - then
 				return request(server.getServer())
@@ -295,78 +296,55 @@ describe('index/server.js', () => {
 
 			});
 
-			it('fails for a valid schema with no post body', () => {
+			it('should respond with 400 if publish rejects', () => {
 
-				// given - when - then
+				// given
+				publisherStub.rejects(new Error('Error test'));
+
+				// when - then
 				return request(server.getServer())
 					.post('/api/testSchema1')
-					.expect(400, 'Error encoding message for schema.');
+					.send({
+						f: 'test1'
+					})
+					.expect(400, 'Error test')
+					.then(() => {
+						calledOnce(publisherStub);
+						calledWith(publisherStub, {
+							eventName: '/api/testSchema1',
+							schema: compileFromSchemaDefinition(schema),
+							message: {
+								f: 'test1'
+							},
+							context: undefined
+						});
+					});
 
 			});
 
-			describe('calls publish for a valid schema with a conforming post body and', () => {
+			it('should respond with 200 if publish resolves', () => {
 
-				it('fails if publish rejects', () => {
+				// given
+				publisherStub.resolves();
 
-					// given 
-					config.transport.publish.rejects();
-
-					// when - then
-					return request(server.getServer())
-						.post('/api/testSchema1')
-						.send({
-							f: 'test1'
-						})
-						.expect(400, 'Error publishing message on transport.')
-						.then(() => {
-							calledOnce(config.transport.publish);
-							calledWith(config.transport.publish, {
-								eventName: '/api/testSchema1',
-								buffer: toBuffer(compileFromSchemaDefinition({
-									type: 'record',
-									fields: [{
-										name: 'f',
-										type: 'string'
-									}]
-								}), {
-									f: 'test1'
-								}),
-								config: config.transportConfig
-							});
+				// when - then
+				return request(server.getServer())
+					.post('/api/testSchema1')
+					.send({
+						f: 'test1'
+					})
+					.expect(200, 'Ok.')
+					.then(() => {
+						calledOnce(publisherStub);
+						calledWith(publisherStub, {
+							eventName: '/api/testSchema1',
+							schema: compileFromSchemaDefinition(schema),
+							message: {
+								f: 'test1'
+							},
+							context: undefined
 						});
-
-				});
-
-				it('succeeds if publish resolves', () => {
-
-					// given
-					config.transport.publish.resolves();
-
-					// when - then
-					return request(server.getServer())
-						.post('/api/testSchema1')
-						.send({
-							f: 'test2'
-						})
-						.expect(200, 'Ok.')
-						.then(() => {
-							calledOnce(config.transport.publish);
-							calledWith(config.transport.publish, {
-								eventName: '/api/testSchema1',
-								buffer: toBuffer(compileFromSchemaDefinition({
-									type: 'record',
-									fields: [{
-										name: 'f',
-										type: 'string'
-									}]
-								}), {
-									f: 'test2'
-								}),
-								config: config.transportConfig
-							});
-						});
-
-				});
+					});
 
 			});
 
