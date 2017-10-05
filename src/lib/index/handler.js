@@ -34,9 +34,9 @@ class Handler {
 	 * Sets the handler function for a fully qualified event
 	 * 
 	 * @example
-	 * handler.handle({ schemaName: '/api/test', callback: ({ nozomi, body }) => {
-	 * 	console.log(nozomi);
-	 * 	console.log(body);
+	 * handler.handle({ schemaName: '/api/test', callback: ({ message, context }) => {
+	 * 	console.log(message);
+	 * 	console.log(context);
 	 * }})
 	 * 
 	 * @param {object} config - { schemaName, callback } 

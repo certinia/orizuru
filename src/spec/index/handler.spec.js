@@ -70,7 +70,7 @@ describe('index/handler.js', () => {
 					calledOnce(config.transport.subscribe);
 					calledWith(config.transport.subscribe, { eventName: 'testSchema', handler: sinon.match.func, config: config.transportConfig });
 					calledOnce(spy);
-					calledWith(spy, { typed: { f: 'test1' }, untyped: { auth: 'testAuth' } });
+					calledWith(spy, { message: { f: 'test1' }, context: { auth: 'testAuth' } });
 				});
 
 		});

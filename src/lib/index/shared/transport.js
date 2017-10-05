@@ -6,30 +6,30 @@ const
 
 	compiledTransportSchema = compileFromSchemaDefinition(transport),
 
-	toBuffer = (compiledTypedSchema, typed, untyped) => {
+	toBuffer = (compiledMessageSchema, message, context) => {
 		const
-			untypedOrEmpty = untyped || {},
-			compiledUntypedSchema = compileFromPlainObject(untypedOrEmpty),
-			message = {
-				untypedSchema: JSON.stringify(compiledUntypedSchema.toJSON()),
-				untypedBuffer: compiledUntypedSchema.toBuffer(untypedOrEmpty),
-				typedSchema: JSON.stringify(compiledTypedSchema.toJSON()),
-				typedBuffer: compiledTypedSchema.toBuffer(typed)
+			contextOrEmpty = context || {},
+			compiledContextSchema = compileFromPlainObject(contextOrEmpty),
+			transport = {
+				contextSchema: JSON.stringify(compiledContextSchema.toJSON()),
+				contextBuffer: compiledContextSchema.toBuffer(contextOrEmpty),
+				messageSchema: JSON.stringify(compiledMessageSchema.toJSON()),
+				messageBuffer: compiledMessageSchema.toBuffer(message)
 			};
-		return compiledTransportSchema.toBuffer(message);
+		return compiledTransportSchema.toBuffer(transport);
 	},
 
 	fromBuffer = (buffer) => {
 		const
 			decompiledTransportObject = compiledTransportSchema.fromBuffer(buffer),
 
-			compiledUntypedSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.untypedSchema)),
-			compiledTypedSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.typedSchema)),
+			compiledContextSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.contextSchema)),
+			compiledMessageSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.messageSchema)),
 
-			untyped = compiledUntypedSchema.fromBuffer(decompiledTransportObject.untypedBuffer),
-			typed = compiledTypedSchema.fromBuffer(decompiledTransportObject.typedBuffer);
+			context = compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer),
+			message = compiledMessageSchema.fromBuffer(decompiledTransportObject.messageBuffer);
 
-		return { untyped, typed };
+		return { context, message };
 	};
 
 module.exports = {
