@@ -50,9 +50,13 @@ class Publisher {
 		// get config
 		const config = privateConfig[this];
 
+		// check event name
+		if (!_.isString(eventName) || _.size(eventName) < 1) {
+			return Promise.reject(new Error('Event name must be an non empty string.'));
+		}
+
 		let compiledSchema,
-			buffer,
-			result;
+			buffer;
 
 		// compile schema if required
 		if (!_.hasIn(schema, 'toBuffer')) {
@@ -69,18 +73,14 @@ class Publisher {
 		try {
 			buffer = toBuffer(compiledSchema, message, context);
 		} catch (err) {
-			Promise.reject(new Error('Error encoding message for schema.'));
+			return Promise.reject(new Error('Error encoding message for schema.'));
 		}
 
 		// publish buffer on transport
-		try {
-			result = config.transport.publish({ eventName, buffer, config: config.transportConfig });
-		} catch (err) {
-			Promise.reject(new Error('Error publishing message on transport'));
-		}
-
-		// return result of publish, wrapped in safety method to promisify non-promise values.
-		return Promise.resolve(result);
+		return Promise.resolve(config.transport.publish({ eventName, buffer, config: config.transportConfig }))
+			.catch(() => {
+				throw new Error('Error publishing message on transport.');
+			});
 
 	}
 
