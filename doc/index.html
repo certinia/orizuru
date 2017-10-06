@@ -43,9 +43,99 @@
 
 
     <section>
-        <article><h1>Nozomi.</h1><p>Nozomi is a library that streamlines strongly typed communication between heroku dynos (or other processes).
+        <article><h1>Nozomi.</h1><p>Nozomi is a library that streamlines strongly typed communication between Heroku dynos (or other processes).
 It leverages <a href="https://avro.apache.org/">Apache Avro</a> for schema validation and communication.</p>
-<h2>Install</h2><pre class="prettyprint source"><code>$ npm install @financialforcedev/nozomi</code></pre><h2>Usage</h2><p>TODO</p>
+<h2>Install</h2><pre class="prettyprint source"><code>$ npm install @financialforcedev/nozomi</code></pre><h2>Usage</h2><h3>Configuration</h3><p>All Nozomi classes require reference to a transport layer. The transport layer governs how messages are published and 
+subscribed to. We inject this as a class constructor configuration parameter.</p>
+<pre class="prettyprint source"><code>const
+    { Server } = require('@financialforcedev/nozomi'),
+    transport = require('@financialforcedev/nozomi-transport-rabbitmq'),
+    transportConfig = {
+        cloudamqpUrl: 'amqp://localhost'
+    },
+
+    serverInstance = new Server({ transport, transportConfig });</code></pre><p>The example above shows how to use our RabbitMQ transport layer with a <code>Server</code>. The same method is used with our other classes.
+The <code>transportConfig</code> is passed through to the transport layer via its function APIs, in the case of the RabbitMQ transport, we require
+the <code>cloudamqpUrl</code> field.</p>
+<h3>Server</h3><p>A Nozomi Server allows you combine Avro schemas with API POST endpoints to create webhooks that validate API post body content and publish events
+via your chosen transport layer implementation. POST bodies are automatically validated against the Avro schema they are paired with, so the consumer
+of your events always receives valid input if it is invoked.</p>
+<pre class="prettyprint source"><code>const
+    { Server } = require('@financialforcedev/nozomi'),
+    ...
+    serverInstance = new Server({ transport, transportConfig }),
+
+    schemaNameToDefinition = {
+        ageAndDob: {
+            type: 'record',
+            fields: [
+                { name: 'age', type: 'string' },
+                { name: 'dob', type: 'string' }
+            ]
+        }
+    },
+
+    middlewares = [],
+
+    apiEndpoint = '/api/path';
+
+serverInstance.addRoute({ schemaNameToDefinition, apiEndpoint, middlewares });
+
+let expressServer = serverInstance.getServer();
+
+expressServer.listen(8080);</code></pre><p>As you can see from the above example, the <code>getServer()</code> method returns an express server, where you can add your own routes, etc, before listening to a port. This example would create a POST API for <code>/api/path/ageAndDob</code>. The post body you send would be validated against the schema, requiring <code>age</code> and <code>dob</code> string fields in its JSON. If the validation succeeds, an event name passed to the transport layer will be <code>/api/path/ageAndDob</code>, along with an Avro serialised buffer of the POST body.</p>
+<p>Additionally, if there is an object on the express request called <code>nozomi</code>, e.g. <code>request.nozomi</code>, this will also be serialized and added to the buffer as <code>context</code>. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.</p>
+<h3>Publisher</h3><p>The Nozomi Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.</p>
+<pre class="prettyprint source"><code>const
+    { Publisher } = require('@financialforcedev/nozomi'),
+    ...
+    publisherInstance = new Publisher({ transport, transportConfig }),
+
+    eventName = 'testEvent',
+
+    schema = {
+        type: 'record',
+        fields: [
+            { name: 'age', type: 'string' },
+            { name: 'dob', type: 'string' }
+        ]
+    },
+
+    message = {
+        age: 'fifty',
+        dob: '07/01/1991'
+    },
+
+    context = {
+        anything: 'something untyped'
+    };
+
+return publisherInstance.publish({ eventName, schema, message, context }); //promise</code></pre><p>This example publishes an event named 'testEvent' with the <code>message</code> described. The <code>message</code> is validated against the <code>schema</code>. The <code>context</code> object is unvalidated and can contain anything.</p>
+<h3>Handler</h3><p>The handler handles messages published by the <code>Server</code> or <code>Publisher</code>. It requires an event name and a callback.</p>
+<pre class="prettyprint source"><code>const
+    { Handler } = require('@financialforcedev/nozomi'),
+    ...
+    handlerInstance = new Handler({ transport, transportConfig }),
+
+    eventName1 = '/api/path/ageAndDob',
+    eventName2 = 'testEvent',
+
+    callback1 = ({ message, context }) => {
+        console.log('handling messages from the server API');
+        console.log(message);
+        console.log(context);
+    },
+
+    callback2 = ({ message, context }) => {
+        console.log('handling messages from the publisher event');
+        console.log(message);
+        console.log(context);
+    };
+
+return Promise.all([
+    handlerInstance.handle({ eventName: eventName1, callback: callback1 }),
+    handlerInstance.handle({ eventName: eventName2, callback: callback2 })
+]); // 'handle' returns a promise</code></pre><p>The handler can handle multiple events, with callbacks for each wired in. The input to the callback <code>{ message, context }</code> is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middlewares or supplied to the publish function.</p>
 <h2>API Docs</h2><p>TODO</p></article>
     </section>
 
@@ -63,7 +153,7 @@ It leverages <a href="https://avro.apache.org/">Apache Avro</a> for schema valid
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Oct 05 2017 11:41:34 GMT+0100 (BST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 09:40:00 GMT+0100 (BST)
 </footer>
 
 <script> prettyPrint(); </script>
