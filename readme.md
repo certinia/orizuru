@@ -3,15 +3,17 @@
 Nozomi is a library that streamlines strongly typed communication between Heroku dynos (or other processes).
 It leverages [Apache Avro](https://avro.apache.org/) for schema validation and communication.
 
+
 ## Install
 
 ```
 $ npm install @financialforcedev/nozomi
 ```
 
+
 ## Usage
 
-###Configuration
+### Configuration
 
 All Nozomi classes require reference to a transport layer. The transport layer governs how messages are published and 
 subscribed to. We inject this as a class constructor configuration parameter.
@@ -29,7 +31,7 @@ The example above shows how to use our RabbitMQ transport layer with a ```Server
 The ```transportConfig``` is passed through to the transport layer via its function APIs, in the case of the RabbitMQ transport, we require
 the ```coludamqpUrl``` field.
 
-###Server
+### Server
 
 A Nozomi Server allows you combine Avro schemas with API POST endpoints to create webhooks that validate API post body content and publish events
 via your chosen transport layer implementation. POST bodies are automatically validated against the Avro schema they are paired with, so the consumer
@@ -64,7 +66,7 @@ As you can see from the above example, the ```getServer()``` method returns an e
 
 Additionally, if there is an object on the express request called ```nozomi```, e.g. ```request.nozomi```, this will also be serialized and added to the buffer as ```context```. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.
 
-###Publisher
+### Publisher
 
 The Nozomi Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.
 
@@ -96,7 +98,7 @@ The Nozomi Publisher allows you to publish events directly from Node.js via a tr
 
 This example publishes an event named 'testEvent' with the ```message``` described. The ```message``` is validated against the ```schema```. The ```context``` object is unvalidated and can contain anything.
 
-###Handler
+### Handler
 
 The handler handles messages published by the ```Server``` or ```Publisher```. It requires an event name and a callback.
 
@@ -126,6 +128,7 @@ The handler handles messages published by the ```Server``` or ```Publisher```. I
 	]); // 'handle' returns a promise
 
 The handler can handle multiple events, with callbacks for each wired in. The input to the callback ```{ message, context }``` is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middlewares or supplied to the publish function.
+
 
 ## API Docs
 
