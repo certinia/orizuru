@@ -29,7 +29,7 @@ subscribed to. We inject this as a class constructor configuration parameter.
 
 The example above shows how to use our RabbitMQ transport layer with a ```Server```. The same method is used with our other classes.
 The ```transportConfig``` is passed through to the transport layer via its function APIs, in the case of the RabbitMQ transport, we require
-the ```coludamqpUrl``` field.
+the ```cloudamqpUrl``` field.
 
 ### Server
 
