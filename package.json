@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@financialforcedev/eslint-config": "2.0.0",
-    "@financialforcedev/nozomi-transport-rabbitmq": "1.1.0",
+    "@financialforcedev/nozomi-transport-rabbitmq": "1.1.1",
     "app-root-path": "2.0.1",
     "chai": "3.5.0",
     "chai-as-promised": "7.1.1",
