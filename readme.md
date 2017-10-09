@@ -102,6 +102,9 @@ This example publishes an event named 'testEvent' with the ```message``` describ
 
 The handler handles messages published by the ```Server``` or ```Publisher```. It requires an event name and a callback.
 
+**NOTE:** The supplied callback to this handler should **always** handle errors.
+This means it should never ```throw``` an exception, and any ```promise``` it returns should always have a ```catch``` block. Any errors thrown / rejecting promises returned will be **swallowed**.
+
 	const
 		{ Handler } = require('@financialforcedev/nozomi'),
 		...
