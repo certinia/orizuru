@@ -27,9 +27,28 @@
 'use strict';
 
 const
-	avro = require('avsc');
+	avro = require('avsc'),
+
+	typeHook = () => {
+		let i = 0;
+		return schema => {
+			if (schema &&
+				schema.type &&
+				schema.type === 'enum' ||
+				schema.type === 'fixed' ||
+				schema.type === 'record') {
+
+				schema.namespace = 'com.ffdc.nozomi';
+				schema.name = `Context${i}`;
+				i++;
+
+			}
+		};
+	};
 
 module.exports = {
-	compileFromPlainObject: type => avro.Type.forValue(type),
+	compileFromPlainObject: type => {
+		return avro.Type.forValue(type, { typeHook: typeHook() });
+	},
 	compileFromSchemaDefinition: json => avro.Type.forSchema(json)
 };

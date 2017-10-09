@@ -69,7 +69,7 @@ class Handler {
 	 * 
 	 * @param {object} config - { eventName, callback } 
 	 * @param {object} config.eventName - the event name to listen to ('/schemaName' for server with no API endpoint specified)
-	 * @param {object} config.callback - the callback (called with { message, context })
+	 * @param {object} config.callback - the callback (called with { message, context }), this callback must handle errors and should only ever return a promise which resolves or undefined 
 	 * 
 	 * @returns {Promise}
 	 */

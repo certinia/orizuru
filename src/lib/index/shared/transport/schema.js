@@ -27,6 +27,8 @@
 'use strict';
 
 module.exports = {
+	namespace: 'com.ffdc.nozomi',
+	name: 'Transport',
 	type: 'record',
 	fields: [
 		{ name: 'contextSchema', type: 'string' },
