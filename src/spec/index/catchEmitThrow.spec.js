@@ -25,3 +25,47 @@
  **/
 
 'use strict';
+
+describe('index/shared/catchEmitThrow.js', () => {
+
+	describe('catchEmitThrow', () => {
+
+		it('should emit and throw if a function throws an error', () => {
+
+		});
+
+		it('should do nothing if a function doesn\'t throw an error', () => {
+
+		});
+
+		it('should emit and throw if a string is passed in', () => {
+
+		});
+
+		it('should return null if something other than a function or string is passed in', () => {
+
+		});
+
+	});
+
+	describe('catchEmitReject', () => {
+
+		it('should emit and return a rejecting promise if a promise rejects', () => {
+
+		});
+
+		it('should return the promise if a promise resolves', () => {
+
+		});
+
+		it('should emit the return a rejecting promise if a string is passed in', () => {
+
+		});
+
+		it('should return a promise resolving to null if something other than a promise or string is passed in', () => {
+
+		});
+
+	});
+
+});
