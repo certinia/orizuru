@@ -160,6 +160,21 @@ class Server {
 
 	}
 
+	addGet(path, requestHandler) {
+
+		if (!path) {
+			throw Error('Path is required.');
+		}
+
+		if (!_.isFunction(requestHandler)) {
+			throw Error('A handler function is required.');
+		}
+
+		serverStore[this].get(path, requestHandler);
+
+		return this;
+	}
+
 	/**
 	 * Returns the express server
 	 * 
