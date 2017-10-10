@@ -33,7 +33,7 @@ const
 
 	{ expect } = chai,
 
-	{ catchEmitReject } = require(root + '/src/lib/index/shared/catchEmitThrow');
+	{ catchEmitReject, catchEmitThrow } = require(root + '/src/lib/index/shared/catchEmitThrow');
 
 chai.use(chaiAsPromised);
 
@@ -54,17 +54,35 @@ describe('index/shared/catchEmitThrow.js', () => {
 
 		it('should emit and throw if a function throws an error', () => {
 
+			// given - when - then
+			expect(() => catchEmitThrow(() => {
+				throw new Error('err');
+			}, 'path', mockEmitter)).to.throw('err');
+			expect(mockEmitterResults).to.haveOwnProperty('path', 'err');
+
 		});
 
 		it('should do nothing if a function doesn\'t throw an error', () => {
+
+			// given - when - then
+			expect(catchEmitThrow(() => {
+				return 5;
+			}, 'path', mockEmitter)).to.eql(5);
 
 		});
 
 		it('should emit and throw if a string is passed in', () => {
 
+			// given - when - then
+			expect(() => catchEmitThrow('err', 'path', mockEmitter)).to.throw('err');
+			expect(mockEmitterResults).to.haveOwnProperty('path', 'err');
+
 		});
 
-		it('should return null if something other than a function or string is passed in', () => {
+		it('should return undefined if something other than a function or string is passed in', () => {
+
+			// given - when - then
+			expect(catchEmitThrow({}, 'path', mockEmitter)).to.eql(undefined);
 
 		});
 

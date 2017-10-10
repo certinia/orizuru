@@ -36,7 +36,7 @@ const
 			} else if (_.isString(funcOrError)) {
 				throw new Error(funcOrError);
 			}
-			return null;
+			return undefined;
 		} catch (err) {
 			emitter.emit(dir, err.message);
 			throw err;
