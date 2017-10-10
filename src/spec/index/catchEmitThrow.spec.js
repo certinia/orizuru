@@ -26,7 +26,29 @@
 
 'use strict';
 
+const
+	root = require('app-root-path'),
+	chai = require('chai'),
+	chaiAsPromised = require('chai-as-promised'),
+
+	{ expect } = chai,
+
+	{ catchEmitReject } = require(root + '/src/lib/index/shared/catchEmitThrow');
+
+chai.use(chaiAsPromised);
+
 describe('index/shared/catchEmitThrow.js', () => {
+
+	let mockEmitter, mockEmitterResults;
+
+	beforeEach(() => {
+		mockEmitterResults = {};
+		mockEmitter = {
+			emit: (key, val) => {
+				mockEmitterResults[key] = val;
+			}
+		};
+	});
 
 	describe('catchEmitThrow', () => {
 
@@ -52,17 +74,35 @@ describe('index/shared/catchEmitThrow.js', () => {
 
 		it('should emit and return a rejecting promise if a promise rejects', () => {
 
+			// given - when - then
+			return expect(catchEmitReject(Promise.reject(new Error('err')), 'path', mockEmitter)).to.eventually.be.rejectedWith('err')
+				.then(() => {
+					expect(mockEmitterResults).to.haveOwnProperty('path', 'err');
+				});
+
 		});
 
 		it('should return the promise if a promise resolves', () => {
+
+			// given - when - then
+			return expect(catchEmitReject(Promise.resolve('test'), 'a', mockEmitter)).to.eventually.eql('test');
 
 		});
 
 		it('should emit the return a rejecting promise if a string is passed in', () => {
 
+			// given - when - then
+			return expect(catchEmitReject('err', 'path', mockEmitter)).to.eventually.be.rejectedWith('err')
+				.then(() => {
+					expect(mockEmitterResults).to.haveOwnProperty('path', 'err');
+				});
+
 		});
 
-		it('should return a promise resolving to null if something other than a promise or string is passed in', () => {
+		it('should return a promise resolving to undefined if something other than a promise or string is passed in', () => {
+
+			// given - when - then
+			return expect(catchEmitReject({}, 'path', mockEmitter)).to.eventually.eql(undefined);
 
 		});
 
