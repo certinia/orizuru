@@ -34,6 +34,7 @@
 
 const
 	_ = require('lodash'),
+	EventEmitter = require('events'),
 	express = require('express'),
 	expressRouter = express.Router,
 	bodyParser = require('body-parser'),
@@ -47,6 +48,10 @@ const
 	serverStore = new WeakMap(),
 	publisherStore = new WeakMap(),
 
+	{ catchEmitThrow, catchEmitReject } = require('./shared/catchEmitThrow'),
+
+	emitter = new EventEmitter(),
+
 	api = (path, schemaNameToDefinition, publisher) => (request, response) => {
 
 		const
@@ -56,16 +61,19 @@ const
 			nozomi = request.nozomi;
 
 		if (!schema) {
-			response.status(400).send(`No schema for '${path}/${schemaName}' found.`);
+			catchEmitReject(`No schema for '${path}/${schemaName}' found.`, __dirname, emitter)
+				.catch(err => {
+					response.status(400).send(err.message);
+				});
 		} else {
-			publisher.publish({
+			catchEmitReject(publisher.publish({
 				eventName: `${path}/${schemaName}`,
 				schema: schema,
 				message: body,
 				context: nozomi
 			}).then(() => {
 				response.status(200).send('Ok.');
-			}).catch(err => {
+			}), __dirname, emitter).catch(err => {
 				response.status(400).send(err.message);
 			});
 		}
@@ -86,7 +94,9 @@ class Server {
 	constructor(config) {
 
 		// create publisher
-		publisherStore[this] = new Publisher(config);
+		catchEmitThrow(() => {
+			publisherStore[this] = new Publisher(config);
+		}, __dirname, emitter);
 
 		// create server
 		const server = express();
@@ -142,7 +152,9 @@ class Server {
 		}
 
 		// compile schemas
-		compileSchemas(schemaNameToDefinition);
+		catchEmitThrow(() => {
+			compileSchemas(schemaNameToDefinition);
+		}, __dirname, emitter);
 
 		// apply middlewares
 		_.each(middlewares, middleware => {
@@ -173,5 +185,7 @@ class Server {
 	}
 
 }
+
+Server.emitter = emitter;
 
 module.exports = Server;

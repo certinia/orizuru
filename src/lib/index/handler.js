@@ -33,11 +33,15 @@
 
 const
 	_ = require('lodash'),
+	EventEmitter = require('events'),
 
 	{ validate } = require('./shared/configValidator'),
 	{ fromBuffer } = require('./shared/transport'),
+	{ catchEmitThrow, catchEmitReject } = require('./shared/catchEmitThrow'),
 
-	privateConfig = new WeakMap();
+	privateConfig = new WeakMap(),
+
+	emitter = new EventEmitter();
 
 /** Class representing a handler. */
 class Handler {
@@ -53,7 +57,7 @@ class Handler {
 	constructor(config) {
 
 		// validate config
-		validate(config);
+		catchEmitThrow(() => validate(config), __dirname, emitter);
 		privateConfig[this] = config;
 
 	}
@@ -78,16 +82,18 @@ class Handler {
 		const config = privateConfig[this];
 
 		if (!_.isFunction(callback)) {
-			throw new Error(`Please provide a valid callback function for event: '${eventName}'`);
+			catchEmitThrow(`Please provide a valid callback function for event: '${eventName}'`, __dirname, emitter);
 		}
 
-		return config.transport.subscribe({
+		return catchEmitReject(config.transport.subscribe({
 			eventName,
 			handler: (content) => callback(fromBuffer(content)),
 			config: config.transportConfig
-		});
+		}), __dirname, emitter);
 	}
 
 }
+
+Handler.emitter = emitter;
 
 module.exports = Handler;
