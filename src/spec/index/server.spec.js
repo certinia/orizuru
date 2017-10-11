@@ -150,7 +150,7 @@ describe('index/server.js', () => {
 				};
 
 			// when - then
-			expect(() => server.addRoute(input)).to.throw('Schema name: \'testSchema\' schema could not be compiled.');
+			expect(() => server.addRoute(input)).to.throw('Schema name: \'testSchema\' schema could not be compiled: empty union');
 
 		});
 

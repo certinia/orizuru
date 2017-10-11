@@ -39,7 +39,7 @@ module.exports = {
 				try {
 					schemaNameToDefinition[key] = compileFromSchemaDefinition(value);
 				} catch (err) {
-					throw new Error(`Schema name: '${key}' schema could not be compiled.`);
+					throw new Error(`Schema name: '${key}' schema could not be compiled: ${err.message}`);
 				}
 			});
 		}
