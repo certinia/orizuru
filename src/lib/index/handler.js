@@ -84,12 +84,12 @@ class Handler {
 		const config = privateConfig[this];
 
 		if (!_.isFunction(callback)) {
-			catchEmitThrow(`Please provide a valid callback function for event: '${eventName}'`, ERROR_EVENT, emitter);
+			return catchEmitReject(`Please provide a valid callback function for event: '${eventName}'`, ERROR_EVENT, emitter);
 		}
 
 		return catchEmitReject(config.transport.subscribe({
 			eventName,
-			handler: (content) => callback(fromBuffer(content)),
+			handler: (content) => callback(fromBuffer(content, emitter)),
 			config: config.transportConfig
 		}), ERROR_EVENT, emitter);
 	}

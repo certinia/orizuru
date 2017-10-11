@@ -145,15 +145,17 @@ describe('index/handler.js', () => {
 
 			it('on no function supplied to handle', () => {
 
-				// given - when
-				try {
-					new Handler(config).handle({ eventName: 'test' });
-				} catch (err) {
-					// doesn't matter
-				}
-
 				// then
-				expect(errorEvents).to.include('Please provide a valid callback function for event: \'test\'');
+				const verify = () => {
+					expect(errorEvents).to.include('Please provide a valid callback function for event: \'test\'');
+				};
+
+				// giveb
+				config.transport.subscribe.rejects(new Error('some error or other'));
+
+				// when
+				return new Handler(config).handle({ eventName: 'test' })
+					.then(verify, verify);
 
 			});
 

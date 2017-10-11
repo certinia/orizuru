@@ -44,6 +44,8 @@ const
 
 	privateConfig = new WeakMap(),
 
+	ERROR_EVENT = 'error',
+
 	emitter = new EventEmitter();
 
 /** Class representing a publisher. */
@@ -60,7 +62,7 @@ class Publisher {
 	constructor(config) {
 
 		// validate config
-		catchEmitThrow(() => validate(config), __dirname, emitter);
+		catchEmitThrow(() => validate(config), ERROR_EVENT, emitter);
 		privateConfig[this] = config;
 
 	}
@@ -90,7 +92,7 @@ class Publisher {
 
 		// check event name
 		if (!_.isString(eventName) || _.size(eventName) < 1) {
-			return catchEmitReject('Event name must be an non empty string.', __dirname, emitter);
+			return catchEmitReject('Event name must be an non empty string.', ERROR_EVENT, emitter);
 		}
 
 		let compiledSchema,
@@ -101,7 +103,7 @@ class Publisher {
 			try {
 				compiledSchema = compileFromSchemaDefinition(schema);
 			} catch (err) {
-				return catchEmitReject('Schema could not be compiled.', __dirname, emitter);
+				return catchEmitReject('Schema could not be compiled.', ERROR_EVENT, emitter);
 			}
 		} else {
 			compiledSchema = schema;
@@ -111,14 +113,14 @@ class Publisher {
 		try {
 			buffer = toBuffer(compiledSchema, message, context);
 		} catch (err) {
-			return catchEmitReject('Error encoding message for schema.', __dirname, emitter);
+			return catchEmitReject('Error encoding message for schema.', ERROR_EVENT, emitter);
 		}
 
 		// publish buffer on transport
 		return catchEmitReject(Promise.resolve(config.transport.publish({ eventName, buffer, config: config.transportConfig }))
 			.catch(() => {
 				throw new Error('Error publishing message on transport.');
-			}), __dirname, emitter);
+			}), ERROR_EVENT, emitter);
 
 	}
 

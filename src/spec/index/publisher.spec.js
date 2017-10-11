@@ -46,20 +46,25 @@ chai.use(chaiAsPromised);
 
 describe('index/publisher.js', () => {
 
+	let config;
+
+	beforeEach(() => {
+		config = {
+			transport: {
+				publish: sandbox.stub(),
+				subscribe: _.noop
+			},
+			transportConfig: 'testTransportConfig'
+		};
+	});
+
 	afterEach(restore);
 
 	describe('publish', () => {
 
-		let publisherInstance, config;
+		let publisherInstance;
 
 		beforeEach(() => {
-			config = {
-				transport: {
-					publish: sandbox.stub(),
-					subscribe: _.noop
-				},
-				transportConfig: 'testTransportConfig'
-			};
 			publisherInstance = new Publisher(config);
 		});
 
@@ -207,6 +212,43 @@ describe('index/publisher.js', () => {
 					}),
 					config: config.transportConfig
 				});
+			});
+
+		});
+
+	});
+
+	describe('emitter', () => {
+
+		let errorEvents = [];
+
+		const listener = message => {
+			errorEvents.push(message);
+		};
+
+		beforeEach(() => {
+			Publisher.emitter.addListener('error', listener);
+		});
+
+		afterEach(() => {
+			Publisher.emitter.removeListener('error', listener);
+			errorEvents = [];
+		});
+
+		describe('should emit an error event', () => {
+
+			it('on constructor error', () => {
+
+				// given - when
+				try {
+					new Publisher();
+				} catch (err) {
+					// doesn't matter
+				}
+
+				// then
+				expect(errorEvents).to.include('Invalid parameter: config not an object');
+
 			});
 
 		});

@@ -29,7 +29,7 @@
 const
 	_ = require('lodash'),
 
-	catchEmitThrow = (funcOrError, dir, emitter) => {
+	catchEmitThrow = (funcOrError, eventName, emitter) => {
 		try {
 			if (_.isFunction(funcOrError)) {
 				return funcOrError();
@@ -38,19 +38,19 @@ const
 			}
 			return undefined;
 		} catch (err) {
-			emitter.emit(dir, err.message);
+			emitter.emit(eventName, err.message);
 			throw err;
 		}
 	},
 
-	catchEmitReject = (promiseOrError, dir, emitter) => {
+	catchEmitReject = (promiseOrError, eventName, emitter) => {
 		if (_.hasIn(promiseOrError, 'then')) {
 			return Promise.resolve(promiseOrError).catch(err => {
-				emitter.emit(dir, err.message);
+				emitter.emit(eventName, err.message);
 				throw err;
 			});
 		} else if (_.isString(promiseOrError)) {
-			emitter.emit(dir, promiseOrError);
+			emitter.emit(eventName, promiseOrError);
 			return Promise.reject(new Error(promiseOrError));
 		}
 		return Promise.resolve();
