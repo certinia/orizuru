@@ -313,7 +313,7 @@ describe('index/server.js', () => {
 				server = new Server(config);
 
 			// when - then
-			expect(() => server.addGet()).to.throw('Path is required.');
+			expect(() => server.addGet({})).to.throw('Path is required.');
 
 		});
 
@@ -324,7 +324,7 @@ describe('index/server.js', () => {
 				server = new Server(config);
 
 			// when - then
-			expect(() => server.addGet('')).to.throw('Path is required.');
+			expect(() => server.addGet({ path: '' })).to.throw('Path is required.');
 
 		});
 
@@ -335,7 +335,7 @@ describe('index/server.js', () => {
 				server = new Server(config);
 
 			// when - then
-			expect(() => server.addGet('/swagger.json')).to.throw('A handler function is required.');
+			expect(() => server.addGet({ path: '/swagger.json' })).to.throw('A handler function is required.');
 
 		});
 
@@ -346,7 +346,10 @@ describe('index/server.js', () => {
 				server = new Server(config);
 
 			// when - then
-			expect(() => server.addGet('/swagger.json', 'bob')).to.throw('A handler function is required.');
+			expect(() => server.addGet({
+				path: '/swagger.json',
+				requestHandler: 'bob'
+			})).to.throw('A handler function is required.');
 
 		});
 
@@ -358,7 +361,7 @@ describe('index/server.js', () => {
 				handler = _.noop;
 
 			// when
-			server.addGet('/swagger.json', handler);
+			server.addGet({ path: '/swagger.json', requestHandler: handler });
 
 			// then
 
