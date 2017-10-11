@@ -41,6 +41,8 @@ const
 
 	privateConfig = new WeakMap(),
 
+	ERROR_EVENT = 'error',
+
 	emitter = new EventEmitter();
 
 /** Class representing a handler. */
@@ -57,7 +59,7 @@ class Handler {
 	constructor(config) {
 
 		// validate config
-		catchEmitThrow(() => validate(config), __dirname, emitter);
+		catchEmitThrow(() => validate(config), ERROR_EVENT, emitter);
 		privateConfig[this] = config;
 
 	}
@@ -73,7 +75,7 @@ class Handler {
 	 * 
 	 * @param {object} config - { eventName, callback } 
 	 * @param {object} config.eventName - the event name to listen to ('/schemaName' for server with no API endpoint specified)
-	 * @param {object} config.callback - the callback (called with { message, context }), this callback must handle errors and should only ever return a promise which resolves or undefined 
+	 * @param {object} config.callback - the callback (called with { message, context }), this callback must handle error_EVENTs and should only ever return a promise which resolves or undefined 
 	 * 
 	 * @returns {Promise}
 	 */
@@ -82,14 +84,14 @@ class Handler {
 		const config = privateConfig[this];
 
 		if (!_.isFunction(callback)) {
-			catchEmitThrow(`Please provide a valid callback function for event: '${eventName}'`, __dirname, emitter);
+			catchEmitThrow(`Please provide a valid callback function for event: '${eventName}'`, ERROR_EVENT, emitter);
 		}
 
 		return catchEmitReject(config.transport.subscribe({
 			eventName,
 			handler: (content) => callback(fromBuffer(content)),
 			config: config.transportConfig
-		}), __dirname, emitter);
+		}), ERROR_EVENT, emitter);
 	}
 
 }
