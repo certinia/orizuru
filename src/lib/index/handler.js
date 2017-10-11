@@ -83,6 +83,12 @@ class Handler {
 
 		const config = privateConfig[this];
 
+		// check event name
+		if (!_.isString(eventName) || _.size(eventName) < 1) {
+			return catchEmitReject('Event name must be an non empty string.', ERROR_EVENT, emitter);
+		}
+
+		// check callback
 		if (!_.isFunction(callback)) {
 			return catchEmitReject(`Please provide a valid callback function for event: '${eventName}'`, ERROR_EVENT, emitter);
 		}

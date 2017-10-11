@@ -71,6 +71,13 @@ describe('index/handler.js', () => {
 			handlerInstance = new Handler(config);
 		});
 
+		it('should reject if a valid eventName is not supplied', () => {
+
+			// given - when - then
+			return expect(handlerInstance.handle({ eventName: '', callback: null })).to.be.rejectedWith('Event name must be an non empty string.');
+
+		});
+
 		it('should reject if a valid callback function is not supplied', () => {
 
 			// given - when - then
@@ -143,15 +150,25 @@ describe('index/handler.js', () => {
 
 			});
 
-			it('on no function supplied to handle', () => {
+			it('on bad event name', () => {
 
 				// then
 				const verify = () => {
 					expect(errorEvents).to.include('Please provide a valid callback function for event: \'test\'');
 				};
 
-				// giveb
-				config.transport.subscribe.rejects(new Error('some error or other'));
+				// when
+				return new Handler(config).handle({ eventName: 'test' })
+					.then(verify, verify);
+
+			});
+
+			it('on no function supplied to handle', () => {
+
+				// then
+				const verify = () => {
+					expect(errorEvents).to.include('Please provide a valid callback function for event: \'test\'');
+				};
 
 				// when
 				return new Handler(config).handle({ eventName: 'test' })
@@ -166,7 +183,7 @@ describe('index/handler.js', () => {
 					expect(errorEvents).to.include('some error or other');
 				};
 
-				// giveb
+				// given
 				config.transport.subscribe.rejects(new Error('some error or other'));
 
 				// when
