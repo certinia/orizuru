@@ -33,7 +33,7 @@ const
 module.exports = {
 	compileSchemas: schemaNameToDefinition => {
 		if (!_.isObject(schemaNameToDefinition)) {
-			throw new Error('Server init argument must be an object of: schemaName -> avroSchema.');
+			throw new Error('schemaNameToDefinition argument must be an object of: schemaName -> avroSchema.');
 		} else {
 			_.each(schemaNameToDefinition, (value, key) => {
 				try {

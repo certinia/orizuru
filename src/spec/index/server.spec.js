@@ -134,7 +134,7 @@ describe('index/server.js', () => {
 				};
 
 			// when - then
-			expect(() => server.addRoute(input)).to.throw('Server init argument must be an object of: schemaName -> avroSchema.');
+			expect(() => server.addRoute(input)).to.throw('schemaNameToDefinition argument must be an object of: schemaName -> avroSchema.');
 
 		});
 
