@@ -41,7 +41,7 @@ const
 
 	privateConfig = new WeakMap(),
 
-	ERROR_EVENT = 'error',
+	ERROR_EVENT = 'error_event',
 
 	emitter = new EventEmitter();
 

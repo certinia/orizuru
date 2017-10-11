@@ -71,10 +71,10 @@ describe('index/handler.js', () => {
 			handlerInstance = new Handler(config);
 		});
 
-		it('should throw an exception if a valid callback function is not supplied', () => {
+		it('should reject if a valid callback function is not supplied', () => {
 
 			// given - when - then
-			expect(() => handlerInstance.handle({ eventName: 'testSchema', callback: null })).to.throw('Please provide a valid callback function for event: \'testSchema\'');
+			return expect(handlerInstance.handle({ eventName: 'testSchema', callback: null })).to.be.rejectedWith('Please provide a valid callback function for event: \'testSchema\'');
 
 		});
 
@@ -119,11 +119,11 @@ describe('index/handler.js', () => {
 		};
 
 		beforeEach(() => {
-			Handler.emitter.addListener('error', listener);
+			Handler.emitter.addListener('error_event', listener);
 		});
 
 		afterEach(() => {
-			Handler.emitter.removeListener('error', listener);
+			Handler.emitter.removeListener('error_event', listener);
 			errorEvents = [];
 		});
 

@@ -227,11 +227,11 @@ describe('index/publisher.js', () => {
 		};
 
 		beforeEach(() => {
-			Publisher.emitter.addListener('error', listener);
+			Publisher.emitter.addListener('error_event', listener);
 		});
 
 		afterEach(() => {
-			Publisher.emitter.removeListener('error', listener);
+			Publisher.emitter.removeListener('error_event', listener);
 			errorEvents = [];
 		});
 
