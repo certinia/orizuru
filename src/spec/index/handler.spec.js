@@ -126,11 +126,11 @@ describe('index/handler.js', () => {
 		};
 
 		beforeEach(() => {
-			Handler.emitter.addListener('error_event', listener);
+			Handler.emitter.addListener(Handler.emitter.ERROR, listener);
 		});
 
 		afterEach(() => {
-			Handler.emitter.removeListener('error_event', listener);
+			Handler.emitter.removeListener(Handler.emitter.ERROR, listener);
 			errorEvents = [];
 		});
 

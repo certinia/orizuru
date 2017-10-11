@@ -127,5 +127,6 @@ class Publisher {
 }
 
 Publisher.emitter = emitter;
+emitter.ERROR = ERROR_EVENT;
 
 module.exports = Publisher;

@@ -52,6 +52,8 @@ const
 
 	emitter = new EventEmitter(),
 
+	ERROR_EVENT = 'error_event',
+
 	api = (path, schemaNameToDefinition, publisher) => (request, response) => {
 
 		const
@@ -61,7 +63,7 @@ const
 			nozomi = request.nozomi;
 
 		if (!schema) {
-			catchEmitReject(`No schema for '${path}/${schemaName}' found.`, __dirname, emitter)
+			catchEmitReject(`No schema for '${path}/${schemaName}' found.`, ERROR_EVENT, emitter)
 				.catch(err => {
 					response.status(400).send(err.message);
 				});
@@ -71,9 +73,9 @@ const
 				schema: schema,
 				message: body,
 				context: nozomi
-			}).then(() => {
+			}), ERROR_EVENT, emitter).then(() => {
 				response.status(200).send('Ok.');
-			}), __dirname, emitter).catch(err => {
+			}).catch(err => {
 				response.status(400).send(err.message);
 			});
 		}
@@ -96,7 +98,7 @@ class Server {
 		// create publisher
 		catchEmitThrow(() => {
 			publisherStore[this] = new Publisher(config);
-		}, __dirname, emitter);
+		}, ERROR_EVENT, emitter);
 
 		// create server
 		const server = express();
@@ -154,7 +156,7 @@ class Server {
 		// compile schemas
 		catchEmitThrow(() => {
 			compileSchemas(schemaNameToDefinition);
-		}, __dirname, emitter);
+		}, ERROR_EVENT, emitter);
 
 		// apply middlewares
 		_.each(middlewares, middleware => {
@@ -187,5 +189,6 @@ class Server {
 }
 
 Server.emitter = emitter;
+emitter.ERROR = ERROR_EVENT;
 
 module.exports = Server;

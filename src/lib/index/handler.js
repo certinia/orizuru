@@ -108,5 +108,6 @@ class Handler {
 }
 
 Handler.emitter = emitter;
+emitter.ERROR = ERROR_EVENT;
 
 module.exports = Handler;
