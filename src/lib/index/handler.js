@@ -89,7 +89,7 @@ class Handler {
 
 		return catchEmitReject(config.transport.subscribe({
 			eventName,
-			handler: (content) => callback(fromBuffer(content, emitter)),
+			handler: (content) => callback(fromBuffer(content)),
 			config: config.transportConfig
 		}), ERROR_EVENT, emitter);
 	}
