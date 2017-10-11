@@ -103,7 +103,7 @@ class Publisher {
 			try {
 				compiledSchema = compileFromSchemaDefinition(schema);
 			} catch (err) {
-				return catchEmitReject('Schema could not be compiled.', ERROR_EVENT, emitter);
+				return catchEmitReject(`Schema could not be compiled: ${err.message}`, ERROR_EVENT, emitter);
 			}
 		} else {
 			compiledSchema = schema;

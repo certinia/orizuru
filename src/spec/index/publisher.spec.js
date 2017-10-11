@@ -78,7 +78,7 @@ describe('index/publisher.js', () => {
 		it('should reject if it failes to compile a schema', () => {
 
 			// given - when - then
-			return expect(publisherInstance.publish({ eventName: 'test', schema: {} })).to.eventually.be.rejectedWith('Schema could not be compiled.');
+			return expect(publisherInstance.publish({ eventName: 'test', schema: {} })).to.eventually.be.rejectedWith('Schema could not be compiled: unknown type: undefined');
 
 		});
 
@@ -266,7 +266,7 @@ describe('index/publisher.js', () => {
 				// given - when - then
 				return expect(new Publisher(config).publish({ schema: 'a', eventName: 'test' })).to.eventually.be.rejected
 					.then(() => {
-						expect(errorEvents).to.include('Schema could not be compiled.');
+						expect(errorEvents).to.include('Schema could not be compiled: undefined type name: a');
 					});
 
 			});
