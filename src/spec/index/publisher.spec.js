@@ -97,7 +97,7 @@ describe('index/publisher.js', () => {
 				message: {
 					f: 1
 				}
-			})).to.eventually.be.rejectedWith('Error encoding message for schema.');
+			})).to.eventually.be.rejectedWith('Error encoding message for schema: invalid "string": 1');
 
 		});
 
@@ -248,6 +248,50 @@ describe('index/publisher.js', () => {
 
 				// then
 				expect(errorEvents).to.include('Invalid parameter: config not an object');
+
+			});
+
+			it('on bad eventName', () => {
+
+				// given - when - then
+				return expect(new Publisher(config).publish({ eventName: {} })).to.eventually.be.rejected
+					.then(() => {
+						expect(errorEvents).to.include('Event name must be an non empty string.');
+					});
+
+			});
+
+			it('on schema compile failure', () => {
+
+				// given - when - then
+				return expect(new Publisher(config).publish({ schema: 'a', eventName: 'test' })).to.eventually.be.rejected
+					.then(() => {
+						expect(errorEvents).to.include('Schema could not be compiled.');
+					});
+
+			});
+
+			it('if toBuffer fails', () => {
+
+				// given
+				const input = {
+					schema: {
+						type: 'record',
+						name: 'test',
+						fields: [{
+							name: 'f',
+							type: 'string'
+						}]
+					},
+					eventName: 'test',
+					message: { f: 1 }
+				};
+
+				// when - then
+				return expect(new Publisher(config).publish(input)).to.eventually.be.rejected
+					.then(() => {
+						expect(errorEvents).to.include('Error encoding message for schema: invalid "string": 1');
+					});
 
 			});
 

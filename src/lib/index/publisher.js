@@ -113,7 +113,7 @@ class Publisher {
 		try {
 			buffer = toBuffer(compiledSchema, message, context);
 		} catch (err) {
-			return catchEmitReject('Error encoding message for schema.', ERROR_EVENT, emitter);
+			return catchEmitReject('Error encoding message for schema: ' + err.message, ERROR_EVENT, emitter);
 		}
 
 		// publish buffer on transport
