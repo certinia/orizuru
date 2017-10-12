@@ -377,4 +377,124 @@ describe('index/server.js', () => {
 
 	});
 
+	describe('emitter', () => {
+
+		let Server, config, errorEvents = [];
+
+		const listener = message => {
+			errorEvents.push(message);
+		};
+
+		beforeEach(() => {
+			config = {
+				transport: {
+					publish: _.noop,
+					subscribe: _.noop
+				},
+				transportConfig: 'testTransportConfig'
+			};
+			Server = require(serverPath);
+			Server.emitter.addListener(Server.emitter.ERROR, listener);
+
+		});
+
+		afterEach(() => {
+			Server.emitter.removeListener(Server.emitter.ERROR, listener);
+			errorEvents = [];
+		});
+
+		describe('should emit an error event', () => {
+
+			it('on constructor error', () => {
+
+				// given - when
+				try {
+					new Server();
+				} catch (err) {
+					// doesn't matter
+				}
+
+				// then
+				expect(errorEvents).to.include('Invalid parameter: config not an object');
+
+			});
+
+			it('if schemas fail to compile', () => {
+
+				// given - when
+				try {
+					new Server(config).addRoute({
+						test: {}
+					});
+				} catch (err) {
+					// doesn't matter
+				}
+
+				// then
+				expect(errorEvents).to.include('schemaNameToDefinition argument must be an object of: schemaName -> avroSchema.');
+
+			});
+
+			describe('for a callout', () => {
+
+				let publisherStub, serverInstance;
+
+				beforeEach(() => {
+
+					publisherStub = sandbox.stub(Publisher.prototype, 'publish');
+					delete require.cache[require.resolve(serverPath)];
+
+					const schema = {
+						type: 'record',
+						fields: [{
+							name: 'f',
+							type: 'string'
+						}]
+					};
+
+					serverInstance = new Server(config).addRoute({
+						schemaNameToDefinition: {
+							testSchema1: schema
+						},
+						apiEndpoint: '/api'
+					});
+
+				});
+
+				it('if path is invalid', () => {
+
+					// given - when - then
+					return request(serverInstance.getServer())
+						.post('/api/testSchemaUnknown')
+						.expect(400, 'No schema for \'/api/testSchemaUnknown\' found.')
+						.then(() => {
+							expect(errorEvents).to.include('No schema for \'/api/testSchemaUnknown\' found.');
+						});
+
+				});
+
+				it('if publisher rejects', () => {
+
+					// given
+					publisherStub.rejects(new Error('Error test'));
+
+					// when - then
+					return request(serverInstance.getServer())
+						.post('/api/testSchema1')
+						.send({
+							f: 'test1'
+						})
+						.expect(400, 'Error test')
+						.then(() => {
+							expect(errorEvents).to.include('Error test');
+						});
+
+				});
+
+			});
+
+		});
+
+	});
+
 });
