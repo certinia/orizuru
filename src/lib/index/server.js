@@ -188,6 +188,10 @@ class Server {
 
 }
 
+/** 
+ * @type {EventEmitter} 
+ * @property {string} ERROR - the error event name
+ **/
 Server.emitter = emitter;
 emitter.ERROR = ERROR_EVENT;
 

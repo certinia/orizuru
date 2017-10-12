@@ -107,6 +107,10 @@ class Handler {
 
 }
 
+/** 
+ * @type {EventEmitter} 
+ * @property {string} ERROR - the error event name
+ **/
 Handler.emitter = emitter;
 emitter.ERROR = ERROR_EVENT;
 

@@ -126,6 +126,10 @@ class Publisher {
 
 }
 
+/** 
+ * @type {EventEmitter} 
+ * @property {string} ERROR - the error event name
+ **/
 Publisher.emitter = emitter;
 emitter.ERROR = ERROR_EVENT;
 
