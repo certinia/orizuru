@@ -45,6 +45,7 @@ const
 	privateConfig = new WeakMap(),
 
 	ERROR_EVENT = 'error_event',
+	INFO_EVENT = 'info_event',
 
 	emitter = new EventEmitter();
 
@@ -53,6 +54,7 @@ const
  * 
  * @property {EventEmitter} emitter
  * @property {string} emitter.ERROR - the error event name
+ * @property {string} emitter.INFO - the info event name
  **/
 class Publisher {
 
@@ -123,6 +125,10 @@ class Publisher {
 
 		// publish buffer on transport
 		return catchEmitReject(Promise.resolve(config.transport.publish({ eventName, buffer, config: config.transportConfig }))
+			.then(result => {
+				emitter.emit(INFO_EVENT, `Published ${eventName} event.`);
+				return result;
+			})
 			.catch(() => {
 				throw new Error('Error publishing message on transport.');
 			}), ERROR_EVENT, emitter);
@@ -133,5 +139,6 @@ class Publisher {
 
 Publisher.emitter = emitter;
 emitter.ERROR = ERROR_EVENT;
+emitter.INFO = INFO_EVENT;
 
 module.exports = Publisher;
