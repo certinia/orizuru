@@ -33,13 +33,26 @@
 
 const
 	_ = require('lodash'),
+	EventEmitter = require('events'),
 
 	{ validate } = require('./shared/configValidator'),
 	{ fromBuffer } = require('./shared/transport'),
+	{ catchEmitThrow, catchEmitReject } = require('./shared/catchEmitThrow'),
 
-	privateConfig = new WeakMap();
+	privateConfig = new WeakMap(),
 
-/** Class representing a handler. */
+	ERROR_EVENT = 'error_event',
+	INFO_EVENT = 'info_event',
+
+	emitter = new EventEmitter();
+
+/** 
+ * Class representing a handler. 
+ * 
+ * @property {EventEmitter} emitter
+ * @property {string} emitter.ERROR - the error event name
+ * @property {string} emitter.INFO - the info event name
+ **/
 class Handler {
 
 	/**
@@ -53,7 +66,7 @@ class Handler {
 	constructor(config) {
 
 		// validate config
-		validate(config);
+		catchEmitThrow(() => validate(config), ERROR_EVENT, emitter);
 		privateConfig[this] = config;
 
 	}
@@ -69,7 +82,7 @@ class Handler {
 	 * 
 	 * @param {object} config - { eventName, callback } 
 	 * @param {object} config.eventName - the event name to listen to ('/schemaName' for server with no API endpoint specified)
-	 * @param {object} config.callback - the callback (called with { message, context }), this callback must handle errors and should only ever return a promise which resolves or undefined 
+	 * @param {object} config.callback - the callback (called with { message, context }), this callback must handle error_EVENTs and should only ever return a promise which resolves or undefined 
 	 * 
 	 * @returns {Promise}
 	 */
@@ -77,17 +90,33 @@ class Handler {
 
 		const config = privateConfig[this];
 
-		if (!_.isFunction(callback)) {
-			throw new Error(`Please provide a valid callback function for event: '${eventName}'`);
+		// check event name
+		if (!_.isString(eventName) || _.size(eventName) < 1) {
+			return catchEmitReject('Event name must be an non empty string.', ERROR_EVENT, emitter);
 		}
 
-		return config.transport.subscribe({
+		// check callback
+		if (!_.isFunction(callback)) {
+			return catchEmitReject(`Please provide a valid callback function for event: '${eventName}'`, ERROR_EVENT, emitter);
+		}
+
+		return catchEmitReject(config.transport.subscribe({
 			eventName,
-			handler: (content) => callback(fromBuffer(content)),
+			handler: content => {
+				catchEmitThrow(() => {
+					const decodedContent = fromBuffer(content);
+					emitter.emit(INFO_EVENT, `Handler received ${eventName} event.`);
+					callback(decodedContent);
+				}, ERROR_EVENT, emitter);
+			},
 			config: config.transportConfig
-		});
+		}), ERROR_EVENT, emitter);
 	}
 
 }
+
+Handler.emitter = emitter;
+emitter.ERROR = ERROR_EVENT;
+emitter.INFO = INFO_EVENT;
 
 module.exports = Handler;

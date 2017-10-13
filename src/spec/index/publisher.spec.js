@@ -46,20 +46,25 @@ chai.use(chaiAsPromised);
 
 describe('index/publisher.js', () => {
 
+	let config;
+
+	beforeEach(() => {
+		config = {
+			transport: {
+				publish: sandbox.stub(),
+				subscribe: _.noop
+			},
+			transportConfig: 'testTransportConfig'
+		};
+	});
+
 	afterEach(restore);
 
 	describe('publish', () => {
 
-		let publisherInstance, config;
+		let publisherInstance;
 
 		beforeEach(() => {
-			config = {
-				transport: {
-					publish: sandbox.stub(),
-					subscribe: _.noop
-				},
-				transportConfig: 'testTransportConfig'
-			};
 			publisherInstance = new Publisher(config);
 		});
 
@@ -73,7 +78,7 @@ describe('index/publisher.js', () => {
 		it('should reject if it failes to compile a schema', () => {
 
 			// given - when - then
-			return expect(publisherInstance.publish({ eventName: 'test', schema: {} })).to.eventually.be.rejectedWith('Schema could not be compiled.');
+			return expect(publisherInstance.publish({ eventName: 'test', schema: {} })).to.eventually.be.rejectedWith('Schema could not be compiled: unknown type: undefined');
 
 		});
 
@@ -92,7 +97,7 @@ describe('index/publisher.js', () => {
 				message: {
 					f: 1
 				}
-			})).to.eventually.be.rejectedWith('Error encoding message for schema.');
+			})).to.eventually.be.rejectedWith('Error encoding message for schema: invalid "string": 1');
 
 		});
 
@@ -207,6 +212,87 @@ describe('index/publisher.js', () => {
 					}),
 					config: config.transportConfig
 				});
+			});
+
+		});
+
+	});
+
+	describe('emitter', () => {
+
+		let errorEvents = [];
+
+		const listener = message => {
+			errorEvents.push(message);
+		};
+
+		beforeEach(() => {
+			Publisher.emitter.addListener(Publisher.emitter.ERROR, listener);
+		});
+
+		afterEach(() => {
+			Publisher.emitter.removeListener(Publisher.emitter.ERROR, listener);
+			errorEvents = [];
+		});
+
+		describe('should emit an error event', () => {
+
+			it('on constructor error', () => {
+
+				// given - when
+				try {
+					new Publisher();
+				} catch (err) {
+					// doesn't matter
+				}
+
+				// then
+				expect(errorEvents).to.include('Invalid parameter: config not an object');
+
+			});
+
+			it('on bad eventName', () => {
+
+				// given - when - then
+				return expect(new Publisher(config).publish({ eventName: {} })).to.eventually.be.rejected
+					.then(() => {
+						expect(errorEvents).to.include('Event name must be an non empty string.');
+					});
+
+			});
+
+			it('on schema compile failure', () => {
+
+				// given - when - then
+				return expect(new Publisher(config).publish({ schema: 'a', eventName: 'test' })).to.eventually.be.rejected
+					.then(() => {
+						expect(errorEvents).to.include('Schema could not be compiled: undefined type name: a');
+					});
+
+			});
+
+			it('if toBuffer fails', () => {
+
+				// given
+				const input = {
+					schema: {
+						type: 'record',
+						name: 'test',
+						fields: [{
+							name: 'f',
+							type: 'string'
+						}]
+					},
+					eventName: 'test',
+					message: { f: 1 }
+				};
+
+				// when - then
+				return expect(new Publisher(config).publish(input)).to.eventually.be.rejected
+					.then(() => {
+						expect(errorEvents).to.include('Error encoding message for schema: invalid "string": 1');
+					});
+
 			});
 
 		});
