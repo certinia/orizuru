@@ -33,7 +33,7 @@ const
 	{ Publisher } = require(root + '/src/lib/index'),
 
 	// get the transport
-	transport = require('@financialforcedev/nozomi-transport-rabbitmq'),
+	transport = require('@financialforcedev/orizuru-transport-rabbitmq'),
 
 	// configure the transport
 	transportConfig = {

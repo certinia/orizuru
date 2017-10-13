@@ -29,7 +29,7 @@
 // schema names to avro schemas
 module.exports = {
 	firstAndLastName: {
-		namespace: 'com.financialforce.nozomi',
+		namespace: 'com.financialforce.orizuru',
 		name: 'firstAndLastName',
 		type: 'record',
 		fields: [
@@ -38,7 +38,7 @@ module.exports = {
 		]
 	},
 	ageAndDob: {
-		namespace: 'com.financialforce.nozomi',
+		namespace: 'com.financialforce.orizuru',
 		name: 'firstAndLastName',
 		type: 'record',
 		fields: [

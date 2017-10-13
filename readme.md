@@ -1,13 +1,13 @@
-# Nozomi.
+# Orizuru.
 
-Nozomi is a library that streamlines strongly typed communication between Heroku dynos (or other processes).
+Orizuru is a library that streamlines strongly typed communication between Heroku dynos (or other processes).
 It leverages [Apache Avro](https://avro.apache.org/) for schema validation and communication.
 
 
 ## Install
 
 ```
-$ npm install @financialforcedev/nozomi
+$ npm install @financialforcedev/orizuru
 ```
 
 
@@ -15,12 +15,12 @@ $ npm install @financialforcedev/nozomi
 
 ### Configuration
 
-All Nozomi classes require reference to a transport layer. The transport layer governs how messages are published and 
+All Orizuru classes require reference to a transport layer. The transport layer governs how messages are published and 
 subscribed to. We inject this as a class constructor configuration parameter.
 
 	const
-		{ Server } = require('@financialforcedev/nozomi'),
-		transport = require('@financialforcedev/nozomi-transport-rabbitmq'),
+		{ Server } = require('@financialforcedev/orizuru'),
+		transport = require('@financialforcedev/orizuru-transport-rabbitmq'),
 		transportConfig = {
 			cloudamqpUrl: 'amqp://localhost'
 		},
@@ -33,12 +33,12 @@ the ```cloudamqpUrl``` field.
 
 ### Server
 
-A Nozomi Server allows you combine Avro schemas with API POST endpoints to create webhooks that validate API post body content and publish events
+A Orizuru Server allows you combine Avro schemas with API POST endpoints to create webhooks that validate API post body content and publish events
 via your chosen transport layer implementation. POST bodies are automatically validated against the Avro schema they are paired with, so the consumer
 of your events always receives valid input if it is invoked.
 
 	const
-		{ Server } = require('@financialforcedev/nozomi'),
+		{ Server } = require('@financialforcedev/orizuru'),
 		...
 		serverInstance = new Server({ transport, transportConfig }),
 
@@ -64,14 +64,14 @@ of your events always receives valid input if it is invoked.
 
 As you can see from the above example, the ```getServer()``` method returns an express server, where you can add your own routes, etc, before listening to a port. This example would create a POST API for ```/api/path/ageAndDob```. The post body you send would be validated against the schema, requiring ```age``` and ```dob``` string fields in its JSON. If the validation succeeds, an event name passed to the transport layer will be ```/api/path/ageAndDob```, along with an Avro serialised buffer of the POST body.
 
-Additionally, if there is an object on the express request called ```nozomi```, e.g. ```request.nozomi```, this will also be serialized and added to the buffer as ```context```. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.
+Additionally, if there is an object on the express request called ```orizuru```, e.g. ```request.orizuru```, this will also be serialized and added to the buffer as ```context```. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.
 
 ### Publisher
 
-The Nozomi Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.
+The Orizuru Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.
 
 	const
-		{ Publisher } = require('@financialforcedev/nozomi'),
+		{ Publisher } = require('@financialforcedev/orizuru'),
 		...
 		publisherInstance = new Publisher({ transport, transportConfig }),
 
@@ -106,7 +106,7 @@ The handler handles messages published by the ```Server``` or ```Publisher```. I
 This means it should never ```throw``` an exception, and any ```promise``` it returns should always have a ```catch``` block. Any errors thrown / rejecting promises returned will be **swallowed**.
 
 	const
-		{ Handler } = require('@financialforcedev/nozomi'),
+		{ Handler } = require('@financialforcedev/orizuru'),
 		...
 		handlerInstance = new Handler({ transport, transportConfig }),
 
