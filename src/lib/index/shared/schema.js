@@ -38,7 +38,7 @@ const
 				schema.type === 'fixed' ||
 				schema.type === 'record') {
 
-				schema.namespace = 'com.ffdc.nozomi';
+				schema.namespace = 'com.ffdc.orizuru';
 				schema.name = `Context${i}`;
 				i++;
 

@@ -33,7 +33,7 @@ const
 	{ Server } = require(root + '/src/lib/index'),
 
 	// get the transport
-	transport = require('@financialforcedev/nozomi-transport-rabbitmq'),
+	transport = require('@financialforcedev/orizuru-transport-rabbitmq'),
 
 	// configure the transport
 	transportConfig = {
@@ -50,7 +50,7 @@ const
 	middlewares = [(req, res, next) => {
 		// just sets auth on the body for transport, should in reality authenticate
 		// and then send a 403 if authentication fails first
-		req.nozomi = { auth: 'test auth token or whatever, object containing id, name, etc' };
+		req.orizuru = { auth: 'test auth token or whatever, object containing id, name, etc' };
 		next();
 	}],
 

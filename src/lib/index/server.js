@@ -61,7 +61,7 @@ const
 			schemaName = request.params.schemaName,
 			schema = schemaNameToDefinition[schemaName],
 			body = request.body,
-			nozomi = request.nozomi;
+			orizuru = request.orizuru;
 
 		if (!schema) {
 			catchEmitReject(`No schema for '${path}/${schemaName}' found.`, ERROR_EVENT, emitter)
@@ -73,7 +73,7 @@ const
 				eventName: `${path}/${schemaName}`,
 				schema: schema,
 				message: body,
-				context: nozomi
+				context: orizuru
 			}), ERROR_EVENT, emitter).then(() => {
 				emitter.emit(INFO_EVENT, `Server published ${path}/${schemaName} event.`);
 				response.status(200).send('Ok.');
