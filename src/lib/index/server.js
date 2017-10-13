@@ -53,6 +53,7 @@ const
 	emitter = new EventEmitter(),
 
 	ERROR_EVENT = 'error_event',
+	INFO_EVENT = 'info_event',
 
 	api = (path, schemaNameToDefinition, publisher) => (request, response) => {
 
@@ -74,6 +75,7 @@ const
 				message: body,
 				context: nozomi
 			}), ERROR_EVENT, emitter).then(() => {
+				emitter.emit(INFO_EVENT, `Server published ${path}/${schemaName} event.`);
 				response.status(200).send('Ok.');
 			}).catch(err => {
 				response.status(400).send(err.message);
@@ -87,6 +89,7 @@ const
  * 
  * @property {EventEmitter} emitter
  * @property {string} emitter.ERROR - the error event name
+ * @property {string} emitter.INFO - the info event name
  **/
 class Server {
 
@@ -195,5 +198,6 @@ class Server {
 
 Server.emitter = emitter;
 emitter.ERROR = ERROR_EVENT;
+emitter.INFO = INFO_EVENT;
 
 module.exports = Server;

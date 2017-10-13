@@ -42,6 +42,7 @@ const
 	privateConfig = new WeakMap(),
 
 	ERROR_EVENT = 'error_event',
+	INFO_EVENT = 'info_event',
 
 	emitter = new EventEmitter();
 
@@ -50,6 +51,7 @@ const
  * 
  * @property {EventEmitter} emitter
  * @property {string} emitter.ERROR - the error event name
+ * @property {string} emitter.INFO - the info event name
  **/
 class Handler {
 
@@ -103,6 +105,7 @@ class Handler {
 			handler: content => {
 				catchEmitThrow(() => {
 					const decodedContent = fromBuffer(content);
+					emitter.emit(INFO_EVENT, `Handler received ${eventName} event.`);
 					callback(decodedContent);
 				}, ERROR_EVENT, emitter);
 			},
@@ -114,5 +117,6 @@ class Handler {
 
 Handler.emitter = emitter;
 emitter.ERROR = ERROR_EVENT;
+emitter.INFO = INFO_EVENT;
 
 module.exports = Handler;
