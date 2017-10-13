@@ -287,6 +287,91 @@ describe('index/server.js', () => {
 
 	});
 
+	describe('addGet', () => {
+
+		let serverUseSpy, serverGetSpy, expressMockResult, expressMock, Server;
+
+		beforeEach(() => {
+			serverUseSpy = sandbox.spy();
+			serverGetSpy = sandbox.spy();
+			expressMockResult = {
+				get: serverGetSpy,
+				use: serverUseSpy
+			};
+			expressMock = function () {
+				return expressMockResult;
+			};
+			Server = proxyquire(serverPath, {
+				express: expressMock
+			});
+		});
+
+		it('should throw an exception if path is null', () => {
+
+			// given
+			const
+				server = new Server(config);
+
+			// when - then
+			expect(() => server.addGet({})).to.throw('Path is required.');
+
+		});
+
+		it('should throw an exception if path is empty', () => {
+
+			// given
+			const
+				server = new Server(config);
+
+			// when - then
+			expect(() => server.addGet({ path: '' })).to.throw('Path is required.');
+
+		});
+
+		it('should throw an exception if handler is undefined', () => {
+
+			// given
+			const
+				server = new Server(config);
+
+			// when - then
+			expect(() => server.addGet({ path: '/swagger.json' })).to.throw('A handler function is required.');
+
+		});
+
+		it('should throw an exception if handler is not a function', () => {
+
+			// given
+			const
+				server = new Server(config);
+
+			// when - then
+			expect(() => server.addGet({
+				path: '/swagger.json',
+				requestHandler: 'bob'
+			})).to.throw('A handler function is required.');
+
+		});
+
+		it('should call get on the express application.', () => {
+
+			// given
+			const
+				server = new Server(config),
+				handler = _.noop;
+
+			// when
+			server.addGet({ path: '/swagger.json', requestHandler: handler });
+
+			// then
+
+			calledOnce(serverGetSpy);
+			calledWith(serverGetSpy, '/swagger.json', handler);
+
+		});
+
+	});
+
 	describe('getServer', () => {
 
 		describe('should return a server that', () => {

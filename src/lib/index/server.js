@@ -183,6 +183,44 @@ class Server {
 	}
 
 	/**
+	 * An express request handler.
+	 * 
+	 * @typedef RequestHandler
+	 * @type {function}
+	 * @param {Object} req - The request.
+	 * @param {Object} res - The response.
+	 */
+
+	/**
+	 Adds a 'get' to the server's default router.
+	 * 
+	 * @example
+	 * // adds a get request handler to ( http://host/swagger.json ) route
+	 * server.addGet({
+	 * 	path: '/swagger.json',
+	 * 	handler: myHandler
+	 * }
+	 * 
+	 * @param {object} config - { path, requestHandler }
+	 * @param {string} config.path - The path to this route.
+	 * @param {RequestHandler} config.requestHandler - The express handler function.
+	 */
+	addGet({ path, requestHandler }) {
+
+		if (!path) {
+			throw Error('Path is required.');
+		}
+
+		if (!_.isFunction(requestHandler)) {
+			throw Error('A handler function is required.');
+		}
+
+		serverStore[this].get(path, requestHandler);
+
+		return this;
+	}
+
+	/**
 	 * Returns the express server
 	 * 
 	 * @example
