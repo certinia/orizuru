@@ -28,20 +28,35 @@
 
 const
 	_ = require('lodash'),
-	{ compileFromSchemaDefinition } = require('./schema');
+
+	catchEmitThrow = (funcOrError, eventName, emitter) => {
+		try {
+			if (_.isFunction(funcOrError)) {
+				return funcOrError();
+			} else if (_.isString(funcOrError)) {
+				throw new Error(funcOrError);
+			}
+			return undefined;
+		} catch (err) {
+			emitter.emit(eventName, err.message);
+			throw err;
+		}
+	},
+
+	catchEmitReject = (promiseOrError, eventName, emitter) => {
+		if (_.hasIn(promiseOrError, 'then')) {
+			return Promise.resolve(promiseOrError).catch(err => {
+				emitter.emit(eventName, err.message);
+				throw err;
+			});
+		} else if (_.isString(promiseOrError)) {
+			emitter.emit(eventName, promiseOrError);
+			return Promise.reject(new Error(promiseOrError));
+		}
+		return Promise.resolve();
+	};
 
 module.exports = {
-	compileSchemas: schemaNameToDefinition => {
-		if (!_.isObject(schemaNameToDefinition)) {
-			throw new Error('schemaNameToDefinition argument must be an object of: schemaName -> avroSchema.');
-		} else {
-			_.each(schemaNameToDefinition, (value, key) => {
-				try {
-					schemaNameToDefinition[key] = compileFromSchemaDefinition(value);
-				} catch (err) {
-					throw new Error(`Schema name: '${key}' schema could not be compiled: ${err.message}`);
-				}
-			});
-		}
-	}
+	catchEmitThrow,
+	catchEmitReject
 };

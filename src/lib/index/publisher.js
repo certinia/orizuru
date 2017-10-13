@@ -34,13 +34,26 @@
 
 const
 	_ = require('lodash'),
+
+	EventEmitter = require('events'),
 	{ compileFromSchemaDefinition } = require('./shared/schema'),
 	{ validate } = require('./shared/configValidator'),
 	{ toBuffer } = require('./shared/transport'),
 
-	privateConfig = new WeakMap();
+	{ catchEmitThrow, catchEmitReject } = require('./shared/catchEmitThrow'),
 
-/** Class representing a publisher. */
+	privateConfig = new WeakMap(),
+
+	ERROR_EVENT = 'error_event',
+
+	emitter = new EventEmitter();
+
+/** 
+ * Class representing a publisher. 
+ * 
+ * @property {EventEmitter} emitter
+ * @property {string} emitter.ERROR - the error event name
+ **/
 class Publisher {
 
 	/**
@@ -54,7 +67,7 @@ class Publisher {
 	constructor(config) {
 
 		// validate config
-		validate(config);
+		catchEmitThrow(() => validate(config), ERROR_EVENT, emitter);
 		privateConfig[this] = config;
 
 	}
@@ -84,7 +97,7 @@ class Publisher {
 
 		// check event name
 		if (!_.isString(eventName) || _.size(eventName) < 1) {
-			return Promise.reject(new Error('Event name must be an non empty string.'));
+			return catchEmitReject('Event name must be an non empty string.', ERROR_EVENT, emitter);
 		}
 
 		let compiledSchema,
@@ -95,7 +108,7 @@ class Publisher {
 			try {
 				compiledSchema = compileFromSchemaDefinition(schema);
 			} catch (err) {
-				return Promise.reject(new Error('Schema could not be compiled.'));
+				return catchEmitReject(`Schema could not be compiled: ${err.message}`, ERROR_EVENT, emitter);
 			}
 		} else {
 			compiledSchema = schema;
@@ -105,17 +118,20 @@ class Publisher {
 		try {
 			buffer = toBuffer(compiledSchema, message, context);
 		} catch (err) {
-			return Promise.reject(new Error('Error encoding message for schema.'));
+			return catchEmitReject('Error encoding message for schema: ' + err.message, ERROR_EVENT, emitter);
 		}
 
 		// publish buffer on transport
-		return Promise.resolve(config.transport.publish({ eventName, buffer, config: config.transportConfig }))
+		return catchEmitReject(Promise.resolve(config.transport.publish({ eventName, buffer, config: config.transportConfig }))
 			.catch(() => {
 				throw new Error('Error publishing message on transport.');
-			});
+			}), ERROR_EVENT, emitter);
 
 	}
 
 }
+
+Publisher.emitter = emitter;
+emitter.ERROR = ERROR_EVENT;
 
 module.exports = Publisher;

@@ -43,31 +43,45 @@ chai.use(chaiAsPromised);
 
 describe('index/handler.js', () => {
 
+	const
+		sandbox = sinon.sandbox.create(),
+		restore = sandbox.restore.bind(sandbox);
+
+	let config;
+
+	beforeEach(() => {
+
+		config = {
+			transport: {
+				publish: _.noop,
+				subscribe: sandbox.stub()
+			},
+			transportConfig: 'testTransportConfig'
+		};
+
+	});
+
+	afterEach(restore);
+
 	describe('handle', () => {
 
-		const
-			sandbox = sinon.sandbox.create(),
-			restore = sandbox.restore.bind(sandbox);
-
-		let handlerInstance, config;
+		let handlerInstance;
 
 		beforeEach(() => {
-			config = {
-				transport: {
-					publish: _.noop,
-					subscribe: sandbox.stub()
-				},
-				transportConfig: 'testTransportConfig'
-			};
 			handlerInstance = new Handler(config);
 		});
 
-		afterEach(restore);
-
-		it('should throw an exception if a valid callback function is not supplied', () => {
+		it('should reject if a valid eventName is not supplied', () => {
 
 			// given - when - then
-			expect(() => handlerInstance.handle({ eventName: 'testSchema', callback: null })).to.throw('Please provide a valid callback function for event: \'testSchema\'');
+			return expect(handlerInstance.handle({ eventName: '', callback: null })).to.be.rejectedWith('Event name must be an non empty string.');
+
+		});
+
+		it('should reject if a valid callback function is not supplied', () => {
+
+			// given - when - then
+			return expect(handlerInstance.handle({ eventName: 'testSchema', callback: null })).to.be.rejectedWith('Please provide a valid callback function for event: \'testSchema\'');
 
 		});
 
@@ -98,6 +112,85 @@ describe('index/handler.js', () => {
 					calledOnce(spy);
 					calledWith(spy, { message: { f: 'test1' }, context: { auth: 'testAuth' } });
 				});
+
+		});
+
+	});
+
+	describe('emitter', () => {
+
+		let errorEvents = [];
+
+		const listener = message => {
+			errorEvents.push(message);
+		};
+
+		beforeEach(() => {
+			Handler.emitter.addListener(Handler.emitter.ERROR, listener);
+		});
+
+		afterEach(() => {
+			Handler.emitter.removeListener(Handler.emitter.ERROR, listener);
+			errorEvents = [];
+		});
+
+		describe('should emit an error event', () => {
+
+			it('on constructor error', () => {
+
+				// given - when
+				try {
+					new Handler();
+				} catch (err) {
+					// doesn't matter
+				}
+
+				// then
+				expect(errorEvents).to.include('Invalid parameter: config not an object');
+
+			});
+
+			it('on bad event name', () => {
+
+				// then
+				const verify = () => {
+					expect(errorEvents).to.include('Please provide a valid callback function for event: \'test\'');
+				};
+
+				// when
+				return new Handler(config).handle({ eventName: 'test' })
+					.then(verify, verify);
+
+			});
+
+			it('on no function supplied to handle', () => {
+
+				// then
+				const verify = () => {
+					expect(errorEvents).to.include('Please provide a valid callback function for event: \'test\'');
+				};
+
+				// when
+				return new Handler(config).handle({ eventName: 'test' })
+					.then(verify, verify);
+
+			});
+
+			it('on transport subscribe reject', () => {
+
+				// then
+				const verify = () => {
+					expect(errorEvents).to.include('some error or other');
+				};
+
+				// given
+				config.transport.subscribe.rejects(new Error('some error or other'));
+
+				// when
+				return new Handler(config).handle({ eventName: 'test', callback: _.noop })
+					.then(verify, verify);
+
+			});
 
 		});
 
