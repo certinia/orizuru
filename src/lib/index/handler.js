@@ -45,7 +45,12 @@ const
 
 	emitter = new EventEmitter();
 
-/** Class representing a handler. */
+/** 
+ * Class representing a handler. 
+ * 
+ * @property {EventEmitter} emitter
+ * @property {string} emitter.ERROR - the error event name
+ **/
 class Handler {
 
 	/**
@@ -107,10 +112,6 @@ class Handler {
 
 }
 
-/** 
- * @type {EventEmitter} 
- * @property {string} ERROR - the error event name
- **/
 Handler.emitter = emitter;
 emitter.ERROR = ERROR_EVENT;
 

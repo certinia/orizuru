@@ -82,7 +82,12 @@ const
 
 	};
 
-/** Class representing a server. */
+/** 
+ * Class representing a server. 
+ * 
+ * @property {EventEmitter} emitter
+ * @property {string} emitter.ERROR - the error event name
+ **/
 class Server {
 
 	/**
@@ -188,10 +193,6 @@ class Server {
 
 }
 
-/** 
- * @type {EventEmitter} 
- * @property {string} ERROR - the error event name
- **/
 Server.emitter = emitter;
 emitter.ERROR = ERROR_EVENT;
 

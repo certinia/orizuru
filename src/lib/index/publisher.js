@@ -48,7 +48,12 @@ const
 
 	emitter = new EventEmitter();
 
-/** Class representing a publisher. */
+/** 
+ * Class representing a publisher. 
+ * 
+ * @property {EventEmitter} emitter
+ * @property {string} emitter.ERROR - the error event name
+ **/
 class Publisher {
 
 	/**
@@ -126,10 +131,6 @@ class Publisher {
 
 }
 
-/** 
- * @type {EventEmitter} 
- * @property {string} ERROR - the error event name
- **/
 Publisher.emitter = emitter;
 emitter.ERROR = ERROR_EVENT;
 
