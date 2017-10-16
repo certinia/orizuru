@@ -135,4 +135,4 @@ The handler can handle multiple events, with callbacks for each wired in. The in
 
 ## API Docs
 
-TODO
+Click to view [JSDoc API documentation](https://github.com/financialforcedev/financialforcedev--orizuru/blob/master/doc/index.html).
