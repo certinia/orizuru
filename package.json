@@ -27,11 +27,9 @@
     "avsc": "5.0.6",
     "body-parser": "1.18.2",
     "debug": "3.1.0",
-    "express": "5.0.0-alpha.6",
-    "helmet": "3.8.2",
-    "lodash": "4.17.4",
-    "mime": "2.0.3",
-    "send": "0.16.1"
+    "express": "4.16.1",
+    "helmet": "3.9.0",
+    "lodash": "4.17.4"
   },
   "devDependencies": {
     "@financialforcedev/eslint-config": "3.0.1",
