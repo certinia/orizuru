@@ -93,12 +93,15 @@ describe('index/publisher.js', () => {
 					fields: [{
 						name: 'f',
 						type: 'string'
+					}, {
+						name: 'g',
+						type: 'int'
 					}]
 				}),
 				message: {
 					f: 1
 				}
-			})).to.eventually.be.rejectedWith('Error encoding message for schema (test): invalid value (1) for path (f) it should be of type (string)');
+			})).to.eventually.be.rejectedWith('Error encoding message for schema (test):\ninvalid value (1) for path (f) it should be of type (string)\ninvalid value (undefined) for path (g) it should be of type (int)');
 
 		});
 
@@ -293,7 +296,7 @@ describe('index/publisher.js', () => {
 				// when - then
 				return expect(new Publisher(config).publish(input)).to.eventually.be.rejected
 					.then(() => {
-						expect(errorEvents).to.include('Error encoding message for schema (test): invalid value (1) for path (f) it should be of type (string)');
+						expect(errorEvents).to.include('Error encoding message for schema (test):\ninvalid value (1) for path (f) it should be of type (string)');
 					});
 
 			});
