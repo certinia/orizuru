@@ -120,7 +120,17 @@ class Publisher {
 		try {
 			buffer = toBuffer(compiledSchema, message, context);
 		} catch (err) {
-			return catchEmitReject('Error encoding message for schema: ' + err.message, ERROR_EVENT, emitter);
+
+			let
+				errorMessage = 'Error encoding message for schema: ' + err.message;
+
+			compiledSchema.isValid(message, {
+				errorHook: (path, any, type) => {
+					errorMessage = `Error encoding message for schema (${compiledSchema.name}): invalid value (${any}) for path (${path.join()}) it should be of type (${type.typeName})`;
+				}
+			});
+
+			return catchEmitReject(errorMessage, ERROR_EVENT, emitter);
 		}
 
 		// publish buffer on transport

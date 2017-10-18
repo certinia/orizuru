@@ -89,6 +89,7 @@ describe('index/publisher.js', () => {
 				eventName: 'test',
 				schema: compileFromSchemaDefinition({
 					type: 'record',
+					name: 'test',
 					fields: [{
 						name: 'f',
 						type: 'string'
@@ -97,7 +98,7 @@ describe('index/publisher.js', () => {
 				message: {
 					f: 1
 				}
-			})).to.eventually.be.rejectedWith('Error encoding message for schema: invalid "string": 1');
+			})).to.eventually.be.rejectedWith('Error encoding message for schema (test): invalid value (1) for path (f) it should be of type (string)');
 
 		});
 
@@ -111,6 +112,7 @@ describe('index/publisher.js', () => {
 				eventName: 'test',
 				schema: compileFromSchemaDefinition({
 					type: 'record',
+					name: 'test',
 					fields: [{
 						name: 'f',
 						type: 'string'
@@ -125,6 +127,7 @@ describe('index/publisher.js', () => {
 					eventName: 'test',
 					buffer: toBuffer(compileFromSchemaDefinition({
 						type: 'record',
+						name: 'test',
 						fields: [{
 							name: 'f',
 							type: 'string'
@@ -290,7 +293,7 @@ describe('index/publisher.js', () => {
 				// when - then
 				return expect(new Publisher(config).publish(input)).to.eventually.be.rejected
 					.then(() => {
-						expect(errorEvents).to.include('Error encoding message for schema: invalid "string": 1');
+						expect(errorEvents).to.include('Error encoding message for schema (test): invalid value (1) for path (f) it should be of type (string)');
 					});
 
 			});
