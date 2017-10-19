@@ -114,8 +114,24 @@ This means it should never ```throw``` an exception, and any ```promise``` it re
 		...
 		handlerInstance = new Handler({ transport, transportConfig }),
 
-		schemaName1 = 'foo.bar',
-		schemaName2 = 'foo.test',
+		schema1 = {
+			namespace: 'foo',
+			name: 'bar',
+			type: 'record',
+			fields: [
+				{ name: 'age', type: 'string' },
+				{ name: 'dob', type: 'string' }
+			]
+		},
+		schema2 = {
+			namespace: 'foo',
+			name: 'test',
+			type: 'record',
+			fields: [
+				{ name: 'age', type: 'string' },
+				{ name: 'dob', type: 'string' }
+			]
+		},
 
 		callback1 = ({ message, context }) => {
 			console.log('handling messages from the server API');
@@ -130,8 +146,8 @@ This means it should never ```throw``` an exception, and any ```promise``` it re
 		};
 
 	return Promise.all([
-		handlerInstance.handle({ schemaName: schemaName1, callback: callback1 }),
-		handlerInstance.handle({ schemaName: schemaName2, callback: callback2 })
+		handlerInstance.handle({ schema: schema1, callback: callback1 }),
+		handlerInstance.handle({ schema: schema2, callback: callback2 })
 	]); // 'handle' returns a promise
 
 The handler can handle multiple events, with callbacks for each wired in. The input to the callback ```{ message, context }``` is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middlewares or supplied to the publish function.
