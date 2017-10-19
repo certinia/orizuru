@@ -46,6 +46,8 @@ of your events always receives valid input if it is invoked.
 
 		schemaNameToDefinition = {
 			ageAndDob: {
+				namespace: 'foo',
+				name: 'bar',
 				type: 'record',
 				fields: [
 					{ name: 'age', type: 'string' },
@@ -64,7 +66,7 @@ of your events always receives valid input if it is invoked.
 
 	expressServer.listen(8080);
 
-As you can see from the above example, the ```getServer()``` method returns an express server, where you can add your own routes, etc, before listening to a port. This example would create a POST API for ```/api/path/ageAndDob```. The post body you send would be validated against the schema, requiring ```age``` and ```dob``` string fields in its JSON. If the validation succeeds, an event name passed to the transport layer will be ```/api/path/ageAndDob```, along with an Avro serialised buffer of the POST body.
+As you can see from the above example, the ```getServer()``` method returns an express server, where you can add your own routes, etc, before listening to a port. This example would create a POST API for ```/api/path/ageAndDob```. The post body you send would be validated against the schema, requiring ```age``` and ```dob``` string fields in its JSON. If the validation succeeds, an event name passed to the transport layer will be the fully qualified name of the Avro schema type ```foo.bar```, along with an Avro serialised buffer of the POST body.
 
 Additionally, if there is an object on the express request called ```orizuru```, e.g. ```request.orizuru```, this will also be serialized and added to the buffer as ```context```. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.
 
@@ -77,9 +79,9 @@ The Orizuru Publisher allows you to publish events directly from Node.js via a t
 		...
 		publisherInstance = new Publisher({ transport, transportConfig }),
 
-		eventName = 'testEvent',
-
 		schema = {
+			namespace: 'foo',
+			name: 'bar',
 			type: 'record',
 			fields: [
 				{ name: 'age', type: 'string' },
@@ -96,13 +98,13 @@ The Orizuru Publisher allows you to publish events directly from Node.js via a t
 			anything: 'something untyped'
 		};
 
-	return publisherInstance.publish({ eventName, schema, message, context }); //promise
+	return publisherInstance.publish({ schema, message, context }); //promise
 
-This example publishes an event named 'testEvent' with the ```message``` described. The ```message``` is validated against the ```schema```. The ```context``` object is unvalidated and can contain anything.
+This example publishes an event named 'foo.bar' with the ```message``` described. The ```message``` is validated against the ```schema```. The ```context``` object is unvalidated and can contain anything.
 
 ### Handler
 
-The handler handles messages published by the ```Server``` or ```Publisher```. It requires an event name and a callback.
+The handler handles messages published by the ```Server``` or ```Publisher```. It requires a schema name and a callback.
 
 **NOTE:** The supplied callback to this handler should **always** handle errors.
 This means it should never ```throw``` an exception, and any ```promise``` it returns should always have a ```catch``` block. Any errors thrown / rejecting promises returned will be **swallowed**.
@@ -112,8 +114,8 @@ This means it should never ```throw``` an exception, and any ```promise``` it re
 		...
 		handlerInstance = new Handler({ transport, transportConfig }),
 
-		eventName1 = '/api/path/ageAndDob',
-		eventName2 = 'testEvent',
+		schemaName1 = 'foo.bar',
+		schemaName2 = 'foo.test',
 
 		callback1 = ({ message, context }) => {
 			console.log('handling messages from the server API');
@@ -128,8 +130,8 @@ This means it should never ```throw``` an exception, and any ```promise``` it re
 		};
 
 	return Promise.all([
-		handlerInstance.handle({ eventName: eventName1, callback: callback1 }),
-		handlerInstance.handle({ eventName: eventName2, callback: callback2 })
+		handlerInstance.handle({ schemaName: schemaName1, callback: callback1 }),
+		handlerInstance.handle({ schemaName: schemaName2, callback: callback2 })
 	]); // 'handle' returns a promise
 
 The handler can handle multiple events, with callbacks for each wired in. The input to the callback ```{ message, context }``` is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middlewares or supplied to the publish function.

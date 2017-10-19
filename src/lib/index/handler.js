@@ -37,6 +37,7 @@ const
 
 	{ validate } = require('./shared/configValidator'),
 	{ fromBuffer } = require('./shared/transport'),
+	{ compileFromSchemaDefinition } = require('./shared/schema'),
 	{ catchEmitThrow, catchEmitReject } = require('./shared/catchEmitThrow'),
 
 	privateConfig = new WeakMap(),
@@ -75,37 +76,52 @@ class Handler {
 	 * Sets the handler function for a fully qualified event
 	 * 
 	 * @example
-	 * handler.handle({ eventName: '/api/test', callback: ({ message, context }) => {
+	 * handler.handle({ schemaName: 'test', callback: ({ message, context }) => {
 	 * 	console.log(message);
 	 * 	console.log(context);
 	 * }})
 	 * 
-	 * @param {object} config - { eventName, callback } 
-	 * @param {object} config.eventName - the event name to listen to ('/schemaName' for server with no API endpoint specified)
+	 * @param {object} config - { schemaName, callback } 
+	 * @param {object} config.schema - schema (compiled or uncompiled Avro schema object)
 	 * @param {object} config.callback - the callback (called with { message, context }), this callback must handle error_EVENTs and should only ever return a promise which resolves or undefined 
 	 * 
 	 * @returns {Promise}
 	 */
-	handle({ eventName, callback }) {
+	handle({ schema, callback }) {
 
 		const config = privateConfig[this];
 
-		// check event name
-		if (!_.isString(eventName) || _.size(eventName) < 1) {
-			return catchEmitReject('Event name must be an non empty string.', ERROR_EVENT, emitter);
+		let compiledSchema;
+
+		// compile schema if required
+		if (!_.hasIn(schema, 'toBuffer')) {
+			try {
+				compiledSchema = compileFromSchemaDefinition(schema);
+			} catch (err) {
+				return catchEmitReject(`Schema could not be compiled: ${err.message}.`, ERROR_EVENT, emitter);
+			}
+		} else {
+			compiledSchema = schema;
+		}
+
+		// check name
+		if (!_.isString(compiledSchema.name) || _.size(compiledSchema.name) < 1) {
+			return catchEmitReject('Schema name must be an non empty string.', ERROR_EVENT, emitter);
 		}
 
 		// check callback
 		if (!_.isFunction(callback)) {
-			return catchEmitReject(`Please provide a valid callback function for event: '${eventName}'`, ERROR_EVENT, emitter);
+			return catchEmitReject(`Please provide a valid callback function for event: '${compiledSchema.name}'`, ERROR_EVENT, emitter);
 		}
 
+		emitter.emit(INFO_EVENT, `Installing handler for ${compiledSchema.name} events.`);
+
 		return catchEmitReject(config.transport.subscribe({
-			eventName,
+			eventName: compiledSchema.name,
 			handler: content => {
 				catchEmitThrow(() => {
-					const decodedContent = fromBuffer(content);
-					emitter.emit(INFO_EVENT, `Handler received ${eventName} event.`);
+					const decodedContent = fromBuffer(content, compiledSchema);
+					emitter.emit(INFO_EVENT, `Handler received ${compiledSchema.name} event.`);
 					callback(decodedContent);
 				}, ERROR_EVENT, emitter);
 			},

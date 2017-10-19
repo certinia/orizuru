@@ -46,7 +46,6 @@ const
 // Publish using publisher, context is optional
 new Publisher({ transport, transportConfig })
 	.publish({
-		eventName: 'testEvent',
 		schema: schemaNameToDefinition.firstAndLastName,
 		message: {
 			firstName: 'testFirstName',

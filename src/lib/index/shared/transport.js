@@ -39,18 +39,17 @@ const
 			transport = {
 				contextSchema: JSON.stringify(compiledContextSchema.toJSON()),
 				contextBuffer: compiledContextSchema.toBuffer(contextOrEmpty),
-				messageSchema: JSON.stringify(compiledMessageSchema.toJSON()),
+				messageSchemaName: compiledMessageSchema.name,
 				messageBuffer: compiledMessageSchema.toBuffer(message)
 			};
 		return compiledTransportSchema.toBuffer(transport);
 	},
 
-	fromBuffer = (buffer) => {
+	fromBuffer = (buffer, compiledMessageSchema) => {
 		const
 			decompiledTransportObject = compiledTransportSchema.fromBuffer(buffer),
 
 			compiledContextSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.contextSchema)),
-			compiledMessageSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.messageSchema)),
 
 			context = compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer),
 			message = compiledMessageSchema.fromBuffer(decompiledTransportObject.messageBuffer);

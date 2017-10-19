@@ -71,26 +71,72 @@ describe('index/handler.js', () => {
 			handlerInstance = new Handler(config);
 		});
 
-		it('should reject if a valid eventName is not supplied', () => {
+		it('should reject if a valid schema is not supplied', () => {
 
 			// given - when - then
-			return expect(handlerInstance.handle({ eventName: '', callback: null })).to.be.rejectedWith('Event name must be an non empty string.');
+			return expect(handlerInstance.handle({ schema: {}, callback: null })).to.be.rejectedWith('Schema could not be compiled: unknown type: undefined.');
+
+		});
+
+		it('should reject if a valid schema name is not supplied', () => {
+
+			// given - when - then
+			return expect(handlerInstance.handle({
+				schema: compileFromSchemaDefinition({
+					type: 'record',
+					fields: [{
+						name: 'f',
+						type: 'string'
+					}, {
+						name: 'g',
+						type: 'int'
+					}]
+				}),
+				callback: null
+			})).to.be.rejectedWith('Schema name must be an non empty string.');
 
 		});
 
 		it('should reject if a valid callback function is not supplied', () => {
 
 			// given - when - then
-			return expect(handlerInstance.handle({ eventName: 'testSchema', callback: null })).to.be.rejectedWith('Please provide a valid callback function for event: \'testSchema\'');
+			return expect(handlerInstance.handle({
+				schema: compileFromSchemaDefinition({
+					name: 'testSchema',
+					type: 'record',
+					fields: [{
+						name: 'f',
+						type: 'string'
+					}, {
+						name: 'g',
+						type: 'int'
+					}]
+				}),
+				callback: null
+			})).to.be.rejectedWith('Please provide a valid callback function for event: \'testSchema\'');
 
 		});
 
-		it('should call subscribe handle with eventName and the handler function wrapped in a helper to deserialize the message to its schema and return its result', () => {
+		it('should call subscribe handle with schemaName and the handler function wrapped in a helper to deserialize the message to its schema and return its result', () => {
 
 			// given
-			const spy = sandbox.spy();
+			const spy = sandbox.spy(),
+				schema = compileFromSchemaDefinition({
+					name: 'testSchema',
+					type: 'record',
+					fields: [{
+						name: 'f',
+						type: 'string'
+					}]
+				}),
+				handleConfig = {
+					schema,
+					callback: spy
+				};
+
 			config.transport.subscribe.callsFake(obj => {
 				obj.handler(toBuffer(compileFromSchemaDefinition({
+					name: 'testSchema',
 					type: 'record',
 					fields: [{
 						name: 'f',
@@ -105,7 +151,8 @@ describe('index/handler.js', () => {
 			});
 
 			// when - then
-			return expect(handlerInstance.handle({ eventName: 'testSchema', callback: spy })).to.eventually.be.eql('a')
+
+			return expect(handlerInstance.handle(handleConfig)).to.eventually.be.eql('a')
 				.then(() => {
 					calledOnce(config.transport.subscribe);
 					calledWith(config.transport.subscribe, { eventName: 'testSchema', handler: sinon.match.func, config: config.transportConfig });
@@ -119,19 +166,24 @@ describe('index/handler.js', () => {
 
 	describe('emitter', () => {
 
-		let errorEvents = [];
+		const errorEvents = [],
+			infoEvents = [],
+			errorListener = message => {
+				errorEvents.push(message);
+			},
 
-		const listener = message => {
-			errorEvents.push(message);
-		};
+			infoListener = message => {
+				infoEvents.push(message);
+			};
 
 		beforeEach(() => {
-			Handler.emitter.addListener(Handler.emitter.ERROR, listener);
+			Handler.emitter.addListener(Handler.emitter.ERROR, errorListener);
+			Handler.emitter.addListener(Handler.emitter.INFO, infoListener);
 		});
 
 		afterEach(() => {
-			Handler.emitter.removeListener(Handler.emitter.ERROR, listener);
-			errorEvents = [];
+			Handler.emitter.removeListener(Handler.emitter.ERROR, errorListener);
+			Handler.emitter.removeListener(Handler.emitter.INFO, infoListener);
 		});
 
 		describe('should emit an error event', () => {
@@ -154,11 +206,24 @@ describe('index/handler.js', () => {
 
 				// then
 				const verify = () => {
-					expect(errorEvents).to.include('Please provide a valid callback function for event: \'test\'');
-				};
+						expect(errorEvents).to.include('Schema name must be an non empty string.');
+					},
+					handleConfig = {
+						schema: compileFromSchemaDefinition({
+							type: 'record',
+							fields: [{
+								name: 'f',
+								type: 'string'
+							}, {
+								name: 'g',
+								type: 'int'
+							}]
+						}),
+						callback: null
+					};
 
 				// when
-				return new Handler(config).handle({ eventName: 'test' })
+				return new Handler(config).handle(handleConfig)
 					.then(verify, verify);
 
 			});
@@ -167,11 +232,25 @@ describe('index/handler.js', () => {
 
 				// then
 				const verify = () => {
-					expect(errorEvents).to.include('Please provide a valid callback function for event: \'test\'');
-				};
+						expect(errorEvents).to.include('Please provide a valid callback function for event: \'test\'');
+					},
+					handleConfig = {
+						schema: compileFromSchemaDefinition({
+							name: 'test',
+							type: 'record',
+							fields: [{
+								name: 'f',
+								type: 'string'
+							}, {
+								name: 'g',
+								type: 'int'
+							}]
+						}),
+						callback: null
+					};
 
 				// when
-				return new Handler(config).handle({ eventName: 'test' })
+				return new Handler(config).handle(handleConfig)
 					.then(verify, verify);
 
 			});
@@ -180,14 +259,58 @@ describe('index/handler.js', () => {
 
 				// then
 				const verify = () => {
-					expect(errorEvents).to.include('some error or other');
-				};
+						expect(errorEvents).to.include('some error or other');
+					},
+					handleConfig = {
+						schema: compileFromSchemaDefinition({
+							name: 'test',
+							type: 'record',
+							fields: [{
+								name: 'f',
+								type: 'string'
+							}, {
+								name: 'g',
+								type: 'int'
+							}]
+						}),
+						callback: _.noop
+					};
 
 				// given
 				config.transport.subscribe.rejects(new Error('some error or other'));
 
 				// when
-				return new Handler(config).handle({ eventName: 'test', callback: _.noop })
+				return new Handler(config).handle(handleConfig)
+					.then(verify, verify);
+
+			});
+
+			it('on transport subscribe resolve', () => {
+
+				// then
+				const verify = () => {
+						expect(infoEvents).to.include('Installing handler for test events.');
+					},
+					handleConfig = {
+						schema: compileFromSchemaDefinition({
+							name: 'test',
+							type: 'record',
+							fields: [{
+								name: 'f',
+								type: 'string'
+							}, {
+								name: 'g',
+								type: 'int'
+							}]
+						}),
+						callback: _.noop
+					};
+
+				// given
+				config.transport.subscribe.resolves();
+
+				// when
+				return new Handler(config).handle(handleConfig)
 					.then(verify, verify);
 
 			});

@@ -70,12 +70,10 @@ const
 				});
 		} else {
 			catchEmitReject(publisher.publish({
-				eventName: `${path}/${schemaName}`,
 				schema: schema,
 				message: body,
 				context: orizuru
 			}), ERROR_EVENT, emitter).then(() => {
-				emitter.emit(INFO_EVENT, `Server published ${path}/${schemaName} event.`);
 				response.status(200).send('Ok.');
 			}).catch(err => {
 				response.status(400).send(err.message);

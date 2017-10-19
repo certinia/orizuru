@@ -421,7 +421,6 @@ describe('index/server.js', () => {
 					.then(() => {
 						calledOnce(publisherStub);
 						calledWith(publisherStub, {
-							eventName: '/api/testSchema1',
 							schema: sinon.match.object,
 							message: {
 								f: 'test1'
@@ -447,7 +446,6 @@ describe('index/server.js', () => {
 					.then(() => {
 						calledOnce(publisherStub);
 						calledWith(publisherStub, {
-							eventName: '/api/testSchema1',
 							schema: sinon.match.object,
 							message: {
 								f: 'test1'
