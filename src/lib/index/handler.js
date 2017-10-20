@@ -73,10 +73,10 @@ class Handler {
 	}
 
 	/**
-	 * Sets the handler function for a fully qualified event
+	 * Sets the handler function for a schema type.
 	 * 
 	 * @example
-	 * handler.handle({ schemaName: 'test', callback: ({ message, context }) => {
+	 * handler.handle({ schema, callback: ({ message, context }) => {
 	 * 	console.log(message);
 	 * 	console.log(context);
 	 * }})
