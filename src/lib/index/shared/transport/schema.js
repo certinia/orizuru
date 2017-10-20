@@ -27,7 +27,7 @@
 'use strict';
 
 module.exports = {
-	namespace: 'com.ffdc.orizuru',
+	namespace: 'com.ffdc.orizuru.transport',
 	name: 'Transport',
 	type: 'record',
 	fields: [
