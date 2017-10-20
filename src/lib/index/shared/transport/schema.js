@@ -27,13 +27,13 @@
 'use strict';
 
 module.exports = {
-	namespace: 'com.ffdc.orizuru',
+	namespace: 'com.ffdc.orizuru.transport',
 	name: 'Transport',
 	type: 'record',
 	fields: [
 		{ name: 'contextSchema', type: 'string' },
 		{ name: 'contextBuffer', type: 'bytes' },
-		{ name: 'messageSchema', type: 'string' },
+		{ name: 'messageSchemaName', type: 'string' },
 		{ name: 'messageBuffer', type: 'bytes' }
 	]
 };

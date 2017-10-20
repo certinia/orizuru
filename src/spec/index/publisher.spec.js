@@ -68,13 +68,6 @@ describe('index/publisher.js', () => {
 			publisherInstance = new Publisher(config);
 		});
 
-		it('should reject if event name is empty', () => {
-
-			// given - when - then
-			return expect(publisherInstance.publish({ eventName: '' })).to.eventually.be.rejectedWith('Event name must be an non empty string.');
-
-		});
-
 		it('should reject if it failes to compile a schema', () => {
 
 			// given - when - then
@@ -82,11 +75,31 @@ describe('index/publisher.js', () => {
 
 		});
 
+		it('should reject if schema has no name', () => {
+
+			// given - when - then
+			return expect(publisherInstance.publish({
+				schema: compileFromSchemaDefinition({
+					type: 'record',
+					fields: [{
+						name: 'f',
+						type: 'string'
+					}, {
+						name: 'g',
+						type: 'int'
+					}]
+				}),
+				message: {
+					f: 1
+				}
+			})).to.eventually.be.rejectedWith('Schema name must be an non empty string.');
+
+		});
+
 		it('should reject if message does not match schema', () => {
 
 			// given - when - then
 			return expect(publisherInstance.publish({
-				eventName: 'test',
 				schema: compileFromSchemaDefinition({
 					type: 'record',
 					name: 'test',
@@ -112,7 +125,6 @@ describe('index/publisher.js', () => {
 
 			//when - then
 			return expect(publisherInstance.publish({
-				eventName: 'test',
 				schema: compileFromSchemaDefinition({
 					type: 'record',
 					name: 'test',
@@ -150,8 +162,9 @@ describe('index/publisher.js', () => {
 
 			//when - then
 			return expect(publisherInstance.publish({
-				eventName: 'test',
 				schema: compileFromSchemaDefinition({
+					namespace: 'test',
+					name: 'test',
 					type: 'record',
 					fields: [{
 						name: 'f',
@@ -164,8 +177,10 @@ describe('index/publisher.js', () => {
 			})).to.eventually.eql('testResult').then(() => {
 				calledOnce(config.transport.publish);
 				calledWith(config.transport.publish, {
-					eventName: 'test',
+					eventName: 'test.test',
 					buffer: toBuffer(compileFromSchemaDefinition({
+						namespace: 'test',
+						name: 'test',
 						type: 'record',
 						fields: [{
 							name: 'f',
@@ -187,8 +202,8 @@ describe('index/publisher.js', () => {
 
 			//when - then
 			return expect(publisherInstance.publish({
-				eventName: 'test',
 				schema: compileFromSchemaDefinition({
+					name: 'test',
 					type: 'record',
 					fields: [{
 						name: 'f',
@@ -206,6 +221,7 @@ describe('index/publisher.js', () => {
 				calledWith(config.transport.publish, {
 					eventName: 'test',
 					buffer: toBuffer(compileFromSchemaDefinition({
+						name: 'test',
 						type: 'record',
 						fields: [{
 							name: 'f',
@@ -259,10 +275,20 @@ describe('index/publisher.js', () => {
 
 			it('on bad eventName', () => {
 
+				// given
+
+				const schema = compileFromSchemaDefinition({
+					type: 'record',
+					fields: [{
+						name: 'f',
+						type: 'string'
+					}]
+				});
+
 				// given - when - then
-				return expect(new Publisher(config).publish({ eventName: {} })).to.eventually.be.rejected
+				return expect(new Publisher(config).publish({ schema })).to.eventually.be.rejected
 					.then(() => {
-						expect(errorEvents).to.include('Event name must be an non empty string.');
+						expect(errorEvents).to.include('Schema name must be an non empty string.');
 					});
 
 			});

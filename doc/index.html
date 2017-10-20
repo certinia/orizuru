@@ -68,6 +68,8 @@ of your events always receives valid input if it is invoked.</p>
 
     schemaNameToDefinition = {
         ageAndDob: {
+            namespace: 'foo',
+            name: 'bar',
             type: 'record',
             fields: [
                 { name: 'age', type: 'string' },
@@ -84,7 +86,7 @@ serverInstance.addRoute({ schemaNameToDefinition, apiEndpoint, middlewares });
 
 let expressServer = serverInstance.getServer();
 
-expressServer.listen(8080);</code></pre><p>As you can see from the above example, the <code>getServer()</code> method returns an express server, where you can add your own routes, etc, before listening to a port. This example would create a POST API for <code>/api/path/ageAndDob</code>. The post body you send would be validated against the schema, requiring <code>age</code> and <code>dob</code> string fields in its JSON. If the validation succeeds, an event name passed to the transport layer will be <code>/api/path/ageAndDob</code>, along with an Avro serialised buffer of the POST body.</p>
+expressServer.listen(8080);</code></pre><p>As you can see from the above example, the <code>getServer()</code> method returns an express server, where you can add your own routes, etc, before listening to a port. This example would create a POST API for <code>/api/path/ageAndDob</code>. The post body you send would be validated against the schema, requiring <code>age</code> and <code>dob</code> string fields in its JSON. If the validation succeeds, an event name passed to the transport layer will be the fully qualified name of the Avro schema type <code>foo.bar</code>, along with an Avro serialised buffer of the POST body.</p>
 <p>Additionally, if there is an object on the express request called <code>orizuru</code>, e.g. <code>request.orizuru</code>, this will also be serialized and added to the buffer as <code>context</code>. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.</p>
 <h3>Publisher</h3><p>The Orizuru Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.</p>
 <pre class="prettyprint source"><code>const
@@ -92,9 +94,9 @@ expressServer.listen(8080);</code></pre><p>As you can see from the above example
     ...
     publisherInstance = new Publisher({ transport, transportConfig }),
 
-    eventName = 'testEvent',
-
     schema = {
+        namespace: 'foo',
+        name: 'bar',
         type: 'record',
         fields: [
             { name: 'age', type: 'string' },
@@ -111,8 +113,8 @@ expressServer.listen(8080);</code></pre><p>As you can see from the above example
         anything: 'something untyped'
     };
 
-return publisherInstance.publish({ eventName, schema, message, context }); //promise</code></pre><p>This example publishes an event named 'testEvent' with the <code>message</code> described. The <code>message</code> is validated against the <code>schema</code>. The <code>context</code> object is unvalidated and can contain anything.</p>
-<h3>Handler</h3><p>The handler handles messages published by the <code>Server</code> or <code>Publisher</code>. It requires an event name and a callback.</p>
+return publisherInstance.publish({ schema, message, context }); //promise</code></pre><p>This example publishes an event named 'foo.bar' with the <code>message</code> described. The <code>message</code> is validated against the <code>schema</code>. The <code>context</code> object is unvalidated and can contain anything.</p>
+<h3>Handler</h3><p>The handler handles messages published by the <code>Server</code> or <code>Publisher</code>. It requires a schema name and a callback.</p>
 <p><strong>NOTE:</strong> The supplied callback to this handler should <strong>always</strong> handle errors.
 This means it should never <code>throw</code> an exception, and any <code>promise</code> it returns should always have a <code>catch</code> block. Any errors thrown / rejecting promises returned will be <strong>swallowed</strong>.</p>
 <pre class="prettyprint source"><code>const
@@ -120,8 +122,24 @@ This means it should never <code>throw</code> an exception, and any <code>promis
     ...
     handlerInstance = new Handler({ transport, transportConfig }),
 
-    eventName1 = '/api/path/ageAndDob',
-    eventName2 = 'testEvent',
+    schema1 = {
+        namespace: 'foo',
+        name: 'bar',
+        type: 'record',
+        fields: [
+            { name: 'age', type: 'string' },
+            { name: 'dob', type: 'string' }
+        ]
+    },
+    schema2 = {
+        namespace: 'foo',
+        name: 'test',
+        type: 'record',
+        fields: [
+            { name: 'age', type: 'string' },
+            { name: 'dob', type: 'string' }
+        ]
+    },
 
     callback1 = ({ message, context }) => {
         console.log('handling messages from the server API');
@@ -136,8 +154,8 @@ This means it should never <code>throw</code> an exception, and any <code>promis
     };
 
 return Promise.all([
-    handlerInstance.handle({ eventName: eventName1, callback: callback1 }),
-    handlerInstance.handle({ eventName: eventName2, callback: callback2 })
+    handlerInstance.handle({ schema: schema1, callback: callback1 }),
+    handlerInstance.handle({ schema: schema2, callback: callback2 })
 ]); // 'handle' returns a promise</code></pre><p>The handler can handle multiple events, with callbacks for each wired in. The input to the callback <code>{ message, context }</code> is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middlewares or supplied to the publish function.</p>
 <h2>API Docs</h2><p>Click to view <a href="http://htmlpreview.github.io/?https://github.com/financialforcedev/orizuru/blob/master/doc/index.html">JSDoc API documentation</a>.</p></article>
     </section>
@@ -156,7 +174,7 @@ return Promise.all([
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Oct 17 2017 15:25:42 GMT+0100 (BST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 20 2017 11:06:24 GMT+0100 (BST)
 </footer>
 
 <script> prettyPrint(); </script>

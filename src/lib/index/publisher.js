@@ -79,31 +79,26 @@ class Publisher {
 	 * 
 	 * @example
 	 * // publishes a message
-	 * publisher.publish({ eventName, schema, message });
+	 * publisher.publish({ schema, message });
 	 * @example
 	 * // publishes a message
-	 * publisher.publish({ eventName, schema, message, context });
+	 * publisher.publish({ schema, message, context });
 	 * 
 	 * @param {object} config - { eventName, schema, message [, context] }
-	 * @param {object} config.eventName - event name (non empty string)
 	 * @param {object} config.schema - schema (compiled or uncompiled schema object)
 	 * @param {object} config.message - message (must match schema)
 	 * @param {object} config.context - untyped context (optional)
 	 * 
 	 * @returns {Promise}
 	 */
-	publish({ eventName, schema, message, context }) {
+	publish({ schema, message, context }) {
 
 		// get config
 		const config = privateConfig[this];
 
-		// check event name
-		if (!_.isString(eventName) || _.size(eventName) < 1) {
-			return catchEmitReject('Event name must be an non empty string.', ERROR_EVENT, emitter);
-		}
-
 		let compiledSchema,
-			buffer;
+			buffer,
+			eventName = null;
 
 		// compile schema if required
 		if (!_.hasIn(schema, 'toBuffer')) {
@@ -114,6 +109,13 @@ class Publisher {
 			}
 		} else {
 			compiledSchema = schema;
+		}
+
+		eventName = compiledSchema.name;
+
+		// check event name (from Schema name)
+		if (!_.isString(eventName) || _.size(eventName) < 1) {
+			return catchEmitReject('Schema name must be an non empty string.', ERROR_EVENT, emitter);
 		}
 
 		// generate transport buffer
@@ -136,9 +138,9 @@ class Publisher {
 		}
 
 		// publish buffer on transport
-		return catchEmitReject(Promise.resolve(config.transport.publish({ eventName, buffer, config: config.transportConfig }))
+		return catchEmitReject(Promise.resolve(config.transport.publish({ eventName: compiledSchema.name, buffer, config: config.transportConfig }))
 			.then(result => {
-				emitter.emit(INFO_EVENT, `Published ${eventName} event.`);
+				emitter.emit(INFO_EVENT, `Published ${compiledSchema.name} event.`);
 				return result;
 			})
 			.catch(() => {
