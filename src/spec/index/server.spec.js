@@ -458,6 +458,92 @@ describe('index/server.js', () => {
 
 		});
 
+		describe('with a response handler should return a server that', () => {
+
+			let schema, server, publisherStub;
+
+			beforeEach(() => {
+				publisherStub = sandbox.stub(Publisher.prototype, 'publish');
+				delete require.cache[require.resolve(serverPath)];
+				const Server = require(serverPath);
+				schema = {
+					type: 'record',
+					fields: [{
+						name: 'f',
+						type: 'string'
+					}]
+				};
+				server = new Server(config).addRoute({
+					schemaNameToDefinition: {
+						testSchema1: schema
+					},
+					apiEndpoint: '/api',
+					responseWriter: (err, response, context) => {
+						if (err) {
+							response.status(418).send(err.message);
+						} else {
+							response.json({
+								id: 12
+							});
+						}
+					}
+				});
+			});
+
+			it('should respond with 418 if publish rejects', () => {
+
+				// given
+				publisherStub.rejects(new Error('I\'m a teapot'));
+
+				// when - then
+				return request(server.getServer())
+					.post('/api/testSchema1')
+					.send({
+						f: 'test1'
+					})
+					.expect(418, 'I\'m a teapot')
+					.then(() => {
+						calledOnce(publisherStub);
+						calledWith(publisherStub, {
+							schema: sinon.match.object,
+							message: {
+								f: 'test1'
+							},
+							context: undefined
+						});
+					});
+
+			});
+
+			it('should respond with json if publish resolves', () => {
+
+				// given
+				publisherStub.resolves();
+
+				// when - then
+				return request(server.getServer())
+					.post('/api/testSchema1')
+					.send({
+						f: 'test1'
+					})
+					.expect(200, {
+						id: 12
+					})
+					.then(() => {
+						calledOnce(publisherStub);
+						calledWith(publisherStub, {
+							schema: sinon.match.object,
+							message: {
+								f: 'test1'
+							},
+							context: undefined
+						});
+					});
+
+			});
+
+		});
+
 	});
 
 	describe('emitter', () => {
