@@ -154,6 +154,29 @@ describe('index/server.js', () => {
 
 		});
 
+		it('should throw an exception if resultWriter is not a function', () => {
+
+			// given
+			const
+				server = new Server(config),
+				input = {
+					schemaNameToDefinition: {
+						testSchema: {
+							type: 'record',
+							fields: [{
+								name: 'f',
+								type: 'string'
+							}]
+						}
+					},
+					responseWriter: {}
+				};
+
+			// when - then
+			expect(() => server.addRoute(input)).to.throw('responseWriter must be a function.');
+
+		});
+
 		it('should add a route if schemaNameToDefinition map is correct, with default route and middlewares', () => {
 
 			// given

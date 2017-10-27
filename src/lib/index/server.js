@@ -181,6 +181,10 @@ class Server {
 			compileSchemas(schemaNameToDefinition);
 		}, ERROR_EVENT, emitter);
 
+		if (responseWriter && !_.isFunction(responseWriter)) {
+			throw new Error('responseWriter must be a function.');
+		}
+
 		// apply middlewares
 		_.each(middlewares, middleware => {
 			if (_.isFunction(middleware)) {
