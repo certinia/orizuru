@@ -571,11 +571,15 @@ describe('index/server.js', () => {
 
 	describe('emitter', () => {
 
-		let Server, config, errorEvents = [];
+		let Server, config, errorEvents = [],
+			infoEvents = [];
 
-		const listener = message => {
-			errorEvents.push(message);
-		};
+		const errorListener = message => {
+				errorEvents.push(message);
+			},
+			infoListener = message => {
+				infoEvents.push(message);
+			};
 
 		beforeEach(() => {
 			config = {
@@ -586,13 +590,18 @@ describe('index/server.js', () => {
 				transportConfig: 'testTransportConfig'
 			};
 			Server = require(serverPath);
-			Server.emitter.addListener(Server.emitter.ERROR, listener);
+			Server.emitter.addListener(Server.emitter.ERROR, errorListener);
+			Server.emitter.addListener(Server.emitter.INFO, infoListener);
+
 
 		});
 
 		afterEach(() => {
-			Server.emitter.removeListener(Server.emitter.ERROR, listener);
+			Server.emitter.removeListener(Server.emitter.ERROR, errorListener);
+			Server.emitter.removeListener(Server.emitter.INFO, infoListener);
+
 			errorEvents = [];
+			infoEvents = [];
 		});
 
 		describe('should emit an error event', () => {
@@ -653,6 +662,19 @@ describe('index/server.js', () => {
 
 				});
 
+				it('if path is valid', () => {
+
+					// given - when - then
+					return request(serverInstance.getServer())
+						.post('/api/testSchema1')
+						.expect(200, 'Ok.')
+						.then(() => {
+							expect(infoEvents).to.include('Served \'/api/testSchema1\'.');
+						});
+
+				});
+
+
 				it('if path is invalid', () => {
 
 					// given - when - then
@@ -682,11 +704,9 @@ describe('index/server.js', () => {
 						});
 
 				});
-
 			});
 
 		});
 
 	});
-
 });
