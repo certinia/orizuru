@@ -119,11 +119,11 @@ class Handler {
 		return catchEmitReject(config.transport.subscribe({
 			eventName: compiledSchema.name,
 			handler: content => {
-				catchEmitThrow(() => {
+				return catchEmitReject(Promise.resolve().then(() => {
 					const decodedContent = fromBuffer(content, compiledSchema);
 					emitter.emit(INFO_EVENT, `Handler received ${compiledSchema.name} event.`);
-					callback(decodedContent);
-				}, ERROR_EVENT, emitter);
+					return callback(decodedContent);
+				}), ERROR_EVENT, emitter);
 			},
 			config: config.transportConfig
 		}), ERROR_EVENT, emitter);
