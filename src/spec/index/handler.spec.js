@@ -120,7 +120,7 @@ describe('index/handler.js', () => {
 		it('should call subscribe handle with schemaName and the handler function wrapped in a helper to deserialize the message to its schema and return its result', () => {
 
 			// given
-			const spy = sandbox.spy(),
+			const stub = sandbox.stub().returns('test'),
 				schema = compileFromSchemaDefinition({
 					name: 'testSchema',
 					type: 'record',
@@ -131,11 +131,11 @@ describe('index/handler.js', () => {
 				}),
 				handleConfig = {
 					schema,
-					callback: spy
+					callback: stub
 				};
 
 			config.transport.subscribe.callsFake(obj => {
-				obj.handler(toBuffer(compileFromSchemaDefinition({
+				const result = obj.handler(toBuffer(compileFromSchemaDefinition({
 					name: 'testSchema',
 					type: 'record',
 					fields: [{
@@ -147,17 +147,16 @@ describe('index/handler.js', () => {
 				}, {
 					auth: 'testAuth'
 				}));
-				return Promise.resolve('a');
+				return result;
 			});
 
 			// when - then
-
-			return expect(handlerInstance.handle(handleConfig)).to.eventually.be.eql('a')
+			return expect(handlerInstance.handle(handleConfig)).to.eventually.be.eql('test')
 				.then(() => {
 					calledOnce(config.transport.subscribe);
 					calledWith(config.transport.subscribe, { eventName: 'testSchema', handler: sinon.match.func, config: config.transportConfig });
-					calledOnce(spy);
-					calledWith(spy, { message: { f: 'test1' }, context: { auth: 'testAuth' } });
+					calledOnce(stub);
+					calledWith(stub, { message: { f: 'test1' }, context: { auth: 'testAuth' } });
 				});
 
 		});
