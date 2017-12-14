@@ -39,20 +39,23 @@ const
 			transport = {
 				contextSchema: JSON.stringify(compiledContextSchema.toJSON()),
 				contextBuffer: compiledContextSchema.toBuffer(contextOrEmpty),
-				messageSchemaName: compiledMessageSchema.name,
+				messageSchema: JSON.stringify(compiledMessageSchema.toJSON()),
 				messageBuffer: compiledMessageSchema.toBuffer(message)
 			};
 		return compiledTransportSchema.toBuffer(transport);
 	},
 
-	fromBuffer = (buffer, compiledMessageSchema) => {
+	fromBuffer = (buffer, compiledReaderMessageSchema) => {
 		const
 			decompiledTransportObject = compiledTransportSchema.fromBuffer(buffer),
 
 			compiledContextSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.contextSchema)),
+			compiledWriterMessageSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.messageSchema)),
+
+			resolver = compiledReaderMessageSchema.createResolver(compiledWriterMessageSchema),
 
 			context = compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer),
-			message = compiledMessageSchema.fromBuffer(decompiledTransportObject.messageBuffer);
+			message = compiledReaderMessageSchema.fromBuffer(decompiledTransportObject.messageBuffer, resolver);
 
 		return { context, message };
 	};

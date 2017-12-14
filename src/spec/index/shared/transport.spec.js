@@ -26,4 +26,138 @@
 
 'use strict';
 
-describe('index/shared/transport.js', () => it('is tested by server and handler tests', () => {}));
+const
+	root = require('app-root-path'),
+
+	chai = require('chai'),
+	{ expect } = chai,
+
+	{ compileFromPlainObject, compileFromSchemaDefinition } = require(root + '/src/lib/index/shared/schema'),
+
+	transportSchema = require(root + '/src/lib/index/shared/transport/schema'),
+	transport = require(root + '/src/lib/index/shared/transport');
+
+describe('index/shared/transport.js', () => {
+
+	const
+		contextSchema = compileFromPlainObject({}),
+		messageSchemaV1 = compileFromSchemaDefinition({
+			namespace: 'example.avro',
+			type: 'record',
+			name: 'user',
+			fields: [
+				{ name: 'name', type: 'string' },
+				{ name: 'favorite_number', type: 'int' }
+			]
+		}),
+		messageSchemaV2 = compileFromSchemaDefinition({
+			namespace: 'example.avro',
+			type: 'record',
+			name: 'user',
+			fields: [
+				{ name: 'name', type: 'string' },
+				{ name: 'favorite_color', type: 'string', ['default']: 'green' },
+				{ name: 'favorite_number', type: 'int' }
+			]
+		}),
+		messageV1 = {
+			name: 'Bob',
+			['favorite_number']: 10
+		},
+		messageV2 = {
+			name: 'Bob',
+			['favorite_color']: 'blue',
+			['favorite_number']: 10
+		},
+		context = {},
+		transportContentsV1 = {
+			contextSchema: JSON.stringify(contextSchema.toJSON()),
+			contextBuffer: contextSchema.toBuffer(context),
+			messageSchema: JSON.stringify(messageSchemaV1.toJSON()),
+			messageBuffer: messageSchemaV1.toBuffer(messageV1)
+		},
+		transportContentsV2 = {
+			contextSchema: JSON.stringify(contextSchema.toJSON()),
+			contextBuffer: contextSchema.toBuffer(context),
+			messageSchema: JSON.stringify(messageSchemaV2.toJSON()),
+			messageBuffer: messageSchemaV2.toBuffer(messageV2)
+		},
+		compiledTransportSchema = compileFromSchemaDefinition(transportSchema);
+
+	describe('toBuffer', () => {
+
+		it('writes the correct data', () => {
+
+			// Given
+			// When
+			// Then
+
+			expect(transport.toBuffer(messageSchemaV1, messageV1, context))
+				.to.eql(compiledTransportSchema.toBuffer(transportContentsV1));
+		});
+
+	});
+
+	describe('fromBuffer', () => {
+
+		it('reads the correct data with the same schema', () => {
+
+			// Given
+			// When
+
+			const
+				result = transport.fromBuffer(compiledTransportSchema.toBuffer(transportContentsV1), messageSchemaV1),
+				expected = { context, message: messageV1 };
+
+			// Then
+
+			expect(JSON.stringify(result))
+				.to.deep.equal(JSON.stringify(expected));
+		});
+
+		it('is backward compatible', () => {
+
+			// Given
+			// When
+
+			const
+				result = transport.fromBuffer(compiledTransportSchema.toBuffer(transportContentsV1), messageSchemaV2),
+				expected = {
+					context,
+					message: {
+						name: 'Bob',
+						['favorite_color']: 'green',
+						['favorite_number']: 10
+					}
+				};
+
+			// Then
+
+			expect(JSON.stringify(result))
+				.to.deep.equal(JSON.stringify(expected));
+		});
+
+		it('is forward compatible', () => {
+
+			// Given
+			// When
+
+			const
+				result = transport.fromBuffer(compiledTransportSchema.toBuffer(transportContentsV2), messageSchemaV1),
+				expected = {
+					context,
+					message: {
+						name: 'Bob',
+						['favorite_number']: 10
+					}
+				};
+
+			// Then
+
+			expect(JSON.stringify(result))
+				.to.deep.equal(JSON.stringify(expected));
+		});
+
+	});
+
+});
