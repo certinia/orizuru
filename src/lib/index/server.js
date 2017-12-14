@@ -76,14 +76,17 @@ const
 				});
 		} else {
 			catchEmitReject(publisher.publish({
-				schema: schema,
-				message: body,
-				context: orizuru
-			}), ERROR_EVENT, emitter).then(() => {
-				responseWriter(null, response, orizuru);
-			}).catch(err => {
-				responseWriter(err, response, orizuru);
-			});
+					schema: schema,
+					message: body,
+					context: orizuru
+				}), ERROR_EVENT, emitter)
+				.then(() => {
+					emitter.emit(INFO_EVENT, `Served '${path}/${schemaName}'.`);
+					responseWriter(null, response, orizuru);
+				})
+				.catch(err => {
+					responseWriter(err, response, orizuru);
+				});
 		}
 
 	};
