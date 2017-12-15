@@ -26,14 +26,46 @@
 
 'use strict';
 
-module.exports = {
-	namespace: 'com.ffdc.orizuru.transport',
-	name: 'Transport',
-	type: 'record',
-	fields: [
-		{ name: 'contextSchema', type: 'string' },
-		{ name: 'contextBuffer', type: 'bytes' },
-		{ name: 'messageSchemaName', type: 'string' },
-		{ name: 'messageBuffer', type: 'bytes' }
-	]
-};
+const
+	chai = require('chai'),
+
+	expect = chai.expect,
+
+	routeMethod = require('../../../lib/index/server/routeMethod');
+
+describe('index/server/routeMethod.js', () => {
+
+	it('should expose the correct route methods', () => {
+
+		// Given
+		// When
+		// Then
+		expect(routeMethod).to.contain.all.keys([
+			'CHECKOUT',
+			'COPY',
+			'DELETE',
+			'GET',
+			'HEAD',
+			'LOCK',
+			'MERGE',
+			'MKACTIVITY',
+			'MKCOL',
+			'MOVE',
+			'M_SEARCH',
+			'NOTIFY',
+			'OPTIONS',
+			'PATCH',
+			'POST',
+			'PURGE',
+			'PUT',
+			'REPORT',
+			'SEARCH',
+			'SUBSCRIBE',
+			'TRACE',
+			'UNLOCK',
+			'UNSUBSCRIBE'
+		]);
+
+	});
+
+});

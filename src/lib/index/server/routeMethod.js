@@ -26,38 +26,28 @@
 
 'use strict';
 
-const
-	transport = require('./transport/schema'),
-	{ compileFromPlainObject, compileFromSchemaDefinition } = require('./schema'),
-
-	compiledTransportSchema = compileFromSchemaDefinition(transport),
-
-	toBuffer = (compiledMessageSchema, message, context) => {
-		const
-			contextOrEmpty = context || {},
-			compiledContextSchema = compileFromPlainObject(contextOrEmpty),
-			transport = {
-				contextSchema: JSON.stringify(compiledContextSchema.toJSON()),
-				contextBuffer: compiledContextSchema.toBuffer(contextOrEmpty),
-				messageSchemaName: compiledMessageSchema.name,
-				messageBuffer: compiledMessageSchema.toBuffer(message)
-			};
-		return compiledTransportSchema.toBuffer(transport);
-	},
-
-	fromBuffer = (buffer, compiledMessageSchema) => {
-		const
-			decompiledTransportObject = compiledTransportSchema.fromBuffer(buffer),
-
-			compiledContextSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.contextSchema)),
-
-			context = compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer),
-			message = compiledMessageSchema.fromBuffer(decompiledTransportObject.messageBuffer);
-
-		return { context, message };
-	};
-
-module.exports = {
-	toBuffer,
-	fromBuffer
-};
+module.exports = Object.freeze({
+	CHECKOUT: 'checkout',
+	COPY: 'copy',
+	DELETE: 'delete',
+	GET: 'get',
+	HEAD: 'head',
+	LOCK: 'lock',
+	MERGE: 'merge',
+	MKACTIVITY: 'mkactivity',
+	MKCOL: 'mkcol',
+	MOVE: 'move',
+	M_SEARCH: 'm-search',
+	NOTIFY: 'notify',
+	OPTIONS: 'options',
+	PATCH: 'patch',
+	POST: 'post',
+	PURGE: 'purge',
+	PUT: 'put',
+	REPORT: 'report',
+	SEARCH: 'search',
+	SUBSCRIBE: 'subscribe',
+	TRACE: 'trace',
+	UNLOCK: 'unlock',
+	UNSUBSCRIBE: 'unsubscribe'
+});

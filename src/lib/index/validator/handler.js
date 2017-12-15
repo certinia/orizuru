@@ -28,35 +28,38 @@
 
 const
 	_ = require('lodash'),
+	schema = require('./shared/schema');
 
-	catchEmitThrow = (funcOrError, eventName, emitter) => {
-		try {
-			if (_.isFunction(funcOrError)) {
-				return funcOrError();
-			} else if (_.isString(funcOrError)) {
-				throw new Error(funcOrError);
-			}
-			return undefined;
-		} catch (err) {
-			emitter.emit(eventName, err.message);
-			throw err;
+/**
+ * Validates handlers.
+ */
+class HandlerValidator {
+
+	validate(config) {
+
+		if (config === undefined) {
+			throw new Error('Missing required object parameter.');
 		}
-	},
 
-	catchEmitReject = (promiseOrError, eventName, emitter) => {
-		if (_.hasIn(promiseOrError, 'then')) {
-			return Promise.resolve(promiseOrError).catch(err => {
-				emitter.emit(eventName, err.message);
-				throw err;
-			});
-		} else if (_.isString(promiseOrError)) {
-			emitter.emit(eventName, promiseOrError);
-			return Promise.reject(new Error(promiseOrError));
+		if (!_.isPlainObject(config)) {
+			throw new Error(`Invalid parameter: ${config} is not an object.`);
 		}
-		return Promise.resolve();
-	};
 
-module.exports = {
-	catchEmitThrow,
-	catchEmitReject
-};
+		if (!config.handler) {
+			throw new Error('Missing required function parameter: handler.');
+		}
+
+		if (!_.isFunction(config.handler)) {
+			throw new Error('Invalid parameter: handler is not a function.');
+		}
+
+		// Validate the schema
+		schema.validate(config);
+
+		return config;
+
+	}
+
+}
+
+module.exports = HandlerValidator;

@@ -27,28 +27,75 @@
 'use strict';
 
 const
-	avro = require('avsc'),
+	_ = require('lodash'),
+	schema = require('./shared/schema'),
 
-	typeHook = () => {
-		let i = 0;
-		return schema => {
-			if (schema &&
-				schema.type &&
-				schema.type === 'enum' ||
-				schema.type === 'fixed' ||
-				schema.type === 'record') {
+	HTTP_STATUS_CODE = require('http-status-codes'),
+	ROUTE_METHOD = require('../server/routeMethod');
 
-				schema.namespace = 'com.ffdc.orizuru';
-				schema.name = `Context${i}`;
-				i++;
+class RouteValidator {
 
+	validate(config) {
+
+		if (config === undefined) {
+			throw new Error('Missing required object parameter.');
+		}
+
+		if (!_.isPlainObject(config)) {
+			throw new Error(`Invalid parameter: ${config} is not an object.`);
+		}
+
+		if (!config.endpoint) {
+			config.endpoint = '';
+		}
+
+		if (!_.isString(config.endpoint)) {
+			throw new Error('Invalid parameter: endpoint is not a string.');
+		}
+
+		if (!config.method) {
+			config.method = ROUTE_METHOD.POST;
+		}
+
+		if (!_.isString(config.method)) {
+			throw new Error('Invalid parameter: method is not a string.');
+		}
+
+		if (!config.middleware) {
+			config.middleware = [];
+		}
+
+		if (!_.isArray(config.middleware)) {
+			throw new Error('Invalid parameter: middleware is not an array.');
+		}
+
+		_.each(config.middleware, (middleware, index) => {
+			if (!_.isFunction(middleware)) {
+				throw new Error(`Invalid parameter: middleware[${index}] is not a function.`);
 			}
-		};
-	};
+		});
 
-module.exports = {
-	compileFromPlainObject: type => {
-		return avro.Type.forValue(type, { typeHook: typeHook() });
-	},
-	compileFromSchemaDefinition: json => avro.Type.forSchema(json)
-};
+		if (!config.responseWriter) {
+			config.responseWriter = (server) => (error, response) => {
+				if (error) {
+					server.error(error);
+					response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(error);
+				} else {
+					response.status(HTTP_STATUS_CODE.OK).send('Ok.');
+				}
+			};
+		}
+
+		if (!_.isFunction(config.responseWriter)) {
+			throw new Error('Invalid parameter: responseWriter is not a function.');
+		}
+
+		// Validate the schema
+		schema.validate(config);
+
+		return config;
+	}
+
+}
+
+module.exports = RouteValidator;

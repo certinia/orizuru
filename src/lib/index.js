@@ -42,17 +42,17 @@ const
 module.exports = {
 	/**
 	 * Server
-	 * @see module:index/server~Server
+	 * @see Server
 	 */
 	Server,
 	/**
 	 * Handler
-	 * @see module:index/handler~Handler
+	 * @see Handler
 	 */
 	Handler,
 	/**
 	 * Publisher
-	 * @see module:index/publisher~Publisher
+	 * @see Publisher
 	 */
 	Publisher
 };

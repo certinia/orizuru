@@ -26,56 +26,35 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	root = require('app-root-path'),
-	{ expect } = require('chai'),
-	{ validate } = require(root + '/src/lib/index/shared/configValidator');
+const HTTP_STATUS_CODE = require('http-status-codes');
 
-describe('index/shared/configValidator.js', () => {
+function create(server, routeConfiguration, responseWriter) {
 
-	describe('send', () => {
+	return (request, response) => {
 
-		it('should throw an error if config is not an object', () => {
+		const
+			schemaName = request.params.schemaName,
+			schema = routeConfiguration[schemaName],
+			message = {
+				schema,
+				message: request.body,
+				context: request.context
+			};
 
-			//given - when - then
-			expect(() => validate(null)).to.throw('Invalid parameter: config not an object');
+		if (!schema) {
+			const errorMsg = `No schema for '${schemaName}' found.`;
+			server.error(errorMsg);
+			return response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(errorMsg);
+		}
 
-		});
+		return server.publisher.publish(message)
+			.then(() => responseWriter(server)(undefined, request, response))
+			.catch((error) => responseWriter(server)(error, request, response));
 
-		it('should throw an error if config.transport is not an object', () => {
+	};
 
-			//given - when - then
-			expect(() => validate({})).to.throw('Invalid parameter: config.transport not an object');
+}
 
-		});
-
-		it('should throw an error if config.transport.publish is not a function', () => {
-
-			//given - when - then
-			expect(() => validate({ transport: {} })).to.throw('Invalid parameter: config.transport.publish not an function');
-
-		});
-
-		it('should throw an error if config.transport.subscribe is not a function', () => {
-
-			//given - when - then
-			expect(() => validate({ transport: { publish: _.noop } })).to.throw('Invalid parameter: config.transport.subscribe not an function');
-
-		});
-
-		it('should return undefined if everything is ok', () => {
-
-			//given - when - then
-			expect(validate({
-				transport: {
-					publish: _.noop,
-					subscribe: _.noop
-				}
-			})).to.eql(undefined);
-
-		});
-
-	});
-
-});
+module.exports = {
+	create
+};

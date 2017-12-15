@@ -28,289 +28,206 @@
 
 const
 	_ = require('lodash'),
-	root = require('app-root-path'),
 	chai = require('chai'),
 	chaiAsPromised = require('chai-as-promised'),
+	proxyquire = require('proxyquire'),
 	sinon = require('sinon'),
-	{ expect } = chai,
-	{ calledOnce, calledWith } = sinon.assert,
+	sinonChai = require('sinon-chai'),
 
-	Handler = require(root + '/src/lib/index/handler'),
-	{ compileFromSchemaDefinition } = require(root + '/src/lib/index/shared/schema'),
-	{ toBuffer } = require(root + '/src/lib/index/shared/transport');
+	avsc = require('avsc'),
+	{ EventEmitter } = require('events'),
+	HandlerValidator = require('../../lib/index/validator/handler'),
+
+	expect = chai.expect,
+
+	sandbox = sinon.sandbox.create();
 
 chai.use(chaiAsPromised);
+chai.use(sinonChai);
 
 describe('index/handler.js', () => {
 
-	const
-		sandbox = sinon.sandbox.create(),
-		restore = sandbox.restore.bind(sandbox);
-
-	let config;
+	let mocks;
 
 	beforeEach(() => {
 
-		config = {
+		mocks = {};
+
+		mocks.config = {
 			transport: {
 				publish: _.noop,
-				subscribe: sandbox.stub()
+				subscribe: _.noop
 			},
-			transportConfig: 'testTransportConfig'
+			transportConfig: _.noop
 		};
+
+		mocks.handlerValidator = sandbox.stub().returnsThis();
+		mocks.messageHandler = sandbox.stub();
+		mocks.transport = sandbox.stub().returnsThis();
 
 	});
 
-	afterEach(restore);
+	afterEach(() => {
+		sandbox.restore();
+	});
+
+	describe('constructor', () => {
+
+		let Handler;
+
+		beforeEach(() => {
+			Handler = proxyquire('../../lib/index/handler', {
+				'./transport/transport': mocks.transport
+			});
+		});
+
+		it('should extend EventEmitter', () => {
+
+			// Given
+			// When
+			const handler = new Handler(mocks.config);
+
+			// Then
+			expect(handler).to.be.an.instanceof(EventEmitter);
+
+		});
+
+		it('should emit an error event if the configuration is invalid', () => {
+
+			// Given
+			sandbox.spy(EventEmitter.prototype, 'emit');
+
+			// When
+			// Then
+			expect(() => new Handler({})).to.throw(/^Missing required object parameter: transport\.$/g);
+
+			expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
+
+		});
+
+		it('should initialise the transport', () => {
+
+			// Given
+			// When
+			const handler = new Handler(mocks.config);
+
+			// Then
+			expect(mocks.transport).to.have.been.calledOnce;
+			expect(mocks.transport).to.have.been.calledWithNew;
+			expect(handler.transport).to.equal(mocks.transport.firstCall.returnValue);
+
+		});
+
+		it('should initialise the transport implementation (subscribe function)', () => {
+
+			// Given
+			mocks.config.transport.subscribe = sandbox.stub();
+
+			// When
+			const handler = new Handler(mocks.config);
+
+			// Then
+			expect(handler.transport_impl).to.equal(mocks.config.transport.subscribe);
+
+		});
+
+		it('should initialise the transport config', () => {
+
+			// Given
+			mocks.config.transportConfig = sandbox.stub();
+
+			// When
+			const handler = new Handler(mocks.config);
+
+			// Then
+			expect(handler.transport_config).to.equal(mocks.config.transportConfig);
+
+		});
+
+		it('should initialise the handler validator', () => {
+
+			// Given
+			Handler = proxyquire('../../lib/index/handler', {
+				'./transport/transport': mocks.transport,
+				'./validator/handler': mocks.handlerValidator
+			});
+
+			// When
+			const handler = new Handler(mocks.config);
+
+			// Then
+			expect(mocks.handlerValidator).to.have.been.calledOnce;
+			expect(mocks.handlerValidator).to.have.been.calledWithNew;
+			expect(handler.validator).to.equal(mocks.handlerValidator.firstCall.returnValue);
+
+		});
+
+	});
 
 	describe('handle', () => {
 
-		let handlerInstance;
+		let Handler;
 
 		beforeEach(() => {
-			handlerInstance = new Handler(config);
+			Handler = proxyquire('../../lib/index/handler', {
+				'./transport/transport': mocks.transport,
+				'./handler/messageHandler': mocks.messageHandler
+			});
 		});
 
-		it('should reject if a valid schema is not supplied', () => {
+		it('should install the handler for a schema', () => {
 
-			// given - when - then
-			return expect(handlerInstance.handle({ schema: {}, callback: null })).to.be.rejectedWith('Schema could not be compiled: unknown type: undefined.');
+			// Given
+			mocks.config.transport.subscribe = sandbox.stub().resolves();
+			sandbox.stub(HandlerValidator.prototype, 'validate');
+			sandbox.spy(EventEmitter.prototype, 'emit');
 
-		});
-
-		it('should reject if a valid schema name is not supplied', () => {
-
-			// given - when - then
-			return expect(handlerInstance.handle({
-				schema: compileFromSchemaDefinition({
-					type: 'record',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}, {
-						name: 'g',
-						type: 'int'
-					}]
-				}),
-				callback: null
-			})).to.be.rejectedWith('Schema name must be an non empty string.');
-
-		});
-
-		it('should reject if a valid callback function is not supplied', () => {
-
-			// given - when - then
-			return expect(handlerInstance.handle({
-				schema: compileFromSchemaDefinition({
-					name: 'testSchema',
-					type: 'record',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}, {
-						name: 'g',
-						type: 'int'
-					}]
-				}),
-				callback: null
-			})).to.be.rejectedWith('Please provide a valid callback function for event: \'testSchema\'');
-
-		});
-
-		it('should call subscribe handle with schemaName and the handler function wrapped in a helper to deserialize the message to its schema and return its result', () => {
-
-			// given
-			const stub = sandbox.stub().returns('test'),
-				schema = compileFromSchemaDefinition({
-					name: 'testSchema',
-					type: 'record',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}]
-				}),
-				handleConfig = {
-					schema,
-					callback: stub
+			const
+				handler = new Handler(mocks.config),
+				config = {
+					handler: sandbox.stub(),
+					schema: avsc.Type.forSchema({
+						type: 'record',
+						namespace: 'com.example',
+						name: 'FullName',
+						fields: [
+							{ name: 'first', type: 'string' },
+							{ name: 'last', type: 'string' }
+						]
+					}),
+					message: {
+						first: 'First',
+						last: 'Last'
+					}
 				};
 
-			config.transport.subscribe.callsFake(obj => {
-				const result = obj.handler(toBuffer(compileFromSchemaDefinition({
-					name: 'testSchema',
-					type: 'record',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}]
-				}), {
-					f: 'test1'
-				}, {
-					auth: 'testAuth'
-				}));
-				return result;
-			});
-
-			// when - then
-			return expect(handlerInstance.handle(handleConfig)).to.eventually.be.eql('test')
+			// When
+			// Then
+			return expect(handler.handle(config))
+				.to.eventually.be.fulfilled
 				.then(() => {
-					calledOnce(config.transport.subscribe);
-					calledWith(config.transport.subscribe, { eventName: 'testSchema', handler: sinon.match.func, config: config.transportConfig });
-					calledOnce(stub);
-					calledWith(stub, { message: { f: 'test1' }, context: { auth: 'testAuth' } });
+					expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
+					expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
+					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Installing handler for com.example.FullName events.');
+					expect(mocks.messageHandler).to.have.been.calledOnce;
 				});
 
 		});
 
-	});
+		describe('should throw an error', () => {
 
-	describe('emitter', () => {
+			it('if no config is provided', () => {
 
-		const errorEvents = [],
-			infoEvents = [],
-			errorListener = message => {
-				errorEvents.push(message);
-			},
+				// Given
+				sandbox.stub(HandlerValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
-			infoListener = message => {
-				infoEvents.push(message);
-			};
+				const handler = new Handler(mocks.config);
 
-		beforeEach(() => {
-			Handler.emitter.addListener(Handler.emitter.ERROR, errorListener);
-			Handler.emitter.addListener(Handler.emitter.INFO, infoListener);
-		});
-
-		afterEach(() => {
-			Handler.emitter.removeListener(Handler.emitter.ERROR, errorListener);
-			Handler.emitter.removeListener(Handler.emitter.INFO, infoListener);
-		});
-
-		describe('should emit an error event', () => {
-
-			it('on constructor error', () => {
-
-				// given - when
-				try {
-					new Handler();
-				} catch (err) {
-					// doesn't matter
-				}
-
-				// then
-				expect(errorEvents).to.include('Invalid parameter: config not an object');
-
-			});
-
-			it('on bad event name', () => {
-
-				// then
-				const verify = () => {
-						expect(errorEvents).to.include('Schema name must be an non empty string.');
-					},
-					handleConfig = {
-						schema: compileFromSchemaDefinition({
-							type: 'record',
-							fields: [{
-								name: 'f',
-								type: 'string'
-							}, {
-								name: 'g',
-								type: 'int'
-							}]
-						}),
-						callback: null
-					};
-
-				// when
-				return new Handler(config).handle(handleConfig)
-					.then(verify, verify);
-
-			});
-
-			it('on no function supplied to handle', () => {
-
-				// then
-				const verify = () => {
-						expect(errorEvents).to.include('Please provide a valid callback function for event: \'test\'');
-					},
-					handleConfig = {
-						schema: compileFromSchemaDefinition({
-							name: 'test',
-							type: 'record',
-							fields: [{
-								name: 'f',
-								type: 'string'
-							}, {
-								name: 'g',
-								type: 'int'
-							}]
-						}),
-						callback: null
-					};
-
-				// when
-				return new Handler(config).handle(handleConfig)
-					.then(verify, verify);
-
-			});
-
-			it('on transport subscribe reject', () => {
-
-				// then
-				const verify = () => {
-						expect(errorEvents).to.include('some error or other');
-					},
-					handleConfig = {
-						schema: compileFromSchemaDefinition({
-							name: 'test',
-							type: 'record',
-							fields: [{
-								name: 'f',
-								type: 'string'
-							}, {
-								name: 'g',
-								type: 'int'
-							}]
-						}),
-						callback: _.noop
-					};
-
-				// given
-				config.transport.subscribe.rejects(new Error('some error or other'));
-
-				// when
-				return new Handler(config).handle(handleConfig)
-					.then(verify, verify);
-
-			});
-
-			it('on transport subscribe resolve', () => {
-
-				// then
-				const verify = () => {
-						expect(infoEvents).to.include('Installing handler for test events.');
-					},
-					handleConfig = {
-						schema: compileFromSchemaDefinition({
-							name: 'test',
-							type: 'record',
-							fields: [{
-								name: 'f',
-								type: 'string'
-							}, {
-								name: 'g',
-								type: 'int'
-							}]
-						}),
-						callback: _.noop
-					};
-
-				// given
-				config.transport.subscribe.resolves();
-
-				// when
-				return new Handler(config).handle(handleConfig)
-					.then(verify, verify);
+				// When
+				// Then
+				expect(() => handler.handle()).to.throw(/^Missing required object parameter\.$/);
+				expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
+				expect(mocks.messageHandler).to.not.have.been.called;
 
 			});
 

@@ -26,24 +26,48 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
+const _ = require('lodash');
 
-	validate = (config) => {
-		if (config == null || !_.isObject(config)) {
-			throw new Error('Invalid parameter: config not an object');
+class ServerValidator {
+
+	constructor(config) {
+
+		if (config === undefined) {
+			throw new Error('Missing required object parameter.');
 		}
-		if (config.transport == null || !_.isObject(config.transport)) {
-			throw new Error('Invalid parameter: config.transport not an object');
+
+		if (!_.isPlainObject(config)) {
+			throw new Error(`Invalid parameter: ${config} is not an object.`);
 		}
+
+		if (config.transport === undefined) {
+			throw new Error('Missing required object parameter: transport.');
+		}
+
+		if (!_.isPlainObject(config.transport)) {
+			throw new Error('Invalid parameter: transport is not an object.');
+		}
+
+		if (!config.transport.publish) {
+			throw new Error('Missing required function parameter: transport[publish].');
+		}
+
 		if (!_.isFunction(config.transport.publish)) {
-			throw new Error('Invalid parameter: config.transport.publish not an function');
+			throw new Error('Invalid parameter: transport[publish] is not a function.');
 		}
-		if (!_.isFunction(config.transport.subscribe)) {
-			throw new Error('Invalid parameter: config.transport.subscribe not an function');
-		}
-	};
 
-module.exports = {
-	validate
-};
+		if (!config.transport.subscribe) {
+			throw new Error('Missing required function parameter: transport[subscribe].');
+		}
+
+		if (!_.isFunction(config.transport.subscribe)) {
+			throw new Error('Invalid parameter: transport[subscribe] is not a function.');
+		}
+
+		return config;
+
+	}
+
+}
+
+module.exports = ServerValidator;

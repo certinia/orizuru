@@ -28,20 +28,60 @@
 
 const
 	_ = require('lodash'),
-	{ compileFromSchemaDefinition } = require('./schema');
+	avsc = require('avsc');
+
+/**
+ * Parses the schema from a JSON string.
+ * @param {string} schema - The JSON schema string.
+ * @throws An error if the JSON string cannot be parsed.
+ */
+function parseSchema(schema) {
+
+	try {
+		return JSON.parse(schema);
+	} catch (error) {
+		throw new Error(`Invalid Avro Schema. Failed to parse JSON string: ${schema}.`);
+	}
+
+}
+
+/**
+ * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc library}.
+ * @param {object} uncompiledSchema - The JSON representation of an Apache Avro Schema.
+ * @throws An error if the schema is invalid.
+ */
+function compileSchema(uncompiledSchema) {
+
+	try {
+		return avsc.Type.forSchema(uncompiledSchema);
+	} catch (error) {
+		throw new Error(`Invalid Avro Schema. Schema error: ${error.message}.`);
+	}
+
+}
+
+function validate(config) {
+
+	if (!config.schema) {
+		throw new Error('Missing required avro-schema parameter: schema.');
+	}
+
+	if (_.isString(config.schema)) {
+		config.schema = parseSchema(config.schema);
+	} else if (_.isPlainObject(config.schema)) {
+		config.schema = compileSchema(config.schema);
+	} else if (_.hasIn(config.schema, 'toJSON') && _.hasIn(config.schema, 'toBuffer')) {
+		// Already have a compiled schema
+	} else {
+		throw new Error(`Invalid Avro Schema. Unexpected value type: ${typeof config.schema}.`);
+	}
+
+	if (!config.schema.name) {
+		throw new Error('Missing required string parameter: schema[name].');
+	}
+
+}
 
 module.exports = {
-	compileSchemas: schemaNameToDefinition => {
-		if (!_.isObject(schemaNameToDefinition)) {
-			throw new Error('schemaNameToDefinition argument must be an object of: schemaName -> avroSchema.');
-		} else {
-			_.each(schemaNameToDefinition, (value, key) => {
-				try {
-					schemaNameToDefinition[key] = compileFromSchemaDefinition(value);
-				} catch (err) {
-					throw new Error(`Schema name: '${key}' schema could not be compiled: ${err.message}`);
-				}
-			});
-		}
-	}
+	validate
 };

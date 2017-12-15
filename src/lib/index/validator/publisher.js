@@ -26,4 +26,32 @@
 
 'use strict';
 
-describe('index/shared/transport/schema.js', () => it('is tested by server and handler tests', () => {}));
+const
+	_ = require('lodash'),
+	schema = require('./shared/schema');
+
+/**
+ * Validate the publisher configuration.
+ */
+class PublisherValidator {
+
+	validate(config) {
+
+		if (config === undefined) {
+			throw new Error('Missing required object parameter.');
+		}
+
+		if (!_.isPlainObject(config)) {
+			throw new Error(`Invalid parameter: ${config} is not an object.`);
+		}
+
+		// Validate the schema
+		schema.validate(config);
+
+		return config;
+
+	}
+
+}
+
+module.exports = PublisherValidator;

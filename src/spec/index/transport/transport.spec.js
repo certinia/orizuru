@@ -26,4 +26,46 @@
 
 'use strict';
 
-describe('index/shared/compileSchemas.js', () => it('is tested by server and handler tests', () => {}));
+const
+	avsc = require('avsc'),
+	chai = require('chai'),
+	sinon = require('sinon'),
+	sinonChai = require('sinon-chai'),
+
+	fs = require('fs-extra'),
+
+	expect = chai.expect,
+
+	Transport = require('../../../lib/index/transport/transport'),
+
+	sandbox = sinon.sandbox.create();
+
+chai.use(sinonChai);
+
+describe('index/transport/transport.js', () => {
+
+	afterEach(() => {
+		sandbox.restore();
+	});
+
+	describe('constructor', () => {
+
+		it('should read the transport schema and store it in a property', () => {
+
+			// Given
+			sandbox.stub(fs, 'readJsonSync').returns(JSON.parse('{"namespace":"com.ffdc.orizuru.transport","name":"Transport","type":"record","fields":[{"name":"contextSchema","type":"string"},{"name":"contextBuffer","type":"bytes"},{"name":"messageSchema","type":"string"},{"name":"messageBuffer","type":"bytes"}]}'));
+			sandbox.stub(avsc.Type, 'forSchema');
+
+			// When
+			const transport = new Transport();
+
+			// Then
+			expect(fs.readJsonSync).to.have.been.calledOnce;
+			expect(avsc.Type.forSchema).to.have.been.calledOnce;
+			expect(transport).to.have.property('compiledSchema');
+
+		});
+
+	});
+
+});

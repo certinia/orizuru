@@ -25,236 +25,190 @@
  **/
 
 'use strict';
-/**
- * The Server for creating routes in a web dyno based on Avro schemas. 
- * Messages are consumed by Handler
- * @module index/server
- * @see module:index/handler
- */
 
 const
 	_ = require('lodash'),
-	EventEmitter = require('events'),
-	express = require('express'),
-	expressRouter = express.Router,
 	bodyParser = require('body-parser'),
+	express = require('express'),
 	helmet = require('helmet'),
 
-	SCHEMA_API_PARAM = '/:schemaName',
-
-	{ compileSchemas } = require('./shared/compileSchemas'),
+	EventEmitter = require('events'),
 	Publisher = require('./publisher'),
 
-	serverStore = new WeakMap(),
-	publisherStore = new WeakMap(),
+	route = require('./server/route'),
 
-	{ catchEmitThrow, catchEmitReject } = require('./shared/catchEmitThrow'),
+	RouteValidator = require('./validator/route'),
+	ServerValidator = require('./validator/server'),
 
-	emitter = new EventEmitter(),
+	expressRouter = express.Router,
+
+	PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName',
+
+	PROPERTY_PUBLISHER = 'publisher',
+	PROPERTY_ROUTE_CONFIGURATION = 'route_configuration',
+	PROPERTY_ROUTER_CONFIGURATION = 'router_configuration',
+	PROPERTY_ROUTE_VALIDATOR = 'route_validator',
+	PROPERTY_SERVER = 'server',
 
 	ERROR_EVENT = 'error_event',
-	INFO_EVENT = 'info_event',
-
-	api = (path, schemaNameToDefinition, publisher, responseWriter = (err, response, context) => {
-		if (err) {
-			response.status(400).send(err.message);
-		} else {
-			response.status(200).send('Ok.');
-		}
-	}) => (request, response) => {
-
-		const
-			schemaName = request.params.schemaName,
-			schema = schemaNameToDefinition[schemaName],
-			body = request.body,
-			orizuru = request.orizuru;
-
-		if (!schema) {
-			catchEmitReject(`No schema for '${path}/${schemaName}' found.`, ERROR_EVENT, emitter)
-				.catch(err => {
-					responseWriter(err, response, orizuru);
-				});
-		} else {
-			catchEmitReject(publisher.publish({
-				schema: schema,
-				message: body,
-				context: orizuru
-			}), ERROR_EVENT, emitter).then(() => {
-				responseWriter(null, response, orizuru);
-			}).catch(err => {
-				responseWriter(err, response, orizuru);
-			});
-		}
-
-	};
+	INFO_EVENT = 'info_event';
 
 /** 
- * Class representing a server. 
+ * The Server for creating routes in a web dyno based on Avro schemas. 
+ * Messages are consumed by Handler
  * 
- * @property {EventEmitter} emitter
+ * @extends EventEmitter
  * @property {string} emitter.ERROR - the error event name
  * @property {string} emitter.INFO - the info event name
  **/
-class Server {
+class Server extends EventEmitter {
 
 	/**
-	 * Constructs a new 'Server'
+	 * Constructs a new 'Server'.
 	 * 
-	 * @param {object} config - { transport [, transportConfig] }
-	 * @param {transport} config.transport - the transport object
-	 * @param {object} config.transportConfig - config for the transport object
-	 * @returns {Server}
+	 * @example 
+	 * const server = new Server();
+	 * @param {Object} config - The server configuration.
+	 * @param {Transport} config.transport - The transport object.
+	 * @param {Object} config.transportConfig - The config for the transport object.
+	 * @returns {Server} - The server.
 	 */
 	constructor(config) {
 
-		// create publisher
-		catchEmitThrow(() => {
-			publisherStore[this] = new Publisher(config);
-		}, ERROR_EVENT, emitter);
+		super();
 
-		// create server
-		const server = express();
+		const me = this;
 
-		// body parser
-		server.use(bodyParser.json());
+		try {
 
-		// Header security
-		server.use(helmet());
+			// Validate the config
+			new ServerValidator(config);
 
-		// add server to private store
-		serverStore[this] = server;
+			// Create the express server
+			const server = express();
+
+			// Configure the server
+			server.use(
+				bodyParser.json(), // Body parser
+				helmet() // Header security
+			);
+
+			// Add the server
+			Object.defineProperty(me, PROPERTY_SERVER, { value: server });
+
+			// Add the publisher
+			Object.defineProperty(me, PROPERTY_PUBLISHER, { value: new Publisher(config) });
+
+			// Define the router configuration for the server
+			Object.defineProperty(me, PROPERTY_ROUTER_CONFIGURATION, { value: {} });
+
+			// Define the route configuration for the server
+			Object.defineProperty(me, PROPERTY_ROUTE_CONFIGURATION, { value: {} });
+
+			// Define the route validator
+			Object.defineProperty(me, PROPERTY_ROUTE_VALIDATOR, { value: new RouteValidator() });
+
+		} catch (e) {
+			me.error(e);
+			throw e;
+		}
 
 	}
 
 	/**
-	 * An express request handler.
+	 * Adds a 'route' to the server.
 	 * 
-	 * @typedef ResponseWriter
-	 * @type {function}
-	 * @param {Object} err - Set if an error occurred in processing the request.
-	 * @param {Object} response - The Express response.
-	 * @param {Object} context - The Orizuru context.
+	 * @param {Object} route - The route.
+	 * @param {string|Object} route.schema - The Apache Avro schema for this route.
+	 * @param {string} route.method=POST - The method to use for this route.
+	 * @param {Function[]} route.middlewares - The middleware functions for this route.
+	 * @param {Function} route.responseWriter - The function to use before writing the response.
+	 * @param {string} [route.endpoint=/] - The API endpoint.
+	 * 
+	 * @returns {Server} The server.
 	 */
+	addRoute(config) {
 
-	/**
-	 * Adds a 'route' to the server
-	 * 
-	 * @example
-	 * // adds schemas to the default ( http://host/{schemaName} ) route
-	 * server.addRoute({
-	 * 	schemaNameToDefinition: {
-	 * 		test: {} // an avro compliant schema (see avro schema API)
-	 * 	}
-	 * });
-	 * @example
-	 * // adds schemas to a route at ( http://host/api/test/{schemaName} )
-	 * server.addRoute({ schemaNameToDefinition, apiEndpoint: '/api/test' });
-	 * @example
-	 * // adds middleware functions contained in the middlewares array (see express middleware API)
-	 * server.addRoute({ schemaNameToDefinition, middlewares: [...] });
-	 * 
-	 * @param {object} config - { schemaNameToDefinition [, middlewares] [, apiEndpoint] [, responseWriter] }
-	 * @param {object} config.schemaNameToDefinition - schema name to definition map
-	 * @param {object} config.middlewares - middleware functions (optional)
-	 * @param {object} config.apiEndpoint - api endpoint (optional, default: /)
-	 * @param {ResponseWriter} config.responseWriter - a function to handle the writing of responses.
-	 * 
-	 * @returns {Server}
-	 */
-	addRoute({ schemaNameToDefinition, middlewares, apiEndpoint, responseWriter }) {
+		// Validate the route configuration.
+		this[PROPERTY_ROUTE_VALIDATOR].validate(config);
 
-		// create router
+		// Now we know the configuration is valid, add the route.
 		const
-			publisher = publisherStore[this],
+			me = this,
+			schema = config.schema,
+			responseWriter = config.responseWriter,
+			fullSchemaName = schema.name,
+			schemaNameParts = fullSchemaName.split('.'),
+			schemaNamespace = _.initial(schemaNameParts).join('.'),
+			schemaName = _.last(schemaNameParts),
+			apiEndpoint = `/${schemaNamespace}`.replace(/\./g, '/'),
+
+			routeConfiguration = _.get(me[PROPERTY_ROUTE_CONFIGURATION], apiEndpoint, {});
+
+		let router = _.get(me[PROPERTY_ROUTER_CONFIGURATION], apiEndpoint);
+
+		// If we don't have the router for this endpoint then we need to create one.
+		if (!router) {
+
+			me.log(`Creating router for namespace: ${schemaNamespace}.`);
+
+			// Create router.
 			router = expressRouter();
 
-		// validate
-		if (!_.isString(apiEndpoint)) {
-			apiEndpoint = '';
-		}
-		if (!_.isArray(middlewares)) {
-			middlewares = [];
-		}
-
-		// compile schemas
-		catchEmitThrow(() => {
-			compileSchemas(schemaNameToDefinition);
-		}, ERROR_EVENT, emitter);
-
-		if (responseWriter && !_.isFunction(responseWriter)) {
-			throw new Error('responseWriter must be a function.');
-		}
-
-		// apply middlewares
-		_.each(middlewares, middleware => {
-			if (_.isFunction(middleware)) {
+			// Apply middlewares.
+			_.each(config.middleware, middleware => {
 				router.use(middleware);
-			}
-		});
+			});
 
-		// add post method
-		router.post(SCHEMA_API_PARAM, api(apiEndpoint, schemaNameToDefinition, publisher, responseWriter));
+			// Add the router to the server.
+			me[PROPERTY_SERVER].use(apiEndpoint, router);
 
-		serverStore[this].use(apiEndpoint, router);
+			// Update the router configuration.
+			_.set(me[PROPERTY_ROUTER_CONFIGURATION], apiEndpoint, router);
+
+		}
+
+		// Update the route configuration.
+		_.set(routeConfiguration, schemaName, schema);
+		_.set(me[PROPERTY_ROUTE_CONFIGURATION], apiEndpoint, routeConfiguration);
+
+		// Add the router method.
+		router[config.method](PARAMETER_API_SCHEMA_ENDPOINT, route.create(me, routeConfiguration, responseWriter));
 
 		return this;
 
 	}
 
 	/**
-	 * An express request handler.
-	 * 
-	 * @typedef RequestHandler
-	 * @type {function}
-	 * @param {Object} req - The request.
-	 * @param {Object} res - The response.
-	 */
-
-	/**
-	 Adds a 'get' to the server's default router.
-	 * 
-	 * @example
-	 * // adds a get request handler to ( http://host/swagger.json ) route
-	 * server.addGet({
-	 * 	path: '/swagger.json',
-	 * 	handler: myHandler
-	 * }
-	 * 
-	 * @param {object} config - { path, requestHandler }
-	 * @param {string} config.path - The path to this route.
-	 * @param {RequestHandler} config.requestHandler - The express handler function.
-	 */
-	addGet({ path, requestHandler }) {
-
-		if (!path) {
-			throw Error('Path is required.');
-		}
-
-		if (!_.isFunction(requestHandler)) {
-			throw Error('A handler function is required.');
-		}
-
-		serverStore[this].get(path, requestHandler);
-
-		return this;
-	}
-
-	/**
-	 * Returns the express server
+	 * Returns the express server.
 	 * 
 	 * @example
 	 * // returns the express server
 	 * server.getServer().listen('8080');
-	 * @returns {express}
+	 * @returns {express} The express server.
 	 */
 	getServer() {
-		return serverStore[this];
+		return this[PROPERTY_SERVER];
+	}
+
+	/**
+	 * Emit an error event.
+	 * @param {Object} event 
+	 */
+	error(event) {
+		this.emit(ERROR_EVENT, event);
+	}
+
+	/**
+	 * Emit a log event.
+	 * @param {Object} event 
+	 */
+	log(event) {
+		this.emit(INFO_EVENT, event);
 	}
 
 }
 
-Server.emitter = emitter;
-emitter.ERROR = ERROR_EVENT;
-emitter.INFO = INFO_EVENT;
-
 module.exports = Server;
+
+Server.ROUTE_METHOD = require('./server/routeMethod');
