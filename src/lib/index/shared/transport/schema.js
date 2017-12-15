@@ -33,7 +33,7 @@ module.exports = {
 	fields: [
 		{ name: 'contextSchema', type: 'string' },
 		{ name: 'contextBuffer', type: 'bytes' },
-		{ name: 'messageSchemaName', type: 'string' },
+		{ name: 'messageSchema', type: 'string' },
 		{ name: 'messageBuffer', type: 'bytes' }
 	]
 };

@@ -37,22 +37,28 @@ const
 			contextOrEmpty = context || {},
 			compiledContextSchema = compileFromPlainObject(contextOrEmpty),
 			transport = {
-				contextSchema: JSON.stringify(compiledContextSchema.toJSON()),
+				contextSchema: JSON.stringify(compiledContextSchema),
 				contextBuffer: compiledContextSchema.toBuffer(contextOrEmpty),
-				messageSchemaName: compiledMessageSchema.name,
+				messageSchema: JSON.stringify(compiledMessageSchema),
 				messageBuffer: compiledMessageSchema.toBuffer(message)
 			};
 		return compiledTransportSchema.toBuffer(transport);
 	},
 
-	fromBuffer = (buffer, compiledMessageSchema) => {
+	fromBuffer = (buffer, compiledReaderMessageSchema) => {
 		const
 			decompiledTransportObject = compiledTransportSchema.fromBuffer(buffer),
 
 			compiledContextSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.contextSchema)),
+			compiledWriterMessageSchema = compileFromSchemaDefinition(JSON.parse(decompiledTransportObject.messageSchema)),
 
-			context = compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer),
-			message = compiledMessageSchema.fromBuffer(decompiledTransportObject.messageBuffer);
+			resolver = compiledReaderMessageSchema.createResolver(compiledWriterMessageSchema),
+
+			// Create plain objects from the AVSC types.
+			context = Object.assign({},
+				compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer)),
+			message = Object.assign({},
+				compiledReaderMessageSchema.fromBuffer(decompiledTransportObject.messageBuffer, resolver));
 
 		return { context, message };
 	};
