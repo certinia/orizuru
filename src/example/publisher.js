@@ -26,11 +26,8 @@
 
 'use strict';
 
-const
-	root = require('app-root-path'),
-
-	// get the server
-	{ Publisher } = require(root + '/src/lib/index'),
+// get the publisher
+const { Publisher } = require('../src/lib/index'),
 
 	// get the transport
 	transport = require('@financialforcedev/orizuru-transport-rabbitmq'),

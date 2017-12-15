@@ -169,4 +169,14 @@ class Publisher extends EventEmitter {
 
 }
 
+/**
+ * The error event name.
+ */
+Publisher.ERROR = ERROR_EVENT;
+
+/**
+ * The info event name.
+ */
+Publisher.INFO = INFO_EVENT;
+
 module.exports = Publisher;

@@ -89,8 +89,8 @@ class Server extends EventEmitter {
 
 			// Configure the server
 			server.use(
-				bodyParser.json(), // Body parser
-				helmet() // Header security
+				bodyParser.json(config.bodyParser), // Body parser
+				helmet(config.helmet) // Header security
 			);
 
 			// Add the server
@@ -141,7 +141,7 @@ class Server extends EventEmitter {
 			schemaNameParts = fullSchemaName.split('.'),
 			schemaNamespace = _.initial(schemaNameParts).join('.'),
 			schemaName = _.last(schemaNameParts),
-			apiEndpoint = `/${schemaNamespace}`.replace(/\./g, '/'),
+			apiEndpoint = `${config.endpoint}${schemaNamespace}`.replace(/\./g, '/'),
 
 			routeConfiguration = _.get(me[PROPERTY_ROUTE_CONFIGURATION], apiEndpoint, {});
 
@@ -150,7 +150,7 @@ class Server extends EventEmitter {
 		// If we don't have the router for this endpoint then we need to create one.
 		if (!router) {
 
-			me.log(`Creating router for namespace: ${schemaNamespace}.`);
+			me.log(`Creating router for namespace: ${apiEndpoint}.`);
 
 			// Create router.
 			router = expressRouter();
@@ -172,6 +172,8 @@ class Server extends EventEmitter {
 		_.set(routeConfiguration, schemaName, schema);
 		_.set(me[PROPERTY_ROUTE_CONFIGURATION], apiEndpoint, routeConfiguration);
 
+		me.log(`Adding route: ${fullSchemaName}.`);
+
 		// Add the router method.
 		router[config.method](PARAMETER_API_SCHEMA_ENDPOINT, route.create(me, routeConfiguration, responseWriter));
 
@@ -192,6 +194,15 @@ class Server extends EventEmitter {
 	}
 
 	/**
+	 * Returns the message publisher.
+	 * 
+	 * @returns {Publisher} The message publisher.
+	 */
+	getPublisher() {
+		return this[PROPERTY_PUBLISHER];
+	}
+
+	/**
 	 * Emit an error event.
 	 * @param {Object} event - The error event.
 	 */
@@ -208,6 +219,16 @@ class Server extends EventEmitter {
 	}
 
 }
+
+/**
+ * The error event name.
+ */
+Server.ERROR = ERROR_EVENT;
+
+/**
+ * The info event name.
+ */
+Server.INFO = INFO_EVENT;
 
 module.exports = Server;
 

@@ -140,4 +140,14 @@ class Handler extends EventEmitter {
 
 }
 
+/**
+ * The error event name.
+ */
+Handler.ERROR = ERROR_EVENT;
+
+/**
+ * The info event name.
+ */
+Handler.INFO = INFO_EVENT;
+
 module.exports = Handler;

@@ -132,6 +132,7 @@ describe('index/server.js', () => {
 					}
 				},
 				route = {
+					endpoint: '/api/',
 					method: 'post',
 					middleware: [sandbox.stub()],
 					schema: schema1
@@ -145,10 +146,11 @@ describe('index/server.js', () => {
 			server = server.addRoute(route);
 
 			// Then
-			expect(server.log).to.have.been.calledOnce;
-			expect(server.log).to.have.been.calledWith('Creating router for namespace: com.example.');
+			expect(server.log).to.have.been.calledTwice;
+			expect(server.log).to.have.been.calledWith('Creating router for namespace: /api/com/example.');
+			expect(server.log).to.have.been.calledWith('Adding route: com.example.FullName.');
 			expect(_.size(server.router_configuration)).to.eql(1);
-			expect(server.route_configuration).to.eql({ '/com/example': { FullName: schema1 } });
+			expect(server.route_configuration).to.eql({ '/api/com/example': { FullName: schema1 } });
 			expect(express.Router.use).to.have.been.calledWith(route.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
@@ -169,11 +171,13 @@ describe('index/server.js', () => {
 					}
 				},
 				route1 = {
+					endpoint: '/',
 					method: 'post',
 					middleware: [sandbox.stub()],
 					schema: schema1
 				},
 				route2 = {
+					endpoint: '/',
 					method: 'post',
 					middleware: [sandbox.stub()],
 					schema: schema2
@@ -188,9 +192,11 @@ describe('index/server.js', () => {
 			server = server.addRoute(route2);
 
 			// Then
-			expect(server.log).to.have.been.calledTwice;
-			expect(server.log).to.have.been.calledWith('Creating router for namespace: com.example.');
-			expect(server.log).to.have.been.calledWith('Creating router for namespace: com.example.two.');
+			expect(server.log).to.have.callCount(4);
+			expect(server.log).to.have.been.calledWith('Creating router for namespace: /com/example.');
+			expect(server.log).to.have.been.calledWith('Adding route: com.example.FullName.');
+			expect(server.log).to.have.been.calledWith('Creating router for namespace: /com/example/two.');
+			expect(server.log).to.have.been.calledWith('Adding route: com.example.two.FullName.');
 			expect(_.size(server.router_configuration)).to.eql(2);
 			expect(server.route_configuration).to.eql({
 				'/com/example': { FullName: schema1 },
@@ -217,11 +223,13 @@ describe('index/server.js', () => {
 					}
 				},
 				route1 = {
+					endpoint: '/',
 					method: 'post',
 					middleware: [sandbox.stub()],
 					schema: schema1
 				},
 				route2 = {
+					endpoint: '/',
 					method: 'post',
 					middleware: [sandbox.stub()],
 					schema: schema3
@@ -236,8 +244,10 @@ describe('index/server.js', () => {
 			server = server.addRoute(route2);
 
 			// Then
-			expect(server.log).to.have.been.calledOnce;
-			expect(server.log).to.have.been.calledWith('Creating router for namespace: com.example.');
+			expect(server.log).to.have.been.calledThrice;
+			expect(server.log).to.have.been.calledWith('Creating router for namespace: /com/example.');
+			expect(server.log).to.have.been.calledWith('Adding route: com.example.FullName.');
+			expect(server.log).to.have.been.calledWith('Adding route: com.example.Surname.');
 			expect(_.size(server.router_configuration)).to.eql(1);
 			expect(server.route_configuration).to.eql({
 				'/com/example': {
@@ -272,6 +282,32 @@ describe('index/server.js', () => {
 
 			// Then
 			expect(expressServer).to.not.be.undefined;
+
+		});
+
+	});
+
+	describe('getPublisher', () => {
+
+		it('should return the publisher', () => {
+
+			// Given
+			const
+				config = {
+					transport: {
+						publish: sandbox.stub().resolves(),
+						subscribe: sandbox.stub().resolves()
+					}
+				},
+
+				server = new Server(config),
+
+				// When
+				publisher = server.getPublisher();
+
+			// Then
+			expect(publisher).to.not.be.undefined;
+			expect(publisher).to.be.an.instanceOf(EventEmitter);
 
 		});
 

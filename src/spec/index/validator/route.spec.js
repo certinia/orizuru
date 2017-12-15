@@ -271,13 +271,14 @@ describe('index/validator/route.js', () => {
 				server = {
 					error: sandbox.stub()
 				},
+				request = sandbox.stub(),
 				response = {
 					status: sandbox.stub().returnsThis(),
 					send: sandbox.stub().returnsThis()
 				};
 
 			// When
-			validatedConfig.responseWriter(server)('error', response);
+			validatedConfig.responseWriter(server)('error', request, response);
 
 			// Then
 			expect(response.status).to.have.been.calledOnce;
@@ -298,13 +299,14 @@ describe('index/validator/route.js', () => {
 				server = {
 					error: sandbox.stub()
 				},
+				request = sandbox.stub(),
 				response = {
 					status: sandbox.stub().returnsThis(),
 					send: sandbox.stub().returnsThis()
 				};
 
 			// When
-			validatedConfig.responseWriter(server)(undefined, response);
+			validatedConfig.responseWriter(server)(undefined, request, response);
 
 			// Then
 			expect(response.status).to.have.been.calledOnce;

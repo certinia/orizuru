@@ -39,10 +39,10 @@ module.exports = {
 	},
 	ageAndDob: {
 		namespace: 'com.financialforce.orizuru',
-		name: 'firstAndLastName',
+		name: 'ageAndDob',
 		type: 'record',
 		fields: [
-			{ name: 'age', type: 'string' },
+			{ name: 'age', type: 'int' },
 			{ name: 'dob', type: 'string' }
 		]
 	}

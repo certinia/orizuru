@@ -49,15 +49,15 @@ class RouteValidator {
 			throw new Error(`Invalid parameter: ${config} is not an object.`);
 		}
 
-		if (!config.endpoint) {
-			config.endpoint = '';
+		if (config.endpoint === undefined) {
+			config.endpoint = '/';
 		}
 
 		if (!_.isString(config.endpoint)) {
 			throw new Error('Invalid parameter: endpoint is not a string.');
 		}
 
-		if (!config.method) {
+		if (config.method === undefined) {
 			config.method = ROUTE_METHOD.POST;
 		}
 
@@ -65,7 +65,7 @@ class RouteValidator {
 			throw new Error('Invalid parameter: method is not a string.');
 		}
 
-		if (!config.middleware) {
+		if (config.middleware === undefined) {
 			config.middleware = [];
 		}
 
@@ -80,7 +80,7 @@ class RouteValidator {
 		});
 
 		if (!config.responseWriter) {
-			config.responseWriter = (server) => (error, response) => {
+			config.responseWriter = (server) => (error, request, response) => {
 				if (error) {
 					server.error(error);
 					response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(error);

@@ -26,9 +26,8 @@
 
 'use strict';
 
-const
-	root = require('app-root-path'),
-	{ Handler } = require(root + '/src/lib/index'),
+// get the handler
+const { Handler } = require('../src/lib/index'),
 
 	// get the transport
 	transport = require('@financialforcedev/orizuru-transport-rabbitmq'),
@@ -42,7 +41,7 @@ const
 	schemaNameToDefinition = require('./schemas'),
 
 	// create a simple callback
-	callback = ({ message, context }) => {
+	handler = ({ message, context }) => {
 		// eslint-disable-next-line no-console
 		console.log('worker 2');
 		// eslint-disable-next-line no-console
@@ -57,5 +56,5 @@ new Handler({
 	transportConfig
 }).handle({
 	schema: schemaNameToDefinition.ageAndDob,
-	callback
+	handler
 });
