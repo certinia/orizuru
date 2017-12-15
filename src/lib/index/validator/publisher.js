@@ -32,6 +32,7 @@ const
 
 /**
  * Validate the publisher configuration.
+ * @private
  */
 class PublisherValidator {
 

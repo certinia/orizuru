@@ -32,6 +32,7 @@ const
 
 /**
  * Validates handlers.
+ * @private
  */
 class HandlerValidator {
 

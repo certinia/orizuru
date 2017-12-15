@@ -25,13 +25,14 @@
  **/
 
 'use strict';
+
 /**
  * The Index file for project.
- * Returns the Server and Handler classes.
+ * Returns the Server, Handler and Publisher classes.
  * @module index
- * @see module:index/server
- * @see module:index/handler
- * @see module:index/publisher
+ * @see Server
+ * @see Handler
+ * @see Publisher
  */
 
 const

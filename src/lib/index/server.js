@@ -193,7 +193,7 @@ class Server extends EventEmitter {
 
 	/**
 	 * Emit an error event.
-	 * @param {Object} event 
+	 * @param {Object} event - The error event.
 	 */
 	error(event) {
 		this.emit(ERROR_EVENT, event);
@@ -201,7 +201,7 @@ class Server extends EventEmitter {
 
 	/**
 	 * Emit a log event.
-	 * @param {Object} event 
+	 * @param {Object} event - The log event.
 	 */
 	log(event) {
 		this.emit(INFO_EVENT, event);

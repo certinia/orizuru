@@ -32,6 +32,7 @@ const
 
 /**
  * Parses the schema from a JSON string.
+ * @private
  * @param {string} schema - The JSON schema string.
  * @throws An error if the JSON string cannot be parsed.
  */
@@ -47,6 +48,7 @@ function parseSchema(schema) {
 
 /**
  * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc library}.
+ * @private
  * @param {object} uncompiledSchema - The JSON representation of an Apache Avro Schema.
  * @throws An error if the schema is invalid.
  */

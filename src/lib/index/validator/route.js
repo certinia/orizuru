@@ -33,6 +33,10 @@ const
 	HTTP_STATUS_CODE = require('http-status-codes'),
 	ROUTE_METHOD = require('../server/routeMethod');
 
+/**
+ * Validates routes.
+ * @private
+ */
 class RouteValidator {
 
 	validate(config) {

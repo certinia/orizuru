@@ -35,6 +35,7 @@ const
 
 /**
  * Class used to encode and decode messages using the transport schema.
+ * @private
  */
 class Transport {
 
