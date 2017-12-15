@@ -44,23 +44,21 @@ of your events always receives valid input if it is invoked.
 		...
 		serverInstance = new Server({ transport, transportConfig }),
 
-		schemaNameToDefinition = {
-			ageAndDob: {
-				namespace: 'foo',
-				name: 'bar',
-				type: 'record',
-				fields: [
-					{ name: 'age', type: 'string' },
-					{ name: 'dob', type: 'string' }
-				]
-			}
-		},
+		schema: {
+			namespace: 'foo',
+			name: 'bar',
+			type: 'record',
+			fields: [
+				{ name: 'age', type: 'string' },
+				{ name: 'dob', type: 'string' }
+			]
+		}
 
 		middlewares = [],
 
-		apiEndpoint = '/api/path';
+		endpoint = '/api/path/';
 	
-	serverInstance.addRoute({ schemaNameToDefinition, apiEndpoint, middlewares });
+	serverInstance.addRoute({ schema, endpoint, middlewares });
 
 	let expressServer = serverInstance.getServer();
 

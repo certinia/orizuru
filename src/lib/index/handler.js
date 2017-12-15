@@ -88,7 +88,7 @@ class Handler extends EventEmitter {
 	 * Sets the handler function for a schema type.
 	 * 
 	 * @example
-	 * handler.handle({ schema, callback: ({ message, context }) => {
+	 * handler.handle({ schema, handler: ({ message, context }) => {
 	 * 	console.log(message);
 	 * 	console.log(context);
 	 * }})
@@ -112,7 +112,7 @@ class Handler extends EventEmitter {
 			eventName = _.get(config, 'schema.name'),
 			handler = messageHandler(me, config);
 
-		me.log(`Installing handler for ${eventName} events.`);
+		me.info(`Installing handler for ${eventName} events.`);
 
 		return me[PROPERTY_TRANSPORT_IMPL]({
 			eventName,
@@ -131,10 +131,10 @@ class Handler extends EventEmitter {
 	}
 
 	/**
-	 * Emit a log event.
-	 * @param {Object} event - The log event.
+	 * Emit an info event.
+	 * @param {Object} event - The info event.
 	 */
-	log(event) {
+	info(event) {
 		this.emit(INFO_EVENT, event);
 	}
 
