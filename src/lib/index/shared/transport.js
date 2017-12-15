@@ -37,9 +37,9 @@ const
 			contextOrEmpty = context || {},
 			compiledContextSchema = compileFromPlainObject(contextOrEmpty),
 			transport = {
-				contextSchema: JSON.stringify(compiledContextSchema.toJSON()),
+				contextSchema: JSON.stringify(compiledContextSchema),
 				contextBuffer: compiledContextSchema.toBuffer(contextOrEmpty),
-				messageSchema: JSON.stringify(compiledMessageSchema.toJSON()),
+				messageSchema: JSON.stringify(compiledMessageSchema),
 				messageBuffer: compiledMessageSchema.toBuffer(message)
 			};
 		return compiledTransportSchema.toBuffer(transport);
@@ -54,8 +54,11 @@ const
 
 			resolver = compiledReaderMessageSchema.createResolver(compiledWriterMessageSchema),
 
-			context = compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer),
-			message = compiledReaderMessageSchema.fromBuffer(decompiledTransportObject.messageBuffer, resolver);
+			// Create plain objects from the AVSC types.
+			context = Object.assign({},
+				compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer)),
+			message = Object.assign({},
+				compiledReaderMessageSchema.fromBuffer(decompiledTransportObject.messageBuffer, resolver));
 
 		return { context, message };
 	};

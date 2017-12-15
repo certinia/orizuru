@@ -40,7 +40,6 @@ const
 describe('index/shared/transport.js', () => {
 
 	const
-		contextSchema = compileFromPlainObject({}),
 		messageSchemaV1 = compileFromSchemaDefinition({
 			namespace: 'example.avro',
 			type: 'record',
@@ -69,17 +68,20 @@ describe('index/shared/transport.js', () => {
 			['favorite_color']: 'blue',
 			['favorite_number']: 10
 		},
-		context = {},
+		context = {
+			test: 'A'
+		},
+		contextSchema = compileFromPlainObject(context),
 		transportContentsV1 = {
-			contextSchema: JSON.stringify(contextSchema.toJSON()),
+			contextSchema: JSON.stringify(contextSchema),
 			contextBuffer: contextSchema.toBuffer(context),
-			messageSchema: JSON.stringify(messageSchemaV1.toJSON()),
+			messageSchema: JSON.stringify(messageSchemaV1),
 			messageBuffer: messageSchemaV1.toBuffer(messageV1)
 		},
 		transportContentsV2 = {
-			contextSchema: JSON.stringify(contextSchema.toJSON()),
+			contextSchema: JSON.stringify(contextSchema),
 			contextBuffer: contextSchema.toBuffer(context),
-			messageSchema: JSON.stringify(messageSchemaV2.toJSON()),
+			messageSchema: JSON.stringify(messageSchemaV2),
 			messageBuffer: messageSchemaV2.toBuffer(messageV2)
 		},
 		compiledTransportSchema = compileFromSchemaDefinition(transportSchema);
@@ -111,8 +113,8 @@ describe('index/shared/transport.js', () => {
 
 			// Then
 
-			expect(JSON.stringify(result))
-				.to.deep.equal(JSON.stringify(expected));
+			expect(result)
+				.to.deep.equal(expected);
 		});
 
 		it('is backward compatible', () => {
@@ -133,8 +135,8 @@ describe('index/shared/transport.js', () => {
 
 			// Then
 
-			expect(JSON.stringify(result))
-				.to.deep.equal(JSON.stringify(expected));
+			expect(result)
+				.to.deep.equal(expected);
 		});
 
 		it('is forward compatible', () => {
@@ -154,8 +156,8 @@ describe('index/shared/transport.js', () => {
 
 			// Then
 
-			expect(JSON.stringify(result))
-				.to.deep.equal(JSON.stringify(expected));
+			expect(result)
+				.to.deep.equal(expected);
 		});
 
 	});
