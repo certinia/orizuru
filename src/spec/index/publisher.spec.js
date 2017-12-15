@@ -63,7 +63,9 @@ describe('index/publisher.js', () => {
 			// Then
 			expect(() => new Publisher({})).to.throw(/^Missing required object parameter: transport\.$/g);
 
-			expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
+			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
 
 		});
 
@@ -130,7 +132,8 @@ describe('index/publisher.js', () => {
 					expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
 					expect(publisher.info).to.have.been.calledOnce;
 					expect(publisher.info).to.have.been.calledWith('Published com.example.FullName event.');
-					expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
+					expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
 					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Published com.example.FullName event.');
 				});
 
@@ -236,7 +239,8 @@ describe('index/publisher.js', () => {
 						expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
 						expect(publisher.error).to.have.been.calledOnce;
 						expect(publisher.error).to.have.been.calledWith('Error publishing message on transport.');
-						expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
+						expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+						expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
 						expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event', 'Error publishing message on transport.');
 					});
 

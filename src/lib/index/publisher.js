@@ -61,6 +61,7 @@ class Publisher extends EventEmitter {
 		super();
 
 		const me = this;
+		me.info('Creating publisher.');
 
 		try {
 

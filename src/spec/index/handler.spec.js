@@ -101,7 +101,9 @@ describe('index/handler.js', () => {
 			// Then
 			expect(() => new Handler({})).to.throw(/^Missing required object parameter: transport\.$/g);
 
-			expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
+			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
 
 		});
 
@@ -207,7 +209,8 @@ describe('index/handler.js', () => {
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
-					expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
+					expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
 					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Installing handler for com.example.FullName events.');
 					expect(mocks.messageHandler).to.have.been.calledOnce;
 				});

@@ -63,6 +63,7 @@ class Handler extends EventEmitter {
 		super();
 
 		const me = this;
+		me.info('Creating handler.');
 
 		try {
 

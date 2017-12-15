@@ -78,6 +78,7 @@ class Server extends EventEmitter {
 		super();
 
 		const me = this;
+		me.info('Creating server.');
 
 		try {
 

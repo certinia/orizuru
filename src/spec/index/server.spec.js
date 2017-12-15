@@ -90,7 +90,9 @@ describe('index/server.js', () => {
 			// Then
 			expect(() => new Server({})).to.throw(/^Missing required object parameter: transport\.$/g);
 
-			expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
+			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating server.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
 
 		});
 
