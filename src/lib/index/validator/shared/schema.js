@@ -69,7 +69,8 @@ function validate(config) {
 	}
 
 	if (_.isString(config.schema)) {
-		config.schema = parseSchema(config.schema);
+		const parsedSchema = parseSchema(config.schema);
+		config.schema = compileSchema(parsedSchema);
 	} else if (_.isPlainObject(config.schema)) {
 		config.schema = compileSchema(config.schema);
 	} else if (_.hasIn(config.schema, 'toJSON') && _.hasIn(config.schema, 'toBuffer')) {
@@ -81,6 +82,8 @@ function validate(config) {
 	if (!config.schema.name) {
 		throw new Error('Missing required string parameter: schema[name].');
 	}
+
+	return config;
 
 }
 
