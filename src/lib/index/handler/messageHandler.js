@@ -41,7 +41,7 @@ function messageHandler(server, config) {
 
 		try {
 
-			const decodedContent = server.transport.decode({ schema, content });
+			const decodedContent = server.transport.decode(schema, content);
 			handleMessage(decodedContent);
 
 		} catch (err) {

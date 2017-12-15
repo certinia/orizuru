@@ -60,20 +60,24 @@ class Transport {
 	/**
 	 * Decode a message using the transport schema.
 	 * 
-	 * @param {Object} message - The transport message to decode.
 	 * @param {String} schema - The message schema.
 	 * @param {String} content - The message contents.
 	 */
-	decode({ schema, content }) {
+	decode(schema, content) {
 
 		const
 			decompiledTransportObject = this[PROPERTY_TRANSPORT_SCHEMA].fromBuffer(content),
 
-			parsedSchema = JSON.parse(decompiledTransportObject.contextSchema),
-			contextSchema = avsc.Type.forSchema(parsedSchema),
+			compiledContextSchema = avsc.Type.forSchema(JSON.parse(decompiledTransportObject.contextSchema)),
+			compiledWriterMessageSchema = avsc.Type.forSchema(JSON.parse(decompiledTransportObject.messageSchema)),
 
-			context = contextSchema.fromBuffer(decompiledTransportObject.contextBuffer),
-			message = schema.fromBuffer(decompiledTransportObject.messageBuffer);
+			resolver = schema.createResolver(compiledWriterMessageSchema),
+
+			// Create plain objects from the AVSC types.
+			context = Object.assign({},
+				compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer)),
+			message = Object.assign({},
+				schema.fromBuffer(decompiledTransportObject.messageBuffer, resolver));
 
 		return { context, message };
 
@@ -82,20 +86,18 @@ class Transport {
 	/**
 	 * Encode a message using the transport schema.
 	 * 
-	 * @param {Object} message - The transport message to encode.
 	 * @param {String} schema - The message schema.
 	 * @param {String} message - The message contents.
 	 * @param {String} context - The message context.
 	 */
-	encode({ schema, message, context }) {
+	encode(schema, message, context = {}) {
 
 		const
-			contextOrEmpty = context || {},
-			compiledContextSchema = avsc.Type.forValue(contextOrEmpty),
+			compiledContextSchema = avsc.Type.forValue(context),
 			transport = {
-				contextSchema: JSON.stringify(compiledContextSchema.toJSON()),
-				contextBuffer: compiledContextSchema.toBuffer(contextOrEmpty),
-				messageSchema: JSON.stringify(schema.toJSON()),
+				contextSchema: JSON.stringify(compiledContextSchema),
+				contextBuffer: compiledContextSchema.toBuffer(context),
+				messageSchema: JSON.stringify(schema),
 				messageBuffer: schema.toBuffer(message)
 			};
 

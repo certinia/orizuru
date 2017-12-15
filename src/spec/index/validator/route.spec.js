@@ -27,6 +27,7 @@
 'use strict';
 
 const
+	_ = require('lodash'),
 	avsc = require('avsc'),
 	chai = require('chai'),
 	sinon = require('sinon'),
@@ -263,7 +264,8 @@ describe('index/validator/route.js', () => {
 			// Given
 			const
 				config = {
-					schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
+					schema: '{"name":"com.example.FullName","type":"record","fields":[]}',
+					middleware: [_.noop]
 				},
 				validatedConfig = routeValidator.validate(config),
 				server = {

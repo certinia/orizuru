@@ -114,12 +114,13 @@ class Publisher extends EventEmitter {
 		// Generate transport buffer.
 		const
 			schema = config.schema,
+			message = config.message,
 			eventName = config.schema.name;
 
 		let buffer;
 
 		try {
-			buffer = me[PROPERTY_TRANSPORT].encode(config);
+			buffer = me[PROPERTY_TRANSPORT].encode(schema, message);
 		} catch (err) {
 
 			const errors = [];
