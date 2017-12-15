@@ -12,7 +12,6 @@
 	},
 	"beautify.ignore": [
 		"**/.vscode/*",
-		"**/force/*",
 		"package.json"
 	],
 	"editor.detectIndentation": false,
