@@ -120,7 +120,7 @@ describe('index/publisher.js', () => {
 					}
 				};
 
-			sandbox.spy(publisher, 'log');
+			sandbox.spy(publisher, 'info');
 
 			// When
 			// Then
@@ -128,8 +128,8 @@ describe('index/publisher.js', () => {
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
-					expect(publisher.log).to.have.been.calledOnce;
-					expect(publisher.log).to.have.been.calledWith('Published com.example.FullName event.');
+					expect(publisher.info).to.have.been.calledOnce;
+					expect(publisher.info).to.have.been.calledWith('Published com.example.FullName event.');
 					expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
 					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Published com.example.FullName event.');
 				});

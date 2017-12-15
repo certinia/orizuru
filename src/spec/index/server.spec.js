@@ -140,15 +140,15 @@ describe('index/server.js', () => {
 
 			let server = new Server(config);
 
-			sandbox.spy(server, 'log');
+			sandbox.spy(server, 'info');
 
 			// When
 			server = server.addRoute(route);
 
 			// Then
-			expect(server.log).to.have.been.calledTwice;
-			expect(server.log).to.have.been.calledWith('Creating router for namespace: /api/com/example.');
-			expect(server.log).to.have.been.calledWith('Adding route: com.example.FullName.');
+			expect(server.info).to.have.been.calledTwice;
+			expect(server.info).to.have.been.calledWith('Creating router for namespace: /api/com/example.');
+			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
 			expect(_.size(server.router_configuration)).to.eql(1);
 			expect(server.route_configuration).to.eql({ '/api/com/example': { FullName: schema1 } });
 			expect(express.Router.use).to.have.been.calledWith(route.middleware[0]);
@@ -185,18 +185,18 @@ describe('index/server.js', () => {
 
 			let server = new Server(config);
 
-			sandbox.spy(server, 'log');
+			sandbox.spy(server, 'info');
 
 			// When
 			server = server.addRoute(route1);
 			server = server.addRoute(route2);
 
 			// Then
-			expect(server.log).to.have.callCount(4);
-			expect(server.log).to.have.been.calledWith('Creating router for namespace: /com/example.');
-			expect(server.log).to.have.been.calledWith('Adding route: com.example.FullName.');
-			expect(server.log).to.have.been.calledWith('Creating router for namespace: /com/example/two.');
-			expect(server.log).to.have.been.calledWith('Adding route: com.example.two.FullName.');
+			expect(server.info).to.have.callCount(4);
+			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example.');
+			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
+			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example/two.');
+			expect(server.info).to.have.been.calledWith('Adding route: com.example.two.FullName.');
 			expect(_.size(server.router_configuration)).to.eql(2);
 			expect(server.route_configuration).to.eql({
 				'/com/example': { FullName: schema1 },
@@ -237,17 +237,17 @@ describe('index/server.js', () => {
 
 			let server = new Server(config);
 
-			sandbox.spy(server, 'log');
+			sandbox.spy(server, 'info');
 
 			// When
 			server = server.addRoute(route1);
 			server = server.addRoute(route2);
 
 			// Then
-			expect(server.log).to.have.been.calledThrice;
-			expect(server.log).to.have.been.calledWith('Creating router for namespace: /com/example.');
-			expect(server.log).to.have.been.calledWith('Adding route: com.example.FullName.');
-			expect(server.log).to.have.been.calledWith('Adding route: com.example.Surname.');
+			expect(server.info).to.have.been.calledThrice;
+			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example.');
+			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
+			expect(server.info).to.have.been.calledWith('Adding route: com.example.Surname.');
 			expect(_.size(server.router_configuration)).to.eql(1);
 			expect(server.route_configuration).to.eql({
 				'/com/example': {

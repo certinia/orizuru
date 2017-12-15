@@ -150,7 +150,7 @@ class Server extends EventEmitter {
 		// If we don't have the router for this endpoint then we need to create one.
 		if (!router) {
 
-			me.log(`Creating router for namespace: ${apiEndpoint}.`);
+			me.info(`Creating router for namespace: ${apiEndpoint}.`);
 
 			// Create router.
 			router = expressRouter();
@@ -172,7 +172,7 @@ class Server extends EventEmitter {
 		_.set(routeConfiguration, schemaName, schema);
 		_.set(me[PROPERTY_ROUTE_CONFIGURATION], apiEndpoint, routeConfiguration);
 
-		me.log(`Adding route: ${fullSchemaName}.`);
+		me.info(`Adding route: ${fullSchemaName}.`);
 
 		// Add the router method.
 		router[config.method](PARAMETER_API_SCHEMA_ENDPOINT, route.create(me, routeConfiguration, responseWriter));
@@ -211,10 +211,10 @@ class Server extends EventEmitter {
 	}
 
 	/**
-	 * Emit a log event.
-	 * @param {Object} event - The log event.
+	 * Emit an info event.
+	 * @param {Object} event - The info event.
 	 */
-	log(event) {
+	info(event) {
 		this.emit(INFO_EVENT, event);
 	}
 

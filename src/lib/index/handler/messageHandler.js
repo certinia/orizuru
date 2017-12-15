@@ -37,7 +37,7 @@ function messageHandler(server, config) {
 
 	return (content) => {
 
-		server.log(`Handler received ${eventName} event.`);
+		server.info(`Handler received ${eventName} event.`);
 
 		try {
 

@@ -141,7 +141,7 @@ class Publisher extends EventEmitter {
 		// publish buffer on transport
 		return me[PROPERTY_TRANSPORT_IMPL]({ eventName, buffer, config: me[PROPERTY_TRANSPORT_CONFIG] })
 			.then(result => {
-				me.log(`Published ${schema.name} event.`);
+				me.info(`Published ${schema.name} event.`);
 				return result;
 			})
 			.catch(err => {
@@ -160,10 +160,10 @@ class Publisher extends EventEmitter {
 	}
 
 	/**
-	 * Emit a log event.
-	 * @param {Object} event - The log event.
+	 * Emit an info event.
+	 * @param {Object} event - The info event.
 	 */
-	log(event) {
+	info(event) {
 		this.emit(INFO_EVENT, event);
 	}
 

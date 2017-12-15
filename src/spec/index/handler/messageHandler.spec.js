@@ -53,7 +53,7 @@ describe('index/handler/messageHandler.js', () => {
 		const
 			server = {
 				error: sandbox.stub(),
-				log: sandbox.stub(),
+				info: sandbox.stub(),
 				transport: {
 					decode: sandbox.stub().returns('test')
 				}
@@ -77,8 +77,8 @@ describe('index/handler/messageHandler.js', () => {
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
 		expect(config.handler).to.have.been.calledWith('test');
-		expect(server.log).to.have.been.calledOnce;
-		expect(server.log).to.have.been.calledWith('Handler received com.example.FullName event.');
+		expect(server.info).to.have.been.calledOnce;
+		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
 		expect(server.error).to.not.have.been.called;
 
 	});
@@ -90,7 +90,7 @@ describe('index/handler/messageHandler.js', () => {
 			expectedError = new Error('Failed to decode message.'),
 			server = {
 				error: sandbox.stub(),
-				log: sandbox.stub(),
+				info: sandbox.stub(),
 				transport: {
 					decode: sandbox.stub().throws(expectedError)
 				}
@@ -112,8 +112,8 @@ describe('index/handler/messageHandler.js', () => {
 		messageHandler(server, config)('test');
 
 		// Then
-		expect(server.log).to.have.been.calledOnce;
-		expect(server.log).to.have.been.calledWith('Handler received com.example.FullName event.');
+		expect(server.info).to.have.been.calledOnce;
+		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
 		expect(server.error).to.have.been.calledOnce;
 		expect(server.error).to.have.been.calledWith(expectedError);
 		expect(config.handler).to.not.have.been.called;
