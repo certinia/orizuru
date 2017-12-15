@@ -43,6 +43,9 @@ const
 	// get schemas
 	schemas = require('./schemas'),
 
+	// define port (should be an env var in production)
+	PORT = 5555,
+
 	// define the endpoint ( in this case: /api/{schemaname} )
 	apiEndpoint = '/api/',
 
@@ -52,10 +55,7 @@ const
 		// and then send a 403 if authentication fails first
 		req.orizuru = { auth: 'test auth token or whatever, object containing id, name, etc' };
 		next();
-	}],
-
-	// define port (should be an env var in production)
-	PORT = 5555;
+	}];
 
 // Create a simple extension of the server to debug out error and info events.
 class Web extends Server {

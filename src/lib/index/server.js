@@ -144,7 +144,7 @@ class Server extends EventEmitter {
 			schemaName = _.last(schemaNameParts),
 			apiEndpoint = `${config.endpoint}${schemaNamespace}`.replace(/\./g, '/'),
 
-			routeConfiguration = _.get(me[PROPERTY_ROUTE_CONFIGURATION], apiEndpoint, {});
+			routeConfiguration = _.get(me, `${PROPERTY_ROUTE_CONFIGURATION}.${apiEndpoint}`, {});
 
 		let router = _.get(me[PROPERTY_ROUTER_CONFIGURATION], apiEndpoint);
 
