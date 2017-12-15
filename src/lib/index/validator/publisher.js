@@ -38,7 +38,7 @@ class PublisherValidator {
 
 	validate(config) {
 
-		if (config === undefined) {
+		if (!config) {
 			throw new Error('Missing required object parameter.');
 		}
 

@@ -32,7 +32,7 @@ class ServerValidator {
 
 	constructor(config) {
 
-		if (config === undefined) {
+		if (!config) {
 			throw new Error('Missing required object parameter.');
 		}
 
@@ -40,7 +40,7 @@ class ServerValidator {
 			throw new Error(`Invalid parameter: ${config} is not an object.`);
 		}
 
-		if (config.transport === undefined) {
+		if (!config.transport) {
 			throw new Error('Missing required object parameter: transport.');
 		}
 

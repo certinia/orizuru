@@ -41,7 +41,7 @@ class RouteValidator {
 
 	validate(config) {
 
-		if (config === undefined) {
+		if (!config) {
 			throw new Error('Missing required object parameter.');
 		}
 
@@ -49,7 +49,7 @@ class RouteValidator {
 			throw new Error(`Invalid parameter: ${config} is not an object.`);
 		}
 
-		if (config.endpoint === undefined) {
+		if (!config.endpoint) {
 			config.endpoint = '/';
 		}
 
@@ -57,7 +57,7 @@ class RouteValidator {
 			throw new Error('Invalid parameter: endpoint is not a string.');
 		}
 
-		if (config.method === undefined) {
+		if (!config.method) {
 			config.method = ROUTE_METHOD.POST;
 		}
 
@@ -65,7 +65,7 @@ class RouteValidator {
 			throw new Error('Invalid parameter: method is not a string.');
 		}
 
-		if (config.middleware === undefined) {
+		if (!config.middleware) {
 			config.middleware = [];
 		}
 
