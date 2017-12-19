@@ -1,6 +1,6 @@
 {
   "name": "@financialforcedev/orizuru",
-  "version": "6.0.0-2",
+  "version": "6.0.0-3",
   "description": "Streamlined communication between Heroku dynos / other worker processes",
   "main": "src/lib/index.js",
   "scripts": {
