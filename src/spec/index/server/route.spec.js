@@ -94,6 +94,12 @@ describe('index/server/route.js', () => {
 				request = {
 					params: {
 						schemaName: 'test'
+					},
+					body: { something: 10 },
+					orizuru: {
+						user: {
+							username: 'test'
+						}
 					}
 				},
 
@@ -108,6 +114,11 @@ describe('index/server/route.js', () => {
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(responseWriter).to.have.been.calledOnce;
+					expect(server.publisher.publish).to.have.been.calledWith({
+						schema: routeConfiguration.test,
+						message: request.body,
+						context: request.orizuru
+					});
 				});
 
 		});

@@ -38,7 +38,7 @@ function create(server, routeConfiguration, responseWriter) {
 			message = {
 				schema,
 				message: request.body,
-				context: request.context
+				context: request.orizuru
 			};
 
 		if (!schema) {
