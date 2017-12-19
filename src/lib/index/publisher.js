@@ -116,12 +116,13 @@ class Publisher extends EventEmitter {
 		const
 			schema = config.schema,
 			message = config.message,
-			eventName = config.schema.name;
+			eventName = config.schema.name,
+			context = config.context;
 
 		let buffer;
 
 		try {
-			buffer = me[PROPERTY_TRANSPORT].encode(schema, message);
+			buffer = me[PROPERTY_TRANSPORT].encode(schema, message, context);
 		} catch (err) {
 
 			const errors = [];

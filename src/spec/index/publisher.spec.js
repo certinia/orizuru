@@ -36,6 +36,7 @@ const
 	avsc = require('avsc'),
 	{ EventEmitter } = require('events'),
 	PublisherValidator = require('../../lib/index/validator/publisher'),
+	Transport = require('../../lib/index/transport/transport'),
 
 	expect = chai.expect,
 
@@ -97,6 +98,7 @@ describe('index/publisher.js', () => {
 			// Given
 			sandbox.stub(PublisherValidator.prototype, 'validate');
 			sandbox.spy(EventEmitter.prototype, 'emit');
+			sandbox.spy(Transport.prototype, 'encode');
 
 			const
 				config = {
@@ -119,6 +121,11 @@ describe('index/publisher.js', () => {
 					message: {
 						first: 'First',
 						last: 'Last'
+					},
+					context: {
+						user: {
+							username: 'test@test.com'
+						}
 					}
 				};
 
@@ -130,6 +137,8 @@ describe('index/publisher.js', () => {
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+					expect(Transport.prototype.encode).to.have.been.calledWith(
+						message.schema, message.message, message.context);
 					expect(publisher.info).to.have.been.calledOnce;
 					expect(publisher.info).to.have.been.calledWith('Published com.example.FullName event.');
 					expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
