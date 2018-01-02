@@ -18,3 +18,4 @@
 ### OTHER CHANGES
 
 - The transport schema has been updated to an Apache Avro schema (`.avsc`) file.
+- Updated the JS documentation to use the Minami theme.
