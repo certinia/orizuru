@@ -65,6 +65,10 @@ class RouteValidator {
 			throw new Error('Invalid parameter: method is not a string.');
 		}
 
+		if (!_.find(_.values(ROUTE_METHOD), (value) => value === config.method)) {
+			throw new Error(`Invalid parameter: method must be one of the following options: ${_.values(ROUTE_METHOD)}. Got ${config.method}.`);
+		}
+
 		if (!config.middleware) {
 			config.middleware = [];
 		}
