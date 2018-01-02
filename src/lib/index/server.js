@@ -28,9 +28,7 @@
 
 const
 	_ = require('lodash'),
-	bodyParser = require('body-parser'),
 	express = require('express'),
-	helmet = require('helmet'),
 
 	EventEmitter = require('events'),
 	Publisher = require('./publisher'),
