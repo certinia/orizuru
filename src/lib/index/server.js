@@ -88,12 +88,6 @@ class Server extends EventEmitter {
 			// Create the express server
 			const server = express();
 
-			// Configure the server
-			server.use(
-				bodyParser.json(config.bodyParser), // Body parser
-				helmet(config.helmet) // Header security
-			);
-
 			// Add the server
 			Object.defineProperty(me, PROPERTY_SERVER, { value: server });
 
