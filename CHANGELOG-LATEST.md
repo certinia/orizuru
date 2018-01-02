@@ -6,7 +6,7 @@
 
 - The server `addRoute` method has been updated to add each route separately.
 - The server `addGet` method has been removed.
-	- The `addRoute allows you to specify the method as part of the route configuration.
+	- The `addRoute` allows you to specify the method as part of the route configuration.
 - The `Server`, `Publisher` and `Handler` now extend `EventEmitter`.
 	- Any cases of `Server.emitter`, `Publisher.emitter` and `Handler.emitter` should be changed to reference the instance.
 
