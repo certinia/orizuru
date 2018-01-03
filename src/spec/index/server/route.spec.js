@@ -154,7 +154,7 @@ describe('index/server/route.js', () => {
 
 		});
 
-		it('should error if publishing the message fails', () => {
+		it('should error if publishing the message rejects', () => {
 
 			// Given
 			const
@@ -162,6 +162,55 @@ describe('index/server/route.js', () => {
 				server = {
 					publisher: {
 						publish: sandbox.stub().rejects(expectedError)
+					}
+				},
+				routeConfiguration = {
+					test: avsc.Type.forSchema({
+						type: 'record',
+						namespace: 'com.example',
+						name: 'FullName',
+						fields: [
+							{ name: 'first', type: 'string' },
+							{ name: 'last', type: 'string' }
+						]
+					})
+				},
+				responseFunction = sandbox.stub(),
+				responseWriter = sandbox.stub().returns(responseFunction),
+
+				routeFunction = route.create(server, routeConfiguration, responseWriter),
+
+				request = {
+					params: {
+						schemaName: 'test'
+					}
+				},
+
+				response = {
+					status: sandbox.stub().returnsThis(),
+					send: sandbox.stub().returnsThis()
+				};
+
+			// When
+			// Then
+			return expect(routeFunction(request, response))
+				.to.eventually.be.fulfilled
+				.then(() => {
+					expect(responseWriter).to.have.been.calledOnce;
+					expect(responseFunction).to.have.been.calledOnce;
+					expect(responseFunction).to.have.been.calledWith(expectedError);
+				});
+
+		});
+
+		it('should error if publishing the message throws an error', () => {
+
+			// Given
+			const
+				expectedError = new Error('Failed to publish message'),
+				server = {
+					publisher: {
+						publish: sandbox.stub().throws(expectedError)
 					}
 				},
 				routeConfiguration = {

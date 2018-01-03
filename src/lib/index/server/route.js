@@ -47,7 +47,8 @@ function create(server, routeConfiguration, responseWriter) {
 			return response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(errorMsg);
 		}
 
-		return server.publisher.publish(message)
+		return Promise.resolve(message)
+			.then(server.publisher.publish.bind(server.publisher))
 			.then(() => responseWriter(server)(undefined, request, response))
 			.catch((error) => responseWriter(server)(error, request, response));
 
