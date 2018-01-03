@@ -148,6 +148,19 @@ describe('index/validator/route.js', () => {
 
 			});
 
+			it('if the method is not a valid option', () => {
+
+				// Given
+				const config = {
+					method: 'invalid'
+				};
+
+				// When
+				// Then
+				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: method must be one of the following options: checkout,copy,delete,get,head,lock,merge,mkactivity,mkcol,move,m-search,notify,options,patch,post,purge,put,report,search,subscribe,trace,unlock,unsubscribe\. Got invalid\.$/);
+
+			});
+
 			it('if the middleware is not an array', () => {
 
 				// Given
