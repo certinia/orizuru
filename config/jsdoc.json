@@ -6,7 +6,7 @@
 		"private": false,
 		"recurse": true,
 		"readme": "README.md",
-		"template": "./node_modules/minami"
+		"template": "./node_modules/docdash"
 	},
 	"plugins": [
 		"plugins/markdown"
@@ -35,7 +35,7 @@
 		"showInheritedInNav": true,
 		"default": {
 			"includeDate": false,
-			"outputSourceFiles": false
+			"outputSourceFiles": true
 		}
 	}
 }
