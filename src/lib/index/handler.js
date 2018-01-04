@@ -56,7 +56,6 @@ class Handler extends EventEmitter {
 	 * @param {Object} config - The handler configuration.
 	 * @param {transport} config.transport - The transport object.
 	 * @param {Object} config.transportConfig - The configuration for the transport object.
-	 * @returns {Server}
 	 */
 	constructor(config) {
 
@@ -97,6 +96,7 @@ class Handler extends EventEmitter {
 	 * @param {Object} config - The handler configuration.
 	 * @param {Object} config.schema - Schema (compiled or uncompiled Avro schema object).
 	 * @param {Object} config.handler - The handler (called with { message, context }), this callback must handle error_EVENTs and should only ever return a promise which resolves or undefined.
+	 * @returns {Promise} A promise.
 	 */
 	handle(config) {
 

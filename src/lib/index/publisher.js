@@ -49,12 +49,11 @@ const
 class Publisher extends EventEmitter {
 
 	/**
-	 * Constructs a new 'Publisher'
+	 * Constructs a new 'Publisher'.
 	 * 
-	 * @param {object} config - { transport [, transportConfig] }
+	 * @param {Object} config - { transport [, transportConfig] }
 	 * @param {transport} config.transport - the transport object
-	 * @param {object} config.transportConfig - config for the transport object
-	 * @returns {Server}
+	 * @param {Object} config.transportConfig - config for the transport object
 	 */
 	constructor(config) {
 
@@ -98,7 +97,7 @@ class Publisher extends EventEmitter {
 	 * @param {Object} config.message - The message to send.
 	 * @param {Object} config.context - The context for this message.
 	 * 
-	 * @returns {Promise}
+	 * @returns {Promise} A promise.
 	 */
 	publish(config) {
 

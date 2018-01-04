@@ -69,7 +69,6 @@ class Server extends EventEmitter {
 	 * @param {Object} config - The server configuration.
 	 * @param {Transport} config.transport - The transport object.
 	 * @param {Object} config.transportConfig - The config for the transport object.
-	 * @returns {Server} - The server.
 	 */
 	constructor(config) {
 
@@ -111,12 +110,12 @@ class Server extends EventEmitter {
 	/**
 	 * Adds a 'route' to the server.
 	 * 
-	 * @param {Object} route - The route.
-	 * @param {string|Object} route.schema - The Apache Avro schema for this route.
-	 * @param {string} route.method=POST - The method to use for this route.
-	 * @param {Function[]} route.middlewares - The middleware functions for this route.
-	 * @param {Function} route.responseWriter - The function to use before writing the response.
-	 * @param {string} [route.endpoint=/] - The API endpoint.
+	 * @param {Object} config - The route.
+	 * @param {string|Object} config.schema - The Apache Avro schema for this route.
+	 * @param {string} config.method=POST - The method to use for this route.
+	 * @param {Function[]} config.middlewares - The middleware functions for this route.
+	 * @param {Function} config.responseWriter - The function to use before writing the response.
+	 * @param {string} [config.endpoint=/] - The API endpoint.
 	 * 
 	 * @returns {Server} The server.
 	 */

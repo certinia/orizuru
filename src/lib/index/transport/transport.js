@@ -44,7 +44,6 @@ class Transport {
 	 * 
 	 * @example
 	 * const transport = new Transport();
-	 * @returns {Transport} - Functions to encode and decode messages using the transport schema.
 	 */
 	constructor() {
 
@@ -61,8 +60,9 @@ class Transport {
 	/**
 	 * Decode a message using the transport schema.
 	 * 
-	 * @param {String} schema - The message schema.
-	 * @param {String} content - The message contents.
+	 * @param {string} schema - The message schema.
+	 * @param {string} content - The message contents.
+	 * @returns {Object} The decoded message.
 	 */
 	decode(schema, content) {
 
@@ -87,9 +87,10 @@ class Transport {
 	/**
 	 * Encode a message using the transport schema.
 	 * 
-	 * @param {String} schema - The message schema.
-	 * @param {String} message - The message contents.
-	 * @param {String} context - The message context.
+	 * @param {string} schema - The message schema.
+	 * @param {string} message - The message contents.
+	 * @param {string} context - The message context.
+	 * @returns {Buffer} The encoded message.
 	 */
 	encode(schema, message, context = {}) {
 
