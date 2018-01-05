@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -27,7 +27,6 @@
 'use strict';
 
 const
-	root = require('app-root-path'),
 	proxyquire = require('proxyquire'),
 	{ expect } = require('chai');
 
@@ -40,7 +39,7 @@ describe('index.js', () => {
 			mockServer = { mock: 'mockServer' },
 			mockHandler = { mock: 'mockHandler' },
 			mockPublisher = { mock: 'mockPublisher' },
-			index = proxyquire(root + '/src/lib/index', {
+			index = proxyquire('../lib/index', {
 				['./index/server']: mockServer,
 				['./index/handler']: mockHandler,
 				['./index/publisher']: mockPublisher

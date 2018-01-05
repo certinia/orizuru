@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -26,29 +26,48 @@
 
 'use strict';
 
-const
-	avro = require('avsc'),
+const _ = require('lodash');
 
-	typeHook = () => {
-		let i = 0;
-		return schema => {
-			if (schema &&
-				schema.type &&
-				schema.type === 'enum' ||
-				schema.type === 'fixed' ||
-				schema.type === 'record') {
+class ServerValidator {
 
-				schema.namespace = 'com.ffdc.orizuru';
-				schema.name = `Context${i}`;
-				i++;
+	constructor(config) {
 
-			}
-		};
-	};
+		if (!config) {
+			throw new Error('Missing required object parameter.');
+		}
 
-module.exports = {
-	compileFromPlainObject: type => {
-		return avro.Type.forValue(type, { typeHook: typeHook() });
-	},
-	compileFromSchemaDefinition: json => avro.Type.forSchema(json)
-};
+		if (!_.isPlainObject(config)) {
+			throw new Error(`Invalid parameter: ${config} is not an object.`);
+		}
+
+		if (!config.transport) {
+			throw new Error('Missing required object parameter: transport.');
+		}
+
+		if (!_.isPlainObject(config.transport)) {
+			throw new Error('Invalid parameter: transport is not an object.');
+		}
+
+		if (!config.transport.publish) {
+			throw new Error('Missing required function parameter: transport[publish].');
+		}
+
+		if (!_.isFunction(config.transport.publish)) {
+			throw new Error('Invalid parameter: transport[publish] is not a function.');
+		}
+
+		if (!config.transport.subscribe) {
+			throw new Error('Missing required function parameter: transport[subscribe].');
+		}
+
+		if (!_.isFunction(config.transport.subscribe)) {
+			throw new Error('Invalid parameter: transport[subscribe] is not a function.');
+		}
+
+		return config;
+
+	}
+
+}
+
+module.exports = ServerValidator;

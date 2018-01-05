@@ -1,7 +1,8 @@
 {
 	"recommendations": [
 		"alexdima.vscode-lcov",
+		"asvetliakov.run-current-test",
 		"dbaeumer.vscode-eslint",
-		"HookyQR.beautify",
+		"HookyQR.beautify"
 	]
 }

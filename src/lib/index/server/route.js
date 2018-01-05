@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -26,4 +26,36 @@
 
 'use strict';
 
-describe('index/shared/compileSchemas.js', () => it('is tested by server and handler tests', () => {}));
+const HTTP_STATUS_CODE = require('http-status-codes');
+
+function create(server, routeConfiguration, responseWriter) {
+
+	return (request, response) => {
+
+		const
+			schemaName = request.params.schemaName,
+			schema = routeConfiguration[schemaName],
+			message = {
+				schema,
+				message: request.body,
+				context: request.orizuru
+			};
+
+		if (!schema) {
+			const errorMsg = `No schema for '${schemaName}' found.`;
+			server.error(errorMsg);
+			return response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(errorMsg);
+		}
+
+		return Promise.resolve(message)
+			.then(server.publisher.publish.bind(server.publisher))
+			.then(() => responseWriter(server)(undefined, request, response))
+			.catch((error) => responseWriter(server)(error, request, response));
+
+	};
+
+}
+
+module.exports = {
+	create
+};

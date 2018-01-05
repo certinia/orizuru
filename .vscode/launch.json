@@ -6,35 +6,40 @@
 		"name": "Debug web example",
 		"runtimeArgs": [
 			"src/example/web.js"
-		]
+		],
+		"envFile": "${workspaceFolder}/local.run.properties"
 	}, {
 		"type": "node",
 		"request": "launch",
 		"name": "Debug publisher example",
 		"runtimeArgs": [
 			"src/example/publisher.js"
-		]
+		],
+		"envFile": "${workspaceFolder}/local.run.properties"
 	}, {
 		"type": "node",
 		"request": "launch",
 		"name": "Debug worker example 1",
 		"runtimeArgs": [
 			"src/example/worker1.js"
-		]
+		],
+		"envFile": "${workspaceFolder}/local.run.properties"
 	}, {
 		"type": "node",
 		"request": "launch",
 		"name": "Debug worker example 2",
 		"runtimeArgs": [
 			"src/example/worker2.js"
-		]
+		],
+		"envFile": "${workspaceFolder}/local.run.properties"
 	}, {
 		"type": "node",
 		"request": "launch",
 		"name": "Debug worker example 3",
 		"runtimeArgs": [
 			"src/example/worker3.js"
-		]
+		],
+		"envFile": "${workspaceFolder}/local.run.properties"
 	}, {
 		"type": "node",
 		"request": "launch",

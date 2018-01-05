@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -28,71 +28,90 @@
 
 const
 	_ = require('lodash'),
-	root = require('app-root-path'),
+	chai = require('chai'),
 	sinon = require('sinon'),
-	proxyquire = require('proxyquire'),
-	{ expect } = require('chai'),
-	{ calledOnce, calledTwice, calledThrice, calledWith, notCalled } = sinon.assert,
-	request = require('supertest'),
+	sinonChai = require('sinon-chai'),
 
-	serverPath = root + '/src/lib/index/server',
-	Publisher = require(root + '/src/lib/index/publisher'),
+	avsc = require('avsc'),
+	express = require('express'),
+	{ EventEmitter } = require('events'),
+	RouteValidator = require('../../lib/index/validator/route'),
 
-	sandbox = sinon.sandbox.create(),
-	restore = sandbox.restore.bind(sandbox);
+	expect = chai.expect,
+
+	Server = require('../../lib/index/server'),
+
+	sandbox = sinon.sandbox.create();
+
+chai.use(sinonChai);
 
 describe('index/server.js', () => {
 
-	let config;
+	const
+		schema1 = avsc.Type.forSchema({
+			type: 'record',
+			namespace: 'com.example',
+			name: 'FullName',
+			fields: [
+				{ name: 'first', type: 'string' },
+				{ name: 'last', type: 'string' }
+			]
+		}),
+		schema2 = avsc.Type.forSchema({
+			type: 'record',
+			namespace: 'com.example.two',
+			name: 'FullName',
+			fields: [
+				{ name: 'first', type: 'string' },
+				{ name: 'last', type: 'string' }
+			]
+		}),
+		schema3 = avsc.Type.forSchema({
+			type: 'record',
+			namespace: 'com.example',
+			name: 'Surname',
+			fields: [
+				{ name: 'last', type: 'string' }
+			]
+		});
 
-	beforeEach(() => {
-		config = {
-			transport: {
-				publish: _.noop,
-				subscribe: _.noop
-			},
-			transportConfig: 'testTransportConfig'
-		};
+	afterEach(() => {
+		sandbox.restore();
 	});
-
-	afterEach(restore);
 
 	describe('constructor', () => {
 
-		let expressMock, expressMockResult, bodyParserMock, helmetMock, serverUseSpy, Server;
+		it('should emit an error event if the configuration is invalid', () => {
 
-		beforeEach(() => {
-			serverUseSpy = sandbox.spy();
-			expressMockResult = {
-				use: serverUseSpy
-			};
-			expressMock = function () {
-				return expressMockResult;
-			};
-			bodyParserMock = 'bodyParserMock';
-			helmetMock = 'helmetMock';
-			Server = proxyquire(serverPath, {
-				express: expressMock,
-				'body-parser': {
-					json: () => bodyParserMock
-				},
-				helmet: () => helmetMock
-			});
+			// Given
+			sandbox.spy(EventEmitter.prototype, 'emit');
+
+			// When
+			// Then
+			expect(() => new Server({})).to.throw(/^Missing required object parameter: transport\.$/g);
+
+			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating server.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
+
 		});
 
-		it('should construct a server', () => {
+		it('should extend EventEmitter', () => {
 
-			// given
+			// Given
 			const
-				server = new Server(config),
-				express = server.getServer();
+				config = {
+					transport: {
+						publish: _.noop,
+						subscribe: _.noop
+					}
+				},
 
-			// when - then
-			expect(express).to.eql(expressMockResult);
+				// When
+				server = new Server(config);
 
-			calledTwice(serverUseSpy);
-			calledWith(serverUseSpy, bodyParserMock);
-			calledWith(serverUseSpy, helmetMock);
+			// Then
+			expect(server).to.be.an.instanceof(EventEmitter);
 
 		});
 
@@ -100,296 +119,146 @@ describe('index/server.js', () => {
 
 	describe('addRoute', () => {
 
-		let expressMock, expressMockResult, expressMockRouterResult, serverUseSpy, serverRouterUseSpy, serverRouterPostSpy, Server;
+		it('should add a route to the server', () => {
 
-		beforeEach(() => {
-			serverUseSpy = sandbox.spy();
-			serverRouterUseSpy = sandbox.spy();
-			serverRouterPostSpy = sandbox.spy();
-			expressMockResult = {
-				use: serverUseSpy
-			};
-			expressMock = function () {
-				return expressMockResult;
-			};
-			expressMockRouterResult = {
-				use: serverRouterUseSpy,
-				post: serverRouterPostSpy
-			};
-			expressMock.Router = function () {
-				return expressMockRouterResult;
-			};
-			Server = proxyquire(serverPath, {
-				express: expressMock
-			});
-		});
+			// Given
+			sandbox.stub(RouteValidator.prototype, 'validate');
+			sandbox.spy(EventEmitter.prototype, 'emit');
+			sandbox.stub(express.Router, 'use');
 
-		it('should throw an exception if schemaNameToDefinition isn\'t an object', () => {
-
-			// given
 			const
-				server = new Server(config),
-				input = {
-					schemaNameToDefinition: null
-				};
-
-			// when - then
-			expect(() => server.addRoute(input)).to.throw('schemaNameToDefinition argument must be an object of: schemaName -> avroSchema.');
-
-		});
-
-		it('should throw an exception if schemaNameToDefinition values aren\'t valid schemas', () => {
-
-			// given
-			const
-				server = new Server(config),
-				input = {
-					schemaNameToDefinition: {
-						testSchema: []
+				config = {
+					transport: {
+						publish: sandbox.stub().resolves(),
+						subscribe: sandbox.stub().resolves()
 					}
+				},
+				route = {
+					endpoint: '/api/',
+					method: 'post',
+					middleware: [sandbox.stub()],
+					schema: schema1
 				};
 
-			// when - then
-			expect(() => server.addRoute(input)).to.throw('Schema name: \'testSchema\' schema could not be compiled: empty union');
+			let server = new Server(config);
+
+			sandbox.spy(server, 'info');
+
+			// When
+			server = server.addRoute(route);
+
+			// Then
+			expect(server.info).to.have.been.calledTwice;
+			expect(server.info).to.have.been.calledWith('Creating router for namespace: /api/com/example.');
+			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
+			expect(_.size(server.router_configuration)).to.eql(1);
+			expect(server.route_configuration).to.eql({ '/api/com/example': { FullName: schema1 } });
+			expect(express.Router.use).to.have.been.calledWith(route.middleware[0]);
+			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
 		});
 
-		it('should throw an exception if resultWriter is not a function', () => {
+		it('should multiple routes to the server (with different namespaces on different routers)', () => {
 
-			// given
+			// Given
+			sandbox.stub(RouteValidator.prototype, 'validate');
+			sandbox.spy(EventEmitter.prototype, 'emit');
+			sandbox.stub(express.Router, 'use');
+
 			const
-				server = new Server(config),
-				input = {
-					schemaNameToDefinition: {
-						testSchema: {
-							type: 'record',
-							fields: [{
-								name: 'f',
-								type: 'string'
-							}]
-						}
-					},
-					responseWriter: {}
-				};
-
-			// when - then
-			expect(() => server.addRoute(input)).to.throw('responseWriter must be a function.');
-
-		});
-
-		it('should add a route if schemaNameToDefinition map is correct, with default route and middlewares', () => {
-
-			// given
-			const
-				server = new Server(config),
-				input = {
-					schemaNameToDefinition: {
-						testSchema: {
-							type: 'record',
-							fields: [{
-								name: 'f',
-								type: 'string'
-							}]
-						}
+				config = {
+					transport: {
+						publish: sandbox.stub().resolves(),
+						subscribe: sandbox.stub().resolves()
 					}
+				},
+				route1 = {
+					endpoint: '/',
+					method: 'post',
+					middleware: [sandbox.stub()],
+					schema: schema1
+				},
+				route2 = {
+					endpoint: '/',
+					method: 'post',
+					middleware: [sandbox.stub()],
+					schema: schema2
 				};
 
-			// when
-			server.addRoute(input);
+			let server = new Server(config);
 
-			// then
-			notCalled(serverRouterUseSpy);
-			calledOnce(serverRouterPostSpy);
-			calledWith(serverRouterPostSpy, '/:schemaName', sinon.match.func);
-			calledThrice(serverUseSpy);
-			calledWith(serverUseSpy, sinon.match.func);
-			calledWith(serverUseSpy, sinon.match.func);
-			calledWith(serverUseSpy, '', expressMockRouterResult);
+			sandbox.spy(server, 'info');
 
-		});
+			// When
+			server = server.addRoute(route1);
+			server = server.addRoute(route2);
 
-		it('should add a route at custom endpoint if custom endpoint is provided', () => {
-
-			// given
-			const
-				server = new Server(config),
-				input = {
-					schemaNameToDefinition: {
-						testSchema: {
-							type: 'record',
-							fields: [{
-								name: 'f',
-								type: 'string'
-							}]
-						}
-					},
-					apiEndpoint: '/test'
-				};
-
-			// when
-			server.addRoute(input);
-
-			// then
-			notCalled(serverRouterUseSpy);
-			calledOnce(serverRouterPostSpy);
-			calledWith(serverRouterPostSpy, '/:schemaName', sinon.match.func);
-			calledThrice(serverUseSpy);
-			calledWith(serverUseSpy, sinon.match.func);
-			calledWith(serverUseSpy, sinon.match.func);
-			calledWith(serverUseSpy, '/test', expressMockRouterResult);
-
-		});
-
-		it('should add a with middlewares if middlewares are provided', () => {
-
-			// given
-			const
-				server = new Server(config),
-				middleware = _.noop,
-				input = {
-					schemaNameToDefinition: {
-						testSchema: {
-							type: 'record',
-							fields: [{
-								name: 'f',
-								type: 'string'
-							}]
-						}
-					},
-					middlewares: [middleware]
-				};
-
-			// when
-			server.addRoute(input);
-
-			// then
-			calledOnce(serverRouterUseSpy);
-			calledWith(serverRouterUseSpy, middleware);
-			calledOnce(serverRouterPostSpy);
-			calledWith(serverRouterPostSpy, '/:schemaName', sinon.match.func);
-			calledThrice(serverUseSpy);
-			calledWith(serverUseSpy, sinon.match.func);
-			calledWith(serverUseSpy, sinon.match.func);
-			calledWith(serverUseSpy, '', expressMockRouterResult);
-
-		});
-
-		it('should ignore middlewares that aren\'t functions', () => {
-
-			// given
-			const
-				server = new Server(config),
-				middleware = _.noop,
-				input = {
-					schemaNameToDefinition: {
-						testSchema: {
-							type: 'record',
-							fields: [{
-								name: 'f',
-								type: 'string'
-							}]
-						}
-					},
-					middlewares: [middleware, 'a test']
-				};
-
-			// when
-			server.addRoute(input);
-
-			// then
-			calledOnce(serverRouterUseSpy);
-			calledWith(serverRouterUseSpy, middleware);
-			calledOnce(serverRouterPostSpy);
-			calledWith(serverRouterPostSpy, '/:schemaName', sinon.match.func);
-			calledThrice(serverUseSpy);
-			calledWith(serverUseSpy, sinon.match.func);
-			calledWith(serverUseSpy, sinon.match.func);
-			calledWith(serverUseSpy, '', expressMockRouterResult);
-
-		});
-
-	});
-
-	describe('addGet', () => {
-
-		let serverUseSpy, serverGetSpy, expressMockResult, expressMock, Server;
-
-		beforeEach(() => {
-			serverUseSpy = sandbox.spy();
-			serverGetSpy = sandbox.spy();
-			expressMockResult = {
-				get: serverGetSpy,
-				use: serverUseSpy
-			};
-			expressMock = function () {
-				return expressMockResult;
-			};
-			Server = proxyquire(serverPath, {
-				express: expressMock
+			// Then
+			expect(server.info).to.have.callCount(4);
+			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example.');
+			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
+			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example/two.');
+			expect(server.info).to.have.been.calledWith('Adding route: com.example.two.FullName.');
+			expect(_.size(server.router_configuration)).to.eql(2);
+			expect(server.route_configuration).to.eql({
+				'/com/example': { FullName: schema1 },
+				'/com/example/two': { FullName: schema2 }
 			});
-		});
-
-		it('should throw an exception if path is null', () => {
-
-			// given
-			const
-				server = new Server(config);
-
-			// when - then
-			expect(() => server.addGet({})).to.throw('Path is required.');
+			expect(express.Router.use).to.have.been.calledWith(route1.middleware[0]);
+			expect(express.Router.use).to.have.been.calledWith(route2.middleware[0]);
+			expect(RouteValidator.prototype.validate).to.have.been.calledTwice;
 
 		});
 
-		it('should throw an exception if path is empty', () => {
+		it('should multiple routes to the server (with the same namespace on the same router)', () => {
 
-			// given
+			// Given
+			sandbox.stub(RouteValidator.prototype, 'validate');
+			sandbox.spy(EventEmitter.prototype, 'emit');
+			sandbox.stub(express.Router, 'use');
+
 			const
-				server = new Server(config);
+				config = {
+					transport: {
+						publish: sandbox.stub().resolves(),
+						subscribe: sandbox.stub().resolves()
+					}
+				},
+				route1 = {
+					endpoint: '/',
+					method: 'post',
+					middleware: [sandbox.stub()],
+					schema: schema1
+				},
+				route2 = {
+					endpoint: '/',
+					method: 'post',
+					middleware: [sandbox.stub()],
+					schema: schema3
+				};
 
-			// when - then
-			expect(() => server.addGet({ path: '' })).to.throw('Path is required.');
+			let server = new Server(config);
 
-		});
+			sandbox.spy(server, 'info');
 
-		it('should throw an exception if handler is undefined', () => {
+			// When
+			server = server.addRoute(route1);
+			server = server.addRoute(route2);
 
-			// given
-			const
-				server = new Server(config);
-
-			// when - then
-			expect(() => server.addGet({ path: '/swagger.json' })).to.throw('A handler function is required.');
-
-		});
-
-		it('should throw an exception if handler is not a function', () => {
-
-			// given
-			const
-				server = new Server(config);
-
-			// when - then
-			expect(() => server.addGet({
-				path: '/swagger.json',
-				requestHandler: 'bob'
-			})).to.throw('A handler function is required.');
-
-		});
-
-		it('should call get on the express application.', () => {
-
-			// given
-			const
-				server = new Server(config),
-				handler = _.noop;
-
-			// when
-			server.addGet({ path: '/swagger.json', requestHandler: handler });
-
-			// then
-
-			calledOnce(serverGetSpy);
-			calledWith(serverGetSpy, '/swagger.json', handler);
+			// Then
+			expect(server.info).to.have.been.calledThrice;
+			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example.');
+			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
+			expect(server.info).to.have.been.calledWith('Adding route: com.example.Surname.');
+			expect(_.size(server.router_configuration)).to.eql(1);
+			expect(server.route_configuration).to.eql({
+				'/com/example': {
+					FullName: schema1,
+					Surname: schema3
+				}
+			});
+			expect(express.Router.use).to.have.been.calledWith(route1.middleware[0]);
+			expect(RouteValidator.prototype.validate).to.have.been.calledTwice;
 
 		});
 
@@ -397,293 +266,50 @@ describe('index/server.js', () => {
 
 	describe('getServer', () => {
 
-		describe('should return a server that', () => {
+		it('should return the express server', () => {
 
-			let schema, server, publisherStub;
-
-			beforeEach(() => {
-				publisherStub = sandbox.stub(Publisher.prototype, 'publish');
-				delete require.cache[require.resolve(serverPath)];
-				const Server = require(serverPath);
-				schema = {
-					type: 'record',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}]
-				};
-				server = new Server(config).addRoute({
-					schemaNameToDefinition: {
-						testSchema1: schema
-					},
-					apiEndpoint: '/api'
-				});
-			});
-
-			it('fails for an invalid schema route', () => {
-
-				// given - when - then
-				return request(server.getServer())
-					.post('/api/testSchemaUnknown')
-					.expect(400, 'No schema for \'/api/testSchemaUnknown\' found.');
-
-			});
-
-			it('should respond with 400 if publish rejects', () => {
-
-				// given
-				publisherStub.rejects(new Error('Error test'));
-
-				// when - then
-				return request(server.getServer())
-					.post('/api/testSchema1')
-					.send({
-						f: 'test1'
-					})
-					.expect(400, 'Error test')
-					.then(() => {
-						calledOnce(publisherStub);
-						calledWith(publisherStub, {
-							schema: sinon.match.object,
-							message: {
-								f: 'test1'
-							},
-							context: undefined
-						});
-					});
-
-			});
-
-			it('should respond with 200 if publish resolves', () => {
-
-				// given
-				publisherStub.resolves();
-
-				// when - then
-				return request(server.getServer())
-					.post('/api/testSchema1')
-					.send({
-						f: 'test1'
-					})
-					.expect(200, 'Ok.')
-					.then(() => {
-						calledOnce(publisherStub);
-						calledWith(publisherStub, {
-							schema: sinon.match.object,
-							message: {
-								f: 'test1'
-							},
-							context: undefined
-						});
-					});
-
-			});
-
-		});
-
-		describe('with a response handler should return a server that', () => {
-
-			let schema, server, publisherStub;
-
-			beforeEach(() => {
-				publisherStub = sandbox.stub(Publisher.prototype, 'publish');
-				delete require.cache[require.resolve(serverPath)];
-				const Server = require(serverPath);
-				schema = {
-					type: 'record',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}]
-				};
-				server = new Server(config).addRoute({
-					schemaNameToDefinition: {
-						testSchema1: schema
-					},
-					apiEndpoint: '/api',
-					responseWriter: (err, response, context) => {
-						if (err) {
-							response.status(418).send(err.message);
-						} else {
-							response.json({
-								id: 12
-							});
-						}
+			// Given
+			const
+				config = {
+					transport: {
+						publish: sandbox.stub().resolves(),
+						subscribe: sandbox.stub().resolves()
 					}
-				});
-			});
+				},
 
-			it('should respond with 418 if publish rejects', () => {
+				server = new Server(config),
 
-				// given
-				publisherStub.rejects(new Error('I\'m a teapot'));
+				// When
+				expressServer = server.getServer();
 
-				// when - then
-				return request(server.getServer())
-					.post('/api/testSchema1')
-					.send({
-						f: 'test1'
-					})
-					.expect(418, 'I\'m a teapot')
-					.then(() => {
-						calledOnce(publisherStub);
-						calledWith(publisherStub, {
-							schema: sinon.match.object,
-							message: {
-								f: 'test1'
-							},
-							context: undefined
-						});
-					});
-
-			});
-
-			it('should respond with json if publish resolves', () => {
-
-				// given
-				publisherStub.resolves();
-
-				// when - then
-				return request(server.getServer())
-					.post('/api/testSchema1')
-					.send({
-						f: 'test1'
-					})
-					.expect(200, {
-						id: 12
-					})
-					.then(() => {
-						calledOnce(publisherStub);
-						calledWith(publisherStub, {
-							schema: sinon.match.object,
-							message: {
-								f: 'test1'
-							},
-							context: undefined
-						});
-					});
-
-			});
+			// Then
+			expect(expressServer).to.not.be.undefined;
 
 		});
 
 	});
 
-	describe('emitter', () => {
+	describe('getPublisher', () => {
 
-		let Server, config, errorEvents = [];
+		it('should return the publisher', () => {
 
-		const listener = message => {
-			errorEvents.push(message);
-		};
-
-		beforeEach(() => {
-			config = {
-				transport: {
-					publish: _.noop,
-					subscribe: _.noop
+			// Given
+			const
+				config = {
+					transport: {
+						publish: sandbox.stub().resolves(),
+						subscribe: sandbox.stub().resolves()
+					}
 				},
-				transportConfig: 'testTransportConfig'
-			};
-			Server = require(serverPath);
-			Server.emitter.addListener(Server.emitter.ERROR, listener);
 
-		});
+				server = new Server(config),
 
-		afterEach(() => {
-			Server.emitter.removeListener(Server.emitter.ERROR, listener);
-			errorEvents = [];
-		});
+				// When
+				publisher = server.getPublisher();
 
-		describe('should emit an error event', () => {
-
-			it('on constructor error', () => {
-
-				// given - when
-				try {
-					new Server();
-				} catch (err) {
-					// doesn't matter
-				}
-
-				// then
-				expect(errorEvents).to.include('Invalid parameter: config not an object');
-
-			});
-
-			it('if schemas fail to compile', () => {
-
-				// given - when
-				try {
-					new Server(config).addRoute({
-						test: {}
-					});
-				} catch (err) {
-					// doesn't matter
-				}
-
-				// then
-				expect(errorEvents).to.include('schemaNameToDefinition argument must be an object of: schemaName -> avroSchema.');
-
-			});
-
-			describe('for a callout', () => {
-
-				let publisherStub, serverInstance;
-
-				beforeEach(() => {
-
-					publisherStub = sandbox.stub(Publisher.prototype, 'publish');
-					delete require.cache[require.resolve(serverPath)];
-
-					const schema = {
-						type: 'record',
-						fields: [{
-							name: 'f',
-							type: 'string'
-						}]
-					};
-
-					serverInstance = new Server(config).addRoute({
-						schemaNameToDefinition: {
-							testSchema1: schema
-						},
-						apiEndpoint: '/api'
-					});
-
-				});
-
-				it('if path is invalid', () => {
-
-					// given - when - then
-					return request(serverInstance.getServer())
-						.post('/api/testSchemaUnknown')
-						.expect(400, 'No schema for \'/api/testSchemaUnknown\' found.')
-						.then(() => {
-							expect(errorEvents).to.include('No schema for \'/api/testSchemaUnknown\' found.');
-						});
-
-				});
-
-				it('if publisher rejects', () => {
-
-					// given
-					publisherStub.rejects(new Error('Error test'));
-
-					// when - then
-					return request(serverInstance.getServer())
-						.post('/api/testSchema1')
-						.send({
-							f: 'test1'
-						})
-						.expect(400, 'Error test')
-						.then(() => {
-							expect(errorEvents).to.include('Error test');
-						});
-
-				});
-
-			});
+			// Then
+			expect(publisher).to.not.be.undefined;
+			expect(publisher).to.be.an.instanceOf(EventEmitter);
 
 		});
 

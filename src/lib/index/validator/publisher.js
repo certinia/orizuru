@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -28,54 +28,31 @@
 
 const
 	_ = require('lodash'),
-	root = require('app-root-path'),
-	{ expect } = require('chai'),
-	{ validate } = require(root + '/src/lib/index/shared/configValidator');
+	schema = require('./shared/schema');
 
-describe('index/shared/configValidator.js', () => {
+/**
+ * Validate the publisher configuration.
+ * @private
+ */
+class PublisherValidator {
 
-	describe('send', () => {
+	validate(config) {
 
-		it('should throw an error if config is not an object', () => {
+		if (!config) {
+			throw new Error('Missing required object parameter.');
+		}
 
-			//given - when - then
-			expect(() => validate(null)).to.throw('Invalid parameter: config not an object');
+		if (!_.isPlainObject(config)) {
+			throw new Error(`Invalid parameter: ${config} is not an object.`);
+		}
 
-		});
+		// Validate the schema
+		schema.validate(config);
 
-		it('should throw an error if config.transport is not an object', () => {
+		return config;
 
-			//given - when - then
-			expect(() => validate({})).to.throw('Invalid parameter: config.transport not an object');
+	}
 
-		});
+}
 
-		it('should throw an error if config.transport.publish is not a function', () => {
-
-			//given - when - then
-			expect(() => validate({ transport: {} })).to.throw('Invalid parameter: config.transport.publish not an function');
-
-		});
-
-		it('should throw an error if config.transport.subscribe is not a function', () => {
-
-			//given - when - then
-			expect(() => validate({ transport: { publish: _.noop } })).to.throw('Invalid parameter: config.transport.subscribe not an function');
-
-		});
-
-		it('should return undefined if everything is ok', () => {
-
-			//given - when - then
-			expect(validate({
-				transport: {
-					publish: _.noop,
-					subscribe: _.noop
-				}
-			})).to.eql(undefined);
-
-		});
-
-	});
-
-});
+module.exports = PublisherValidator;

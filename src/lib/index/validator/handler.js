@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -28,22 +28,39 @@
 
 const
 	_ = require('lodash'),
+	schema = require('./shared/schema');
 
-	validate = (config) => {
-		if (config == null || !_.isObject(config)) {
-			throw new Error('Invalid parameter: config not an object');
-		}
-		if (config.transport == null || !_.isObject(config.transport)) {
-			throw new Error('Invalid parameter: config.transport not an object');
-		}
-		if (!_.isFunction(config.transport.publish)) {
-			throw new Error('Invalid parameter: config.transport.publish not an function');
-		}
-		if (!_.isFunction(config.transport.subscribe)) {
-			throw new Error('Invalid parameter: config.transport.subscribe not an function');
-		}
-	};
+/**
+ * Validates handlers.
+ * @private
+ */
+class HandlerValidator {
 
-module.exports = {
-	validate
-};
+	validate(config) {
+
+		if (!config) {
+			throw new Error('Missing required object parameter.');
+		}
+
+		if (!_.isPlainObject(config)) {
+			throw new Error(`Invalid parameter: ${config} is not an object.`);
+		}
+
+		if (!config.handler) {
+			throw new Error('Missing required function parameter: handler.');
+		}
+
+		if (!_.isFunction(config.handler)) {
+			throw new Error('Invalid parameter: handler is not a function.');
+		}
+
+		// Validate the schema
+		schema.validate(config);
+
+		return config;
+
+	}
+
+}
+
+module.exports = HandlerValidator;

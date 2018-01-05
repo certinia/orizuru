@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -28,301 +28,229 @@
 
 const
 	_ = require('lodash'),
-	root = require('app-root-path'),
 	chai = require('chai'),
 	chaiAsPromised = require('chai-as-promised'),
 	sinon = require('sinon'),
-	{ expect } = chai,
-	{ calledOnce, calledWith } = sinon.assert,
+	sinonChai = require('sinon-chai'),
 
-	Publisher = require(root + '/src/lib/index/publisher'),
-	{ compileFromSchemaDefinition } = require(root + '/src/lib/index/shared/schema'),
-	{ toBuffer } = require(root + '/src/lib/index/shared/transport'),
+	avsc = require('avsc'),
+	{ EventEmitter } = require('events'),
+	PublisherValidator = require('../../lib/index/validator/publisher'),
+	Transport = require('../../lib/index/transport/transport'),
 
-	sandbox = sinon.sandbox.create(),
-	restore = sandbox.restore.bind(sandbox);
+	expect = chai.expect,
+
+	Publisher = require('../../lib/index/publisher'),
+
+	sandbox = sinon.sandbox.create();
 
 chai.use(chaiAsPromised);
+chai.use(sinonChai);
 
 describe('index/publisher.js', () => {
 
-	let config;
-
-	beforeEach(() => {
-		config = {
-			transport: {
-				publish: sandbox.stub(),
-				subscribe: _.noop
-			},
-			transportConfig: 'testTransportConfig'
-		};
+	afterEach(() => {
+		sandbox.restore();
 	});
 
-	afterEach(restore);
+	describe('constructor', () => {
+
+		it('should emit an error event if the configuration is invalid', () => {
+
+			// Given
+			sandbox.spy(EventEmitter.prototype, 'emit');
+
+			// When
+			// Then
+			expect(() => new Publisher({})).to.throw(/^Missing required object parameter: transport\.$/g);
+
+			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
+
+		});
+
+		it('should extend EventEmitter', () => {
+
+			// Given
+			const
+				config = {
+					transport: {
+						publish: _.noop,
+						subscribe: _.noop
+					}
+				},
+
+				// When
+				publisher = new Publisher(config);
+
+			// Then
+			expect(publisher).to.be.an.instanceof(EventEmitter);
+
+		});
+
+	});
 
 	describe('publish', () => {
 
-		let publisherInstance;
+		it('should publish a message', () => {
 
-		beforeEach(() => {
-			publisherInstance = new Publisher(config);
-		});
+			// Given
+			sandbox.stub(PublisherValidator.prototype, 'validate');
+			sandbox.spy(EventEmitter.prototype, 'emit');
+			sandbox.spy(Transport.prototype, 'encode');
 
-		it('should reject if it failes to compile a schema', () => {
-
-			// given - when - then
-			return expect(publisherInstance.publish({ eventName: 'test', schema: {} })).to.eventually.be.rejectedWith('Schema could not be compiled: unknown type: undefined');
-
-		});
-
-		it('should reject if schema has no name', () => {
-
-			// given - when - then
-			return expect(publisherInstance.publish({
-				schema: compileFromSchemaDefinition({
-					type: 'record',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}, {
-						name: 'g',
-						type: 'int'
-					}]
-				}),
-				message: {
-					f: 1
-				}
-			})).to.eventually.be.rejectedWith('Schema name must be an non empty string.');
-
-		});
-
-		it('should reject if message does not match schema', () => {
-
-			// given - when - then
-			return expect(publisherInstance.publish({
-				schema: compileFromSchemaDefinition({
-					type: 'record',
-					name: 'test',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}, {
-						name: 'g',
-						type: 'int'
-					}]
-				}),
-				message: {
-					f: 1
-				}
-			})).to.eventually.be.rejectedWith('Error encoding message for schema (test):\ninvalid value (1) for path (f) it should be of type (string)\ninvalid value (undefined) for path (g) it should be of type (int)');
-
-		});
-
-		it('should reject if transport publish rejects', () => {
-
-			// given 
-			config.transport.publish.rejects(new Error());
-
-			//when - then
-			return expect(publisherInstance.publish({
-				schema: compileFromSchemaDefinition({
-					type: 'record',
-					name: 'test',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}]
-				}),
-				message: {
-					f: 'test'
-				}
-			})).to.eventually.be.rejectedWith('Error publishing message on transport.').then(() => {
-				calledOnce(config.transport.publish);
-				calledWith(config.transport.publish, {
-					eventName: 'test',
-					buffer: toBuffer(compileFromSchemaDefinition({
-						type: 'record',
-						name: 'test',
-						fields: [{
-							name: 'f',
-							type: 'string'
-						}]
-					}), {
-						f: 'test'
-					}),
-					config: config.transportConfig
-				});
-			});
-		});
-
-		it('should resolve and publish if message matches schema', () => {
-
-			// given 
-			config.transport.publish.resolves('testResult');
-
-			//when - then
-			return expect(publisherInstance.publish({
-				schema: compileFromSchemaDefinition({
-					namespace: 'test',
-					name: 'test',
-					type: 'record',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}]
-				}),
-				message: {
-					f: 'test'
-				}
-			})).to.eventually.eql('testResult').then(() => {
-				calledOnce(config.transport.publish);
-				calledWith(config.transport.publish, {
-					eventName: 'test.test',
-					buffer: toBuffer(compileFromSchemaDefinition({
-						namespace: 'test',
-						name: 'test',
-						type: 'record',
-						fields: [{
-							name: 'f',
-							type: 'string'
-						}]
-					}), {
-						f: 'test'
-					}),
-					config: config.transportConfig
-				});
-			});
-
-		});
-
-		it('should resolve and publish message and optional context', () => {
-
-			// given 
-			config.transport.publish.resolves('testResult');
-
-			//when - then
-			return expect(publisherInstance.publish({
-				schema: compileFromSchemaDefinition({
-					name: 'test',
-					type: 'record',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}]
-				}),
-				message: {
-					f: 'test'
+			const
+				config = {
+					transport: {
+						publish: sandbox.stub().resolves(),
+						subscribe: sandbox.stub().resolves()
+					}
 				},
-				context: {
-					someVar: 'someVal'
-				}
-			})).to.eventually.eql('testResult').then(() => {
-				calledOnce(config.transport.publish);
-				calledWith(config.transport.publish, {
-					eventName: 'test',
-					buffer: toBuffer(compileFromSchemaDefinition({
-						name: 'test',
+				publisher = new Publisher(config),
+				message = {
+					schema: avsc.Type.forSchema({
 						type: 'record',
-						fields: [{
-							name: 'f',
-							type: 'string'
-						}]
-					}), {
-						f: 'test'
-					}, {
-						someVar: 'someVal'
+						namespace: 'com.example',
+						name: 'FullName',
+						fields: [
+							{ name: 'first', type: 'string' },
+							{ name: 'last', type: 'string' }
+						]
 					}),
-					config: config.transportConfig
-				});
-			});
-
-		});
-
-	});
-
-	describe('emitter', () => {
-
-		let errorEvents = [];
-
-		const listener = message => {
-			errorEvents.push(message);
-		};
-
-		beforeEach(() => {
-			Publisher.emitter.addListener(Publisher.emitter.ERROR, listener);
-		});
-
-		afterEach(() => {
-			Publisher.emitter.removeListener(Publisher.emitter.ERROR, listener);
-			errorEvents = [];
-		});
-
-		describe('should emit an error event', () => {
-
-			it('on constructor error', () => {
-
-				// given - when
-				try {
-					new Publisher();
-				} catch (err) {
-					// doesn't matter
-				}
-
-				// then
-				expect(errorEvents).to.include('Invalid parameter: config not an object');
-
-			});
-
-			it('on bad eventName', () => {
-
-				// given
-
-				const schema = compileFromSchemaDefinition({
-					type: 'record',
-					fields: [{
-						name: 'f',
-						type: 'string'
-					}]
-				});
-
-				// given - when - then
-				return expect(new Publisher(config).publish({ schema })).to.eventually.be.rejected
-					.then(() => {
-						expect(errorEvents).to.include('Schema name must be an non empty string.');
-					});
-
-			});
-
-			it('on schema compile failure', () => {
-
-				// given - when - then
-				return expect(new Publisher(config).publish({ schema: 'a', eventName: 'test' })).to.eventually.be.rejected
-					.then(() => {
-						expect(errorEvents).to.include('Schema could not be compiled: undefined type name: a');
-					});
-
-			});
-
-			it('if toBuffer fails', () => {
-
-				// given
-				const input = {
-					schema: {
-						type: 'record',
-						name: 'test',
-						fields: [{
-							name: 'f',
-							type: 'string'
-						}]
+					message: {
+						first: 'First',
+						last: 'Last'
 					},
-					eventName: 'test',
-					message: { f: 1 }
+					context: {
+						user: {
+							username: 'test@test.com'
+						}
+					}
 				};
 
-				// when - then
-				return expect(new Publisher(config).publish(input)).to.eventually.be.rejected
+			sandbox.spy(publisher, 'info');
+
+			// When
+			// Then
+			return expect(publisher.publish(message))
+				.to.eventually.be.fulfilled
+				.then(() => {
+					expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+					expect(Transport.prototype.encode).to.have.been.calledWith(
+						message.schema, message.message, message.context);
+					expect(publisher.info).to.have.been.calledOnce;
+					expect(publisher.info).to.have.been.calledWith('Published com.example.FullName event.');
+					expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
+					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Published com.example.FullName event.');
+				});
+
+		});
+
+		describe('should throw an error', () => {
+
+			it('if no config is provided', () => {
+
+				// Given
+				sandbox.stub(PublisherValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
+
+				const
+					config = {
+						transport: {
+							publish: sandbox.stub().resolves(),
+							subscribe: sandbox.stub().resolves()
+						}
+					},
+					publisher = new Publisher(config);
+
+				// When
+				// Then
+				expect(() => publisher.publish()).to.throw(/^Missing required object parameter\.$/);
+				expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+
+			});
+
+			it('if the transport cannot be encoded', () => {
+
+				// Given
+				sandbox.stub(PublisherValidator.prototype, 'validate');
+
+				const
+					config = {
+						transport: {
+							publish: sandbox.stub().resolves(),
+							subscribe: sandbox.stub().resolves()
+						}
+					},
+					publishMessage = {
+						schema: avsc.Type.forSchema({
+							type: 'record',
+							namespace: 'com.example',
+							name: 'FullName',
+							fields: [
+								{ name: 'first', type: 'string' },
+								{ name: 'last', type: 'string' }
+							]
+						}),
+						message: 'test'
+					},
+					publisher = new Publisher(config);
+
+				sandbox.spy(publisher, 'error');
+
+				// When
+				// Then
+				expect(() => publisher.publish(publishMessage)).to.throw(/^Error encoding message for schema \(com.example.FullName\):\ninvalid value \(test\) for path \(\) it should be of type \(record\)$/);
+				expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+				expect(publisher.error).to.have.been.calledOnce;
+
+			});
+
+			it('if the publishing the message fails', () => {
+
+				// Given
+				sandbox.stub(PublisherValidator.prototype, 'validate');
+				sandbox.spy(EventEmitter.prototype, 'emit');
+
+				const
+					expectedError = new Error('Failed to publish message.'),
+					config = {
+						transport: {
+							publish: sandbox.stub().rejects(expectedError),
+							subscribe: sandbox.stub().resolves()
+						}
+					},
+					publishMessage = {
+						schema: avsc.Type.forSchema({
+							type: 'record',
+							namespace: 'com.example',
+							name: 'FullName',
+							fields: [
+								{ name: 'first', type: 'string' },
+								{ name: 'last', type: 'string' }
+							]
+						}),
+						message: {
+							first: 'Test',
+							last: 'Tester'
+						}
+					},
+					publisher = new Publisher(config);
+
+				sandbox.spy(publisher, 'error');
+
+				// When
+				// Then
+				return expect(publisher.publish(publishMessage))
+					.to.eventually.be.rejectedWith('Failed to publish message.')
 					.then(() => {
-						expect(errorEvents).to.include('Error encoding message for schema (test):\ninvalid value (1) for path (f) it should be of type (string)');
+						expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+						expect(publisher.error).to.have.been.calledOnce;
+						expect(publisher.error).to.have.been.calledWith('Error publishing message on transport.');
+						expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+						expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
+						expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event', 'Error publishing message on transport.');
 					});
 
 			});

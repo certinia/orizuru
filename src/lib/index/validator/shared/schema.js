@@ -26,34 +26,69 @@
 
 'use strict';
 
-/**
- * The Index file for project.
- * Returns the Server, Handler and Publisher classes.
- * @module index
- * @see Server
- * @see Handler
- * @see Publisher
- */
-
 const
-	Server = require('./index/server'),
-	Handler = require('./index/handler'),
-	Publisher = require('./index/publisher');
+	_ = require('lodash'),
+	avsc = require('avsc');
+
+/**
+ * Parses the schema from a JSON string.
+ * @private
+ * @param {string} schema - The JSON schema string.
+ * @throws An error if the JSON string cannot be parsed.
+ * @returns {Object} The parsed schema.
+ */
+function parseSchema(schema) {
+
+	try {
+		return JSON.parse(schema);
+	} catch (error) {
+		throw new Error(`Invalid Avro Schema. Failed to parse JSON string: ${schema}.`);
+	}
+
+}
+
+/**
+ * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc library}.
+ * @private
+ * @param {Object} uncompiledSchema - The JSON representation of an Apache Avro Schema.
+ * @throws An error if the schema is invalid.
+ * @returns {Object} The compiled schema.
+ */
+function compileSchema(uncompiledSchema) {
+
+	try {
+		return avsc.Type.forSchema(uncompiledSchema);
+	} catch (error) {
+		throw new Error(`Invalid Avro Schema. Schema error: ${error.message}.`);
+	}
+
+}
+
+function validate(config) {
+
+	if (!config.schema) {
+		throw new Error('Missing required avro-schema parameter: schema.');
+	}
+
+	if (_.isString(config.schema)) {
+		const parsedSchema = parseSchema(config.schema);
+		config.schema = compileSchema(parsedSchema);
+	} else if (_.isPlainObject(config.schema)) {
+		config.schema = compileSchema(config.schema);
+	} else if (_.hasIn(config.schema, 'toJSON') && _.hasIn(config.schema, 'toBuffer')) {
+		// Already have a compiled schema
+	} else {
+		throw new Error(`Invalid Avro Schema. Unexpected value type: ${typeof config.schema}.`);
+	}
+
+	if (!config.schema.name) {
+		throw new Error('Missing required string parameter: schema[name].');
+	}
+
+	return config;
+
+}
 
 module.exports = {
-	/**
-	 * Server
-	 * @see Server
-	 */
-	Server,
-	/**
-	 * Handler
-	 * @see Handler
-	 */
-	Handler,
-	/**
-	 * Publisher
-	 * @see Publisher
-	 */
-	Publisher
+	validate
 };

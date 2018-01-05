@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -26,14 +26,28 @@
 
 'use strict';
 
-module.exports = {
-	namespace: 'com.ffdc.orizuru.transport',
-	name: 'Transport',
-	type: 'record',
-	fields: [
-		{ name: 'contextSchema', type: 'string' },
-		{ name: 'contextBuffer', type: 'bytes' },
-		{ name: 'messageSchema', type: 'string' },
-		{ name: 'messageBuffer', type: 'bytes' }
-	]
-};
+module.exports = Object.freeze({
+	CHECKOUT: 'checkout',
+	COPY: 'copy',
+	DELETE: 'delete',
+	GET: 'get',
+	HEAD: 'head',
+	LOCK: 'lock',
+	MERGE: 'merge',
+	MKACTIVITY: 'mkactivity',
+	MKCOL: 'mkcol',
+	MOVE: 'move',
+	M_SEARCH: 'm-search',
+	NOTIFY: 'notify',
+	OPTIONS: 'options',
+	PATCH: 'patch',
+	POST: 'post',
+	PURGE: 'purge',
+	PUT: 'put',
+	REPORT: 'report',
+	SEARCH: 'search',
+	SUBSCRIBE: 'subscribe',
+	TRACE: 'trace',
+	UNLOCK: 'unlock',
+	UNSUBSCRIBE: 'unsubscribe'
+});

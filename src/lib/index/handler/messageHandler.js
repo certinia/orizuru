@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -26,4 +26,30 @@
 
 'use strict';
 
-describe('index/shared/transport/schema.js', () => it('is tested by server and handler tests', () => {}));
+const _ = require('lodash');
+
+function messageHandler(server, config) {
+
+	const
+		schema = config.schema,
+		eventName = _.get(config, 'schema.name'),
+		handleMessage = config.handler;
+
+	return (content) => {
+
+		server.info(`Handler received ${eventName} event.`);
+
+		try {
+
+			const decodedContent = server.transport.decode(schema, content);
+			handleMessage(decodedContent);
+
+		} catch (err) {
+			server.error(err);
+		}
+
+	};
+
+}
+
+module.exports = messageHandler;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -27,20 +27,26 @@
 'use strict';
 
 const
-	root = require('app-root-path'),
-
+	avsc = require('avsc'),
 	chai = require('chai'),
-	{ expect } = chai,
+	sinon = require('sinon'),
+	sinonChai = require('sinon-chai'),
 
-	{ compileFromPlainObject, compileFromSchemaDefinition } = require(root + '/src/lib/index/shared/schema'),
+	fs = require('fs-extra'),
+	transportSchema = fs.readJsonSync(__dirname + '/../../../lib/index/transport/transport.avsc'),
 
-	transportSchema = require(root + '/src/lib/index/shared/transport/schema'),
-	transport = require(root + '/src/lib/index/shared/transport');
+	expect = chai.expect,
 
-describe('index/shared/transport.js', () => {
+	Transport = require('../../../lib/index/transport/transport'),
+
+	sandbox = sinon.sandbox.create();
+
+chai.use(sinonChai);
+
+describe('index/transport/transport.js', () => {
 
 	const
-		messageSchemaV1 = compileFromSchemaDefinition({
+		messageSchemaV1 = avsc.Type.forSchema({
 			namespace: 'example.avro',
 			type: 'record',
 			name: 'user',
@@ -49,7 +55,7 @@ describe('index/shared/transport.js', () => {
 				{ name: 'favorite_number', type: 'int' }
 			]
 		}),
-		messageSchemaV2 = compileFromSchemaDefinition({
+		messageSchemaV2 = avsc.Type.forSchema({
 			namespace: 'example.avro',
 			type: 'record',
 			name: 'user',
@@ -71,7 +77,7 @@ describe('index/shared/transport.js', () => {
 		context = {
 			test: 'A'
 		},
-		contextSchema = compileFromPlainObject(context),
+		contextSchema = avsc.Type.forValue(context),
 		transportContentsV1 = {
 			contextSchema: JSON.stringify(contextSchema),
 			contextBuffer: contextSchema.toBuffer(context),
@@ -84,46 +90,72 @@ describe('index/shared/transport.js', () => {
 			messageSchema: JSON.stringify(messageSchemaV2),
 			messageBuffer: messageSchemaV2.toBuffer(messageV2)
 		},
-		compiledTransportSchema = compileFromSchemaDefinition(transportSchema);
+		compiledTransportSchema = avsc.Type.forSchema(transportSchema);
 
-	describe('toBuffer', () => {
+	afterEach(() => {
+		sandbox.restore();
+	});
 
-		it('writes the correct data', () => {
+	describe('constructor', () => {
+
+		it('should read the transport schema and store it in a property', () => {
 
 			// Given
-			// When
-			// Then
+			sandbox.stub(fs, 'readJsonSync').returns(JSON.parse('{"namespace":"com.ffdc.orizuru.transport","name":"Transport","type":"record","fields":[{"name":"contextSchema","type":"string"},{"name":"contextBuffer","type":"bytes"},{"name":"messageSchema","type":"string"},{"name":"messageBuffer","type":"bytes"}]}'));
+			sandbox.stub(avsc.Type, 'forSchema');
 
-			expect(transport.toBuffer(messageSchemaV1, messageV1, context))
-				.to.eql(compiledTransportSchema.toBuffer(transportContentsV1));
+			// When
+			const transport = new Transport();
+
+			// Then
+			expect(fs.readJsonSync).to.have.been.calledOnce;
+			expect(avsc.Type.forSchema).to.have.been.calledOnce;
+			expect(transport).to.have.property('compiledSchema');
+
 		});
 
 	});
 
-	describe('fromBuffer', () => {
+	describe('encode', () => {
+
+		it('writes the correct data (with context)', () => {
+
+			// Given
+			const transport = new Transport();
+
+			// When
+			// Then
+			expect(transport.encode(messageSchemaV1, messageV1, context)).to.eql(compiledTransportSchema.toBuffer(transportContentsV1));
+
+		});
+
+	});
+
+	describe('decode', () => {
 
 		it('reads the correct data with the same schema', () => {
 
 			// Given
-			// When
-
 			const
-				result = transport.fromBuffer(compiledTransportSchema.toBuffer(transportContentsV1), messageSchemaV1),
+				transport = new Transport(),
+
+				// When
+				result = transport.decode(messageSchemaV1, compiledTransportSchema.toBuffer(transportContentsV1)),
 				expected = { context, message: messageV1 };
 
 			// Then
+			expect(result).to.deep.equal(expected);
 
-			expect(result)
-				.to.deep.equal(expected);
 		});
 
 		it('is backward compatible', () => {
 
 			// Given
-			// When
-
 			const
-				result = transport.fromBuffer(compiledTransportSchema.toBuffer(transportContentsV1), messageSchemaV2),
+				transport = new Transport(),
+
+				// When
+				result = transport.decode(messageSchemaV2, compiledTransportSchema.toBuffer(transportContentsV1)),
 				expected = {
 					context,
 					message: {
@@ -134,18 +166,18 @@ describe('index/shared/transport.js', () => {
 				};
 
 			// Then
+			expect(result).to.deep.equal(expected);
 
-			expect(result)
-				.to.deep.equal(expected);
 		});
 
 		it('is forward compatible', () => {
 
 			// Given
-			// When
-
 			const
-				result = transport.fromBuffer(compiledTransportSchema.toBuffer(transportContentsV2), messageSchemaV1),
+				transport = new Transport(),
+
+				// When
+				result = transport.decode(messageSchemaV1, compiledTransportSchema.toBuffer(transportContentsV2)),
 				expected = {
 					context,
 					message: {
@@ -155,9 +187,8 @@ describe('index/shared/transport.js', () => {
 				};
 
 			// Then
+			expect(result).to.deep.equal(expected);
 
-			expect(result)
-				.to.deep.equal(expected);
 		});
 
 	});

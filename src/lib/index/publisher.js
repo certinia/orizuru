@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -25,57 +25,65 @@
  **/
 
 'use strict';
-/**
- * The Publisher for publishing messages based on Avro schemas. 
- * Messages are consumed by Handler
- * @module index/publisher
- * @see module:index/handler
- */
 
 const
-	_ = require('lodash'),
-
 	EventEmitter = require('events'),
-	{ compileFromSchemaDefinition } = require('./shared/schema'),
-	{ validate } = require('./shared/configValidator'),
-	{ toBuffer } = require('./shared/transport'),
 
-	{ catchEmitThrow, catchEmitReject } = require('./shared/catchEmitThrow'),
+	Transport = require('./transport/transport'),
 
-	privateConfig = new WeakMap(),
+	ServerValidator = require('./validator/server'),
+	PublisherValidator = require('./validator/publisher'),
+
+	PROPERTY_TRANSPORT = 'transport',
+	PROPERTY_TRANSPORT_CONFIG = 'transport_config',
+	PROPERTY_TRANSPORT_IMPL = 'transport_impl',
+	PROPERTY_VALIDATOR = 'validator',
 
 	ERROR_EVENT = 'error_event',
-	INFO_EVENT = 'info_event',
-
-	emitter = new EventEmitter();
+	INFO_EVENT = 'info_event';
 
 /** 
- * Class representing a publisher. 
- * 
- * @property {EventEmitter} emitter
- * @property {string} emitter.ERROR - the error event name
- * @property {string} emitter.INFO - the info event name
+ * The Publisher for publishing messages based on Avro schemas.
+ * @extends EventEmitter
  **/
-class Publisher {
+class Publisher extends EventEmitter {
 
 	/**
-	 * Constructs a new 'Publisher'
+	 * Constructs a new 'Publisher'.
 	 * 
-	 * @param {object} config - { transport [, transportConfig] }
+	 * @param {Object} config - { transport [, transportConfig] }
 	 * @param {transport} config.transport - the transport object
-	 * @param {object} config.transportConfig - config for the transport object
-	 * @returns {Server}
+	 * @param {Object} config.transportConfig - config for the transport object
 	 */
 	constructor(config) {
 
-		// validate config
-		catchEmitThrow(() => validate(config), ERROR_EVENT, emitter);
-		privateConfig[this] = config;
+		super();
+
+		const me = this;
+		me.info('Creating publisher.');
+
+		try {
+
+			// Validate the config
+			new ServerValidator(config);
+
+			// Define the transport
+			Object.defineProperty(me, PROPERTY_TRANSPORT, { value: new Transport() });
+			Object.defineProperty(me, PROPERTY_TRANSPORT_IMPL, { value: config.transport.publish });
+			Object.defineProperty(me, PROPERTY_TRANSPORT_CONFIG, { value: config.transportConfig });
+
+			// Define the publisher validator
+			Object.defineProperty(me, PROPERTY_VALIDATOR, { value: new PublisherValidator() });
+
+		} catch (err) {
+			me.error(err);
+			throw err;
+		}
 
 	}
 
 	/**
-	 * Publishes a message
+	 * Publishes a message.
 	 * 
 	 * @example
 	 * // publishes a message
@@ -84,75 +92,92 @@ class Publisher {
 	 * // publishes a message
 	 * publisher.publish({ schema, message, context });
 	 * 
-	 * @param {object} config - { eventName, schema, message [, context] }
-	 * @param {object} config.schema - schema (compiled or uncompiled schema object)
-	 * @param {object} config.message - message (must match schema)
-	 * @param {object} config.context - untyped context (optional)
+	 * @param {Object} config - The message arguments.
+	 * @param {Object} config.schema - The Apache Avro schema.
+	 * @param {Object} config.message - The message to send.
+	 * @param {Object} config.context - The context for this message.
 	 * 
-	 * @returns {Promise}
+	 * @returns {Promise} A promise.
 	 */
-	publish({ schema, message, context }) {
+	publish(config) {
 
-		// get config
-		const config = privateConfig[this];
+		var me = this;
 
-		let compiledSchema,
-			buffer,
-			eventName = null;
-
-		// compile schema if required
-		if (!_.hasIn(schema, 'toBuffer')) {
-			try {
-				compiledSchema = compileFromSchemaDefinition(schema);
-			} catch (err) {
-				return catchEmitReject(`Schema could not be compiled: ${err.message}`, ERROR_EVENT, emitter);
-			}
-		} else {
-			compiledSchema = schema;
-		}
-
-		eventName = compiledSchema.name;
-
-		// check event name (from Schema name)
-		if (!_.isString(eventName) || _.size(eventName) < 1) {
-			return catchEmitReject('Schema name must be an non empty string.', ERROR_EVENT, emitter);
-		}
-
-		// generate transport buffer
+		// Validate the arguments.
 		try {
-			buffer = toBuffer(compiledSchema, message, context);
+			me[PROPERTY_VALIDATOR].validate(config);
+		} catch (err) {
+			me.error(err);
+			throw err;
+		}
+
+		// Generate transport buffer.
+		const
+			schema = config.schema,
+			message = config.message,
+			eventName = config.schema.name,
+			context = config.context;
+
+		let buffer;
+
+		try {
+			buffer = me[PROPERTY_TRANSPORT].encode(schema, message, context);
 		} catch (err) {
 
-			const
-				errors = [];
+			const errors = [];
 
-			errors.push(`Error encoding message for schema (${compiledSchema.name}):`);
+			errors.push(`Error encoding message for schema (${eventName}):`);
 
-			compiledSchema.isValid(message, {
+			schema.isValid(config.message, {
 				errorHook: (path, any, type) => {
 					errors.push(`invalid value (${any}) for path (${path.join()}) it should be of type (${type.typeName})`);
 				}
 			});
 
-			return catchEmitReject(errors.join('\n'), ERROR_EVENT, emitter);
+			me.error(errors.join('\n'));
+			throw new Error(errors.join('\n'));
+
 		}
 
 		// publish buffer on transport
-		return catchEmitReject(Promise.resolve(config.transport.publish({ eventName: compiledSchema.name, buffer, config: config.transportConfig }))
+		return me[PROPERTY_TRANSPORT_IMPL]({ eventName, buffer, config: me[PROPERTY_TRANSPORT_CONFIG] })
 			.then(result => {
-				emitter.emit(INFO_EVENT, `Published ${compiledSchema.name} event.`);
+				me.info(`Published ${schema.name} event.`);
 				return result;
 			})
-			.catch(() => {
-				throw new Error('Error publishing message on transport.');
-			}), ERROR_EVENT, emitter);
+			.catch(err => {
+				me.error('Error publishing message on transport.');
+				throw err;
+			});
 
+	}
+
+	/**
+	 * Emit an error event.
+	 * @param {Object} event - The error event.
+	 */
+	error(event) {
+		this.emit(ERROR_EVENT, event);
+	}
+
+	/**
+	 * Emit an info event.
+	 * @param {Object} event - The info event.
+	 */
+	info(event) {
+		this.emit(INFO_EVENT, event);
 	}
 
 }
 
-Publisher.emitter = emitter;
-emitter.ERROR = ERROR_EVENT;
-emitter.INFO = INFO_EVENT;
+/**
+ * The error event name.
+ */
+Publisher.ERROR = ERROR_EVENT;
+
+/**
+ * The info event name.
+ */
+Publisher.INFO = INFO_EVENT;
 
 module.exports = Publisher;

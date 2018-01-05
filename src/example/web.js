@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -27,10 +27,10 @@
 'use strict';
 
 const
-	root = require('app-root-path'),
+	debug = require('debug-plus')('web'),
 
 	// get the server
-	{ Server } = require(root + '/src/lib/index'),
+	{ Server } = require('../lib/index'),
 
 	// get the transport
 	transport = require('@financialforcedev/orizuru-transport-rabbitmq'),
@@ -41,10 +41,13 @@ const
 	},
 
 	// get schemas
-	schemaNameToDefinition = require('./schemas'),
+	schemas = require('./schemas'),
+
+	// define port (should be an env var in production)
+	PORT = 5555,
 
 	// define the endpoint ( in this case: /api/{schemaname} )
-	apiEndpoint = '/api',
+	apiEndpoint = '/api/',
 
 	// define middlewares (in order of usage)
 	middlewares = [(req, res, next) => {
@@ -52,16 +55,35 @@ const
 		// and then send a 403 if authentication fails first
 		req.orizuru = { auth: 'test auth token or whatever, object containing id, name, etc' };
 		next();
-	}],
+	}];
 
-	// define port (should be an env var in production)
-	port = 5555;
+// Create a simple extension of the server to debug out error and info events.
+class Web extends Server {
 
-// listen using the schemas
-// you could call 'addRoute' multiple times to add different sets of schemas on different endpoints with different middlewares, etc
-// apiEndpoint defaults to '/{schemaname}', middlewares defaults to []
-new Server({ transport, transportConfig })
-	.addRoute({ schemaNameToDefinition, apiEndpoint, middlewares })
+	constructor(config) {
+
+		super(config);
+
+		const
+			me = this,
+			publisher = me.getPublisher();
+
+		// Debug out errors and info messages from the server.
+		me.on(Server.ERROR, debug.error);
+		me.on(Server.INFO, debug.log);
+
+		// Debug out errors and info messages from the publisher.
+		publisher.on(Server.ERROR, debug.error);
+		publisher.on(Server.INFO, debug.log);
+	}
+
+}
+
+// Initialise the Web server.
+// Listen on the given port with the specified routes.
+new Web({ transport, transportConfig })
+	.addRoute({ schema: schemas.ageAndDob, endpoint: apiEndpoint, middlewares })
+	.addRoute({ schema: schemas.firstAndLastName, endpoint: apiEndpoint, middlewares })
 	.getServer()
 	// getServer returns the express server, you could push other routes on to it (public folders, etc) at this point
-	.listen(port);
+	.listen(PORT);

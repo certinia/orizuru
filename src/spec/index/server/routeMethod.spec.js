@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -27,36 +27,45 @@
 'use strict';
 
 const
-	_ = require('lodash'),
+	chai = require('chai'),
 
-	catchEmitThrow = (funcOrError, eventName, emitter) => {
-		try {
-			if (_.isFunction(funcOrError)) {
-				return funcOrError();
-			} else if (_.isString(funcOrError)) {
-				throw new Error(funcOrError);
-			}
-			return undefined;
-		} catch (err) {
-			emitter.emit(eventName, err.message);
-			throw err;
-		}
-	},
+	expect = chai.expect,
 
-	catchEmitReject = (promiseOrError, eventName, emitter) => {
-		if (_.hasIn(promiseOrError, 'then')) {
-			return Promise.resolve(promiseOrError).catch(err => {
-				emitter.emit(eventName, err.message);
-				throw err;
-			});
-		} else if (_.isString(promiseOrError)) {
-			emitter.emit(eventName, promiseOrError);
-			return Promise.reject(new Error(promiseOrError));
-		}
-		return Promise.resolve();
-	};
+	routeMethod = require('../../../lib/index/server/routeMethod');
 
-module.exports = {
-	catchEmitThrow,
-	catchEmitReject
-};
+describe('index/server/routeMethod.js', () => {
+
+	it('should expose the correct route methods', () => {
+
+		// Given
+		// When
+		// Then
+		expect(routeMethod).to.contain.all.keys([
+			'CHECKOUT',
+			'COPY',
+			'DELETE',
+			'GET',
+			'HEAD',
+			'LOCK',
+			'MERGE',
+			'MKACTIVITY',
+			'MKCOL',
+			'MOVE',
+			'M_SEARCH',
+			'NOTIFY',
+			'OPTIONS',
+			'PATCH',
+			'POST',
+			'PURGE',
+			'PUT',
+			'REPORT',
+			'SEARCH',
+			'SUBSCRIBE',
+			'TRACE',
+			'UNLOCK',
+			'UNSUBSCRIBE'
+		]);
+
+	});
+
+});

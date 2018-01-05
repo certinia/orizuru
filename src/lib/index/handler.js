@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, FinancialForce.com, inc
+ * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -25,50 +25,62 @@
  **/
 
 'use strict';
-/**
- * The Handler for consuming messages in a worker dyno created by Server.
- * @module index/handler
- * @see module:index/server
- */
 
 const
 	_ = require('lodash'),
 	EventEmitter = require('events'),
 
-	{ validate } = require('./shared/configValidator'),
-	{ fromBuffer } = require('./shared/transport'),
-	{ compileFromSchemaDefinition } = require('./shared/schema'),
-	{ catchEmitThrow, catchEmitReject } = require('./shared/catchEmitThrow'),
+	HandlerValidator = require('./validator/handler'),
+	ServerValidator = require('./validator/server'),
+	Transport = require('./transport/transport'),
 
-	privateConfig = new WeakMap(),
+	messageHandler = require('./handler/messageHandler'),
+
+	PROPERTY_TRANSPORT = 'transport',
+	PROPERTY_TRANSPORT_CONFIG = 'transport_config',
+	PROPERTY_TRANSPORT_IMPL = 'transport_impl',
+	PROPERTY_VALIDATOR = 'validator',
 
 	ERROR_EVENT = 'error_event',
-	INFO_EVENT = 'info_event',
-
-	emitter = new EventEmitter();
+	INFO_EVENT = 'info_event';
 
 /** 
- * Class representing a handler. 
- * 
- * @property {EventEmitter} emitter
- * @property {string} emitter.ERROR - the error event name
- * @property {string} emitter.INFO - the info event name
+ * The Handler for consuming messages in a worker dyno created by Server.
+ * @extends EventEmitter
  **/
-class Handler {
+class Handler extends EventEmitter {
 
 	/**
-	 * Constructs a new 'Handler'
+	 * Constructs a new 'Handler'.
 	 * 
-	 * @param {object} config - { transport [, transportConfig] }
-	 * @param {transport} config.transport - the transport object
-	 * @param {object} config.transportConfig - config for the transport object
-	 * @returns {Server}
+	 * @param {Object} config - The handler configuration.
+	 * @param {transport} config.transport - The transport object.
+	 * @param {Object} config.transportConfig - The configuration for the transport object.
 	 */
 	constructor(config) {
 
-		// validate config
-		catchEmitThrow(() => validate(config), ERROR_EVENT, emitter);
-		privateConfig[this] = config;
+		super();
+
+		const me = this;
+		me.info('Creating handler.');
+
+		try {
+
+			// Validate the config
+			new ServerValidator(config);
+
+			// Define the transport
+			Object.defineProperty(me, PROPERTY_TRANSPORT, { value: new Transport() });
+			Object.defineProperty(me, PROPERTY_TRANSPORT_IMPL, { value: config.transport.subscribe });
+			Object.defineProperty(me, PROPERTY_TRANSPORT_CONFIG, { value: config.transportConfig });
+
+			// Define the handler validator
+			Object.defineProperty(me, PROPERTY_VALIDATOR, { value: new HandlerValidator() });
+
+		} catch (err) {
+			me.error(err);
+			throw err;
+		}
 
 	}
 
@@ -76,63 +88,67 @@ class Handler {
 	 * Sets the handler function for a schema type.
 	 * 
 	 * @example
-	 * handler.handle({ schema, callback: ({ message, context }) => {
+	 * handler.handle({ schema, handler: ({ message, context }) => {
 	 * 	console.log(message);
 	 * 	console.log(context);
 	 * }})
 	 * 
-	 * @param {object} config - { schemaName, callback } 
-	 * @param {object} config.schema - schema (compiled or uncompiled Avro schema object)
-	 * @param {object} config.callback - the callback (called with { message, context }), this callback must handle error_EVENTs and should only ever return a promise which resolves or undefined 
-	 * 
-	 * @returns {Promise}
+	 * @param {Object} config - The handler configuration.
+	 * @param {Object} config.schema - Schema (compiled or uncompiled Avro schema object).
+	 * @param {Object} config.handler - The handler (called with { message, context }), this callback must handle error_EVENTs and should only ever return a promise which resolves or undefined.
+	 * @returns {Promise} A promise.
 	 */
-	handle({ schema, callback }) {
+	handle(config) {
 
-		const config = privateConfig[this];
+		var me = this;
 
-		let compiledSchema;
-
-		// compile schema if required
-		if (!_.hasIn(schema, 'toBuffer')) {
-			try {
-				compiledSchema = compileFromSchemaDefinition(schema);
-			} catch (err) {
-				return catchEmitReject(`Schema could not be compiled: ${err.message}.`, ERROR_EVENT, emitter);
-			}
-		} else {
-			compiledSchema = schema;
+		try {
+			me[PROPERTY_VALIDATOR].validate(config);
+		} catch (err) {
+			me.error(err);
+			throw err;
 		}
 
-		// check name
-		if (!_.isString(compiledSchema.name) || _.size(compiledSchema.name) < 1) {
-			return catchEmitReject('Schema name must be an non empty string.', ERROR_EVENT, emitter);
-		}
+		const
+			eventName = _.get(config, 'schema.name'),
+			handler = messageHandler(me, config);
 
-		// check callback
-		if (!_.isFunction(callback)) {
-			return catchEmitReject(`Please provide a valid callback function for event: '${compiledSchema.name}'`, ERROR_EVENT, emitter);
-		}
+		me.info(`Installing handler for ${eventName} events.`);
 
-		emitter.emit(INFO_EVENT, `Installing handler for ${compiledSchema.name} events.`);
+		return me[PROPERTY_TRANSPORT_IMPL]({
+			eventName,
+			handler,
+			config: me[PROPERTY_TRANSPORT_CONFIG]
+		});
 
-		return catchEmitReject(config.transport.subscribe({
-			eventName: compiledSchema.name,
-			handler: content => {
-				return catchEmitReject(Promise.resolve().then(() => {
-					const decodedContent = fromBuffer(content, compiledSchema);
-					emitter.emit(INFO_EVENT, `Handler received ${compiledSchema.name} event.`);
-					return callback(decodedContent);
-				}), ERROR_EVENT, emitter);
-			},
-			config: config.transportConfig
-		}), ERROR_EVENT, emitter);
+	}
+
+	/**
+	 * Emit an error event.
+	 * @param {Object} event - The error event.
+	 */
+	error(event) {
+		this.emit(ERROR_EVENT, event);
+	}
+
+	/**
+	 * Emit an info event.
+	 * @param {Object} event - The info event.
+	 */
+	info(event) {
+		this.emit(INFO_EVENT, event);
 	}
 
 }
 
-Handler.emitter = emitter;
-emitter.ERROR = ERROR_EVENT;
-emitter.INFO = INFO_EVENT;
+/**
+ * The error event name.
+ */
+Handler.ERROR = ERROR_EVENT;
+
+/**
+ * The info event name.
+ */
+Handler.INFO = INFO_EVENT;
 
 module.exports = Handler;
