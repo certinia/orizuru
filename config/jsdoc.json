@@ -4,8 +4,7 @@
 		"destination": "./doc/",
 		"private": false,
 		"recurse": true,
-		"readme": "README.md",
-		"template": "./node_modules/docdash"
+		"readme": "README.md"
 	},
 	"plugins": [
 		"plugins/markdown"
