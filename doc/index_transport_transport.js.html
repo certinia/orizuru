@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: index.js</title>
+    <title>JSDoc: Source: index/transport/transport.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: index.js</h1>
+    <h1 class="page-title">Source: index/transport/transport.js</h1>
 
     
 
@@ -54,37 +54,90 @@
 
 'use strict';
 
-/**
- * The Index file for project.
- * Returns the Server, Handler and Publisher classes.
- * @module index
- * @see Server
- * @see Handler
- * @see Publisher
- */
-
 const
-	Server = require('./index/server'),
-	Handler = require('./index/handler'),
-	Publisher = require('./index/publisher');
+	avsc = require('avsc'),
+	fs = require('fs-extra'),
+	path = require('path'),
 
-module.exports = {
+	PROPERTY_TRANSPORT_SCHEMA = 'compiledSchema';
+
+/**
+ * Class used to encode and decode messages using the transport schema.
+ * @private
+ */
+class Transport {
+
 	/**
-	 * Server
-	 * @see Server
+	 * Creates a new 'Transport' which can then be used to encode and decode messages.
+	 * 
+	 * @example
+	 * const transport = new Transport();
 	 */
-	Server,
+	constructor() {
+
+		const
+			schemaPath = path.resolve(__dirname, './transport.avsc'),
+			transport = fs.readJsonSync(schemaPath),
+			compiledSchema = avsc.Type.forSchema(transport);
+
+		// Define the transport schema as a property.
+		Object.defineProperty(this, PROPERTY_TRANSPORT_SCHEMA, { value: compiledSchema });
+
+	}
+
 	/**
-	 * Handler
-	 * @see Handler
+	 * Decode a message using the transport schema.
+	 * 
+	 * @param {string} schema - The message schema.
+	 * @param {string} content - The message contents.
+	 * @returns {Object} The decoded message.
 	 */
-	Handler,
+	decode(schema, content) {
+
+		const
+			decompiledTransportObject = this[PROPERTY_TRANSPORT_SCHEMA].fromBuffer(content),
+
+			compiledContextSchema = avsc.Type.forSchema(JSON.parse(decompiledTransportObject.contextSchema)),
+			compiledWriterMessageSchema = avsc.Type.forSchema(JSON.parse(decompiledTransportObject.messageSchema)),
+
+			resolver = schema.createResolver(compiledWriterMessageSchema),
+
+			// Create plain objects from the AVSC types.
+			context = Object.assign({},
+				compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer)),
+			message = Object.assign({},
+				schema.fromBuffer(decompiledTransportObject.messageBuffer, resolver));
+
+		return { context, message };
+
+	}
+
 	/**
-	 * Publisher
-	 * @see Publisher
+	 * Encode a message using the transport schema.
+	 * 
+	 * @param {string} schema - The message schema.
+	 * @param {string} message - The message contents.
+	 * @param {string} context - The message context.
+	 * @returns {Buffer} The encoded message.
 	 */
-	Publisher
-};
+	encode(schema, message, context = {}) {
+
+		const
+			compiledContextSchema = avsc.Type.forValue(context),
+			transport = {
+				contextSchema: JSON.stringify(compiledContextSchema),
+				contextBuffer: compiledContextSchema.toBuffer(context),
+				messageSchema: JSON.stringify(schema),
+				messageBuffer: schema.toBuffer(message)
+			};
+
+		return this[PROPERTY_TRANSPORT_SCHEMA].toBuffer(transport);
+
+	}
+
+}
+
+module.exports = Transport;
 </code></pre>
         </article>
     </section>
