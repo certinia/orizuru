@@ -2,7 +2,6 @@
 	"opts": {
 		"encoding": "utf8",
 		"destination": "./doc/",
-		"package": "package.json",
 		"private": false,
 		"recurse": true,
 		"readme": "README.md",
@@ -15,7 +14,6 @@
 	"source": {
 		"include": [
 			"src/lib",
-			"package.json",
 			"README.md"
 		],
 		"includePattern": ".+\\.js(doc|x)?$",
