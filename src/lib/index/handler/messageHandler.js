@@ -35,14 +35,14 @@ function messageHandler(server, config) {
 		eventName = _.get(config, 'schema.name'),
 		handleMessage = config.handler;
 
-	return (content) => {
+	return async (content) => {
 
 		server.info(`Handler received ${eventName} event.`);
 
 		try {
 
 			const decodedContent = server.transport.decode(schema, content);
-			handleMessage(decodedContent);
+			await handleMessage(decodedContent);
 
 		} catch (err) {
 			server.error(err);

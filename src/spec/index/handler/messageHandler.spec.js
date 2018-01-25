@@ -47,7 +47,7 @@ describe('index/handler/messageHandler.js', () => {
 		sandbox.restore();
 	});
 
-	it('should handle a message', () => {
+	it('should handle a message where the base handler resolves', async () => {
 
 		// Given
 		const
@@ -71,8 +71,10 @@ describe('index/handler/messageHandler.js', () => {
 				})
 			};
 
+		config.handler.resolves();
+
 		// When
-		messageHandler(server, config)('test');
+		await messageHandler(server, config)('test');
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
@@ -80,6 +82,86 @@ describe('index/handler/messageHandler.js', () => {
 		expect(server.info).to.have.been.calledOnce;
 		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
 		expect(server.error).to.not.have.been.called;
+
+	});
+
+	it('should handle a message where the base handler rejects', async () => {
+
+		// Given
+		const
+			server = {
+				error: sandbox.stub(),
+				info: sandbox.stub(),
+				transport: {
+					decode: sandbox.stub().returns('test')
+				}
+			},
+			config = {
+				handler: sandbox.stub(),
+				schema: avsc.Type.forSchema({
+					type: 'record',
+					namespace: 'com.example',
+					name: 'FullName',
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					]
+				})
+			},
+			error = new Error('Error');
+
+		config.handler.rejects(error);
+
+		// When
+
+		await messageHandler(server, config)('test');
+
+		// Then
+		expect(config.handler).to.have.been.calledOnce;
+		expect(config.handler).to.have.been.calledWith('test');
+		expect(server.info).to.have.been.calledOnce;
+		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
+		expect(server.error).to.have.been.calledWith(error);
+
+	});
+
+	it('should handle a message where the base handler throws', async () => {
+
+		// Given
+		const
+			server = {
+				error: sandbox.stub(),
+				info: sandbox.stub(),
+				transport: {
+					decode: sandbox.stub().returns('test')
+				}
+			},
+			config = {
+				handler: sandbox.stub(),
+				schema: avsc.Type.forSchema({
+					type: 'record',
+					namespace: 'com.example',
+					name: 'FullName',
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					]
+				})
+			},
+			error = new Error('Error');
+
+		config.handler.throws(error);
+
+		// When
+
+		await messageHandler(server, config)('test');
+
+		// Then
+		expect(config.handler).to.have.been.calledOnce;
+		expect(config.handler).to.have.been.calledWith('test');
+		expect(server.info).to.have.been.calledOnce;
+		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
+		expect(server.error).to.have.been.calledWith(error);
 
 	});
 
