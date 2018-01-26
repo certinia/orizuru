@@ -43,36 +43,43 @@ chai.use(sinonChai);
 
 describe('index/handler/messageHandler.js', () => {
 
+	let server, config;
+
+	beforeEach(() => {
+		server = {
+			error: sandbox.stub(),
+			info: sandbox.stub(),
+			transport: {
+				decode: sandbox.stub()
+			}
+		};
+		server.transport.decode.returns('test');
+		config = {
+			handler: sandbox.stub(),
+			schema: avsc.Type.forSchema({
+				type: 'record',
+				namespace: 'com.example',
+				name: 'FullName',
+				fields: [
+					{ name: 'first', type: 'string' },
+					{ name: 'last', type: 'string' }
+				]
+			})
+		};
+	});
+
 	afterEach(() => {
 		sandbox.restore();
 	});
 
-	it('should handle a message', () => {
+	it('should handle a message where the base handler resolves', async () => {
 
 		// Given
-		const
-			server = {
-				error: sandbox.stub(),
-				info: sandbox.stub(),
-				transport: {
-					decode: sandbox.stub().returns('test')
-				}
-			},
-			config = {
-				handler: sandbox.stub(),
-				schema: avsc.Type.forSchema({
-					type: 'record',
-					namespace: 'com.example',
-					name: 'FullName',
-					fields: [
-						{ name: 'first', type: 'string' },
-						{ name: 'last', type: 'string' }
-					]
-				})
-			};
+
+		config.handler.resolves();
 
 		// When
-		messageHandler(server, config)('test');
+		await messageHandler(server, config)('test');
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
@@ -83,30 +90,70 @@ describe('index/handler/messageHandler.js', () => {
 
 	});
 
+	it('should handle a message where the base handler returns', async () => {
+
+		// Given
+
+		config.handler.returns(null);
+
+		// When
+		await messageHandler(server, config)('test');
+
+		// Then
+		expect(config.handler).to.have.been.calledOnce;
+		expect(config.handler).to.have.been.calledWith('test');
+		expect(server.info).to.have.been.calledOnce;
+		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
+		expect(server.error).to.not.have.been.called;
+
+	});
+
+	it('should handle a message where the base handler rejects', async () => {
+
+		// Given
+		const expectedError = new Error('Error');
+
+		config.handler.rejects(expectedError);
+
+		// When
+
+		await messageHandler(server, config)('test');
+
+		// Then
+		expect(config.handler).to.have.been.calledOnce;
+		expect(config.handler).to.have.been.calledWith('test');
+		expect(server.info).to.have.been.calledOnce;
+		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
+		expect(server.error).to.have.been.calledWith(expectedError);
+
+	});
+
+	it('should handle a message where the base handler throws', async () => {
+
+		// Given
+		const expectedError = new Error('Error');
+
+		config.handler.throws(expectedError);
+
+		// When
+
+		await messageHandler(server, config)('test');
+
+		// Then
+		expect(config.handler).to.have.been.calledOnce;
+		expect(config.handler).to.have.been.calledWith('test');
+		expect(server.info).to.have.been.calledOnce;
+		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
+		expect(server.error).to.have.been.calledWith(expectedError);
+
+	});
+
 	it('should throw an error if the message decoding fails', () => {
 
 		// Given
-		const
-			expectedError = new Error('Failed to decode message.'),
-			server = {
-				error: sandbox.stub(),
-				info: sandbox.stub(),
-				transport: {
-					decode: sandbox.stub().throws(expectedError)
-				}
-			},
-			config = {
-				handler: sandbox.stub(),
-				schema: avsc.Type.forSchema({
-					type: 'record',
-					namespace: 'com.example',
-					name: 'FullName',
-					fields: [
-						{ name: 'first', type: 'string' },
-						{ name: 'last', type: 'string' }
-					]
-				})
-			};
+		const expectedError = new Error('Failed to decode message.');
+
+		server.transport.decode.throws(expectedError);
 
 		// When
 		messageHandler(server, config)('test');
