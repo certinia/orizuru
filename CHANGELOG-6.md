@@ -1,5 +1,11 @@
 # @financialforcedev/orizuru
 
+## 6.0.1
+
+### FIXES
+
+- Make the subscribe handler wrapper async, and await the inner handler.
+
 ## 6.0.0
 
 ### BREAKING CHANGES
