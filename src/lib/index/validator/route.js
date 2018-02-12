@@ -98,6 +98,14 @@ class RouteValidator {
 			throw new Error('Invalid parameter: responseWriter is not a function.');
 		}
 
+		if (!config.pathMapper) {
+			config.pathMapper = (namespace => namespace.replace(/\./g, '/'));
+		}
+
+		if (!_.isFunction(config.pathMapper)) {
+			throw new Error('Invalid parameter: pathMapper is not a function.');
+		}
+
 		// Validate the schema
 		schema.validate(config);
 
