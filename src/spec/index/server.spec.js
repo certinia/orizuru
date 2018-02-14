@@ -73,6 +73,14 @@ describe('index/server.js', () => {
 			fields: [
 				{ name: 'last', type: 'string' }
 			]
+		}),
+		schema4 = avsc.Type.forSchema({
+			type: 'record',
+			namespace: 'com.example.v1_0',
+			name: 'Surname',
+			fields: [
+				{ name: 'last', type: 'string' }
+			]
 		});
 
 	afterEach(() => {
@@ -122,7 +130,7 @@ describe('index/server.js', () => {
 		it('should add a route to the server', () => {
 
 			// Given
-			sandbox.stub(RouteValidator.prototype, 'validate');
+			sandbox.spy(RouteValidator.prototype, 'validate');
 			sandbox.spy(EventEmitter.prototype, 'emit');
 			sandbox.stub(express.Router, 'use');
 
@@ -158,10 +166,52 @@ describe('index/server.js', () => {
 
 		});
 
+		it('should add a route to the server with a version number', () => {
+
+			// Given
+			sandbox.spy(RouteValidator.prototype, 'validate');
+			sandbox.spy(EventEmitter.prototype, 'emit');
+			sandbox.stub(express.Router, 'use');
+
+			const
+				config = {
+					transport: {
+						publish: sandbox.stub().resolves(),
+						subscribe: sandbox.stub().resolves()
+					}
+				},
+				route = {
+					endpoint: '/api/',
+					method: 'post',
+					middleware: [sandbox.stub()],
+					schema: schema4,
+					pathMapper: (namespace) => {
+						return namespace.replace(/\./g, '/').replace('_', '.');
+					}
+				};
+
+			let server = new Server(config);
+
+			sandbox.spy(server, 'info');
+
+			// When
+			server = server.addRoute(route);
+
+			// Then
+			expect(server.info).to.have.been.calledTwice;
+			expect(server.info).to.have.been.calledWith('Creating router for namespace: /api/com/example/v1.0.');
+			expect(server.info).to.have.been.calledWith('Adding route: com.example.v1_0.Surname.');
+			expect(_.size(server.router_configuration)).to.eql(1);
+			expect(server.route_configuration).to.eql({ '/api/com/example/v1.0': { Surname: schema4 } });
+			expect(express.Router.use).to.have.been.calledWith(route.middleware[0]);
+			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
+
+		});
+
 		it('should multiple routes to the server (with different namespaces on different routers)', () => {
 
 			// Given
-			sandbox.stub(RouteValidator.prototype, 'validate');
+			sandbox.spy(RouteValidator.prototype, 'validate');
 			sandbox.spy(EventEmitter.prototype, 'emit');
 			sandbox.stub(express.Router, 'use');
 
@@ -213,7 +263,7 @@ describe('index/server.js', () => {
 		it('should multiple routes to the server (with the same namespace on the same router)', () => {
 
 			// Given
-			sandbox.stub(RouteValidator.prototype, 'validate');
+			sandbox.spy(RouteValidator.prototype, 'validate');
 			sandbox.spy(EventEmitter.prototype, 'emit');
 			sandbox.stub(express.Router, 'use');
 

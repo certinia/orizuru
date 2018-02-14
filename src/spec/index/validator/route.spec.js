@@ -102,6 +102,24 @@ describe('index/validator/route.js', () => {
 
 		});
 
+		it('should return the schema if pathMapper is a function', () => {
+
+			// Given
+			const config = {
+				schema: avsc.Type.forSchema({
+					name: 'com.example.FullName',
+					type: 'record',
+					fields: []
+				}),
+				pathMapper: _.noop
+			};
+
+			// When
+			// Then
+			expect(routeValidator.validate(config)).to.eql(config);
+
+		});
+
 		describe('should throw an error', () => {
 
 			it('if no config is provided', () => {
@@ -263,6 +281,21 @@ describe('index/validator/route.js', () => {
 				// When
 				// Then
 				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: responseWriter is not a function\.$/);
+
+			});
+
+			it('if the pathMapper is not a function', () => {
+
+				// Given
+				const config = {
+					schema: '{"name":"com.example.FullName","type":"record","fields":[]}',
+					responseWriter: _.noop,
+					pathMapper: 23
+				};
+
+				// When
+				// Then
+				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: pathMapper is not a function\.$/);
 
 			});
 
