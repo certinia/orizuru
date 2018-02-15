@@ -144,6 +144,7 @@ class Server extends EventEmitter {
 	 * @param {Function[]} config.middlewares - The middleware functions for this route.
 	 * @param {Function} config.responseWriter - The function to use before writing the response.
 	 * @param {string} [config.endpoint=/] - The API endpoint.
+	 * @param {Function} [config.pathMapper] - A function to map from a namespace string to a URL path string.
 	 * 
 	 * @returns {Server} The server.
 	 */
@@ -161,11 +162,11 @@ class Server extends EventEmitter {
 			schemaNameParts = fullSchemaName.split('.'),
 			schemaNamespace = _.initial(schemaNameParts).join('.'),
 			schemaName = _.last(schemaNameParts),
-			apiEndpoint = `${config.endpoint}${schemaNamespace}`.replace(/\./g, '/'),
+			apiEndpoint = config.endpoint + config.pathMapper(schemaNamespace);
 
-			routeConfiguration = _.get(me, `${PROPERTY_ROUTE_CONFIGURATION}.${apiEndpoint}`, {});
-
-		let router = _.get(me[PROPERTY_ROUTER_CONFIGURATION], apiEndpoint);
+		let
+			routeConfiguration = me[PROPERTY_ROUTE_CONFIGURATION][apiEndpoint],
+			router = me[PROPERTY_ROUTER_CONFIGURATION][apiEndpoint];
 
 		// If we don't have the router for this endpoint then we need to create one.
 		if (!router) {
@@ -184,13 +185,17 @@ class Server extends EventEmitter {
 			me[PROPERTY_SERVER].use(apiEndpoint, router);
 
 			// Update the router configuration.
-			_.set(me[PROPERTY_ROUTER_CONFIGURATION], apiEndpoint, router);
+			me[PROPERTY_ROUTER_CONFIGURATION][apiEndpoint] = router;
 
 		}
 
+		if (!routeConfiguration) {
+			routeConfiguration = {};
+			me[PROPERTY_ROUTE_CONFIGURATION][apiEndpoint] = routeConfiguration;
+		}
+
 		// Update the route configuration.
-		_.set(routeConfiguration, schemaName, schema);
-		_.set(me[PROPERTY_ROUTE_CONFIGURATION], apiEndpoint, routeConfiguration);
+		routeConfiguration[schemaName] = schema;
 
 		me.info(`Adding route: ${fullSchemaName}.`);
 
