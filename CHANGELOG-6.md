@@ -1,5 +1,11 @@
 # @financialforcedev/orizuru
 
+## 6.1.0
+
+### NEW FEATURES
+
+- Allow customisation of the mapping from Avro schema namespace to URL path.
+
 ## 6.0.1
 
 ### FIXES
