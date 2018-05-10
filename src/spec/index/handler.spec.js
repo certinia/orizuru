@@ -40,7 +40,7 @@ const
 
 	expect = chai.expect,
 
-	sandbox = sinon.sandbox.create();
+	sandbox = sinon.createSandbox();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);

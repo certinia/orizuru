@@ -42,7 +42,7 @@ const
 
 	Publisher = require('../../lib/index/publisher'),
 
-	sandbox = sinon.sandbox.create();
+	sandbox = sinon.createSandbox();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);

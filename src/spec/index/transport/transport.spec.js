@@ -39,7 +39,7 @@ const
 
 	Transport = require('../../../lib/index/transport/transport'),
 
-	sandbox = sinon.sandbox.create();
+	sandbox = sinon.createSandbox();
 
 chai.use(sinonChai);
 

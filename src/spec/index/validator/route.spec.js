@@ -37,7 +37,7 @@ const
 
 	RouteValidator = require('../../../lib/index/validator/route'),
 
-	sandbox = sinon.sandbox.create();
+	sandbox = sinon.createSandbox();
 
 chai.use(sinonChai);
 

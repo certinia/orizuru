@@ -37,7 +37,7 @@ const
 
 	messageHandler = require('../../../lib/index/handler/messageHandler'),
 
-	sandbox = sinon.sandbox.create();
+	sandbox = sinon.createSandbox();
 
 chai.use(sinonChai);
 

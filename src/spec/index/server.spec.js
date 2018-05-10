@@ -41,7 +41,7 @@ const
 
 	Server = require('../../lib/index/server'),
 
-	sandbox = sinon.sandbox.create();
+	sandbox = sinon.createSandbox();
 
 chai.use(sinonChai);
 

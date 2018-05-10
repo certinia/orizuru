@@ -38,7 +38,7 @@ const
 
 	route = require('../../../lib/index/server/route'),
 
-	sandbox = sinon.sandbox.create();
+	sandbox = sinon.createSandbox();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
