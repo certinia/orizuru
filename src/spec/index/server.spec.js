@@ -2,22 +2,22 @@
  * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification, 
+ * Redistribution and use in source and binary forms, with or without modification,
  *   are permitted provided that the following conditions are met:
  *
- * - Redistributions of source code must retain the above copyright notice, 
+ * - Redistributions of source code must retain the above copyright notice,
  *      this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, 
- *      this list of conditions and the following disclaimer in the documentation 
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
  *      and/or other materials provided with the distribution.
- * - Neither the name of the FinancialForce.com, inc nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software without 
+ * - Neither the name of the FinancialForce.com, inc nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
- *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
- *  THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+ *  THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
@@ -39,9 +39,7 @@ const
 
 	expect = chai.expect,
 
-	Server = require('../../lib/index/server'),
-
-	sandbox = sinon.sandbox.create();
+	Server = require('../../lib/index/server');
 
 chai.use(sinonChai);
 
@@ -84,7 +82,7 @@ describe('index/server.js', () => {
 		});
 
 	afterEach(() => {
-		sandbox.restore();
+		sinon.restore();
 	});
 
 	describe('constructor', () => {
@@ -92,7 +90,7 @@ describe('index/server.js', () => {
 		it('should emit an error event if the configuration is invalid', () => {
 
 			// Given
-			sandbox.spy(EventEmitter.prototype, 'emit');
+			sinon.spy(EventEmitter.prototype, 'emit');
 
 			// When
 			// Then
@@ -130,27 +128,27 @@ describe('index/server.js', () => {
 		it('should add a route to the server', () => {
 
 			// Given
-			sandbox.spy(RouteValidator.prototype, 'validate');
-			sandbox.spy(EventEmitter.prototype, 'emit');
-			sandbox.stub(express.Router, 'use');
+			sinon.spy(RouteValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
+			sinon.stub(express.Router, 'use');
 
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 				route = {
 					endpoint: '/api/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema1
 				};
 
 			let server = new Server(config);
 
-			sandbox.spy(server, 'info');
+			sinon.spy(server, 'info');
 
 			// When
 			server = server.addRoute(route);
@@ -169,21 +167,21 @@ describe('index/server.js', () => {
 		it('should add a route to the server with a version number', () => {
 
 			// Given
-			sandbox.spy(RouteValidator.prototype, 'validate');
-			sandbox.spy(EventEmitter.prototype, 'emit');
-			sandbox.stub(express.Router, 'use');
+			sinon.spy(RouteValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
+			sinon.stub(express.Router, 'use');
 
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 				route = {
 					endpoint: '/api/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema4,
 					pathMapper: (namespace) => {
 						return namespace.replace(/\./g, '/').replace('_', '.');
@@ -192,7 +190,7 @@ describe('index/server.js', () => {
 
 			let server = new Server(config);
 
-			sandbox.spy(server, 'info');
+			sinon.spy(server, 'info');
 
 			// When
 			server = server.addRoute(route);
@@ -211,33 +209,33 @@ describe('index/server.js', () => {
 		it('should multiple routes to the server (with different namespaces on different routers)', () => {
 
 			// Given
-			sandbox.spy(RouteValidator.prototype, 'validate');
-			sandbox.spy(EventEmitter.prototype, 'emit');
-			sandbox.stub(express.Router, 'use');
+			sinon.spy(RouteValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
+			sinon.stub(express.Router, 'use');
 
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 				route1 = {
 					endpoint: '/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema1
 				},
 				route2 = {
 					endpoint: '/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema2
 				};
 
 			let server = new Server(config);
 
-			sandbox.spy(server, 'info');
+			sinon.spy(server, 'info');
 
 			// When
 			server = server.addRoute(route1);
@@ -263,33 +261,33 @@ describe('index/server.js', () => {
 		it('should multiple routes to the server (with the same namespace on the same router)', () => {
 
 			// Given
-			sandbox.spy(RouteValidator.prototype, 'validate');
-			sandbox.spy(EventEmitter.prototype, 'emit');
-			sandbox.stub(express.Router, 'use');
+			sinon.spy(RouteValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
+			sinon.stub(express.Router, 'use');
 
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 				route1 = {
 					endpoint: '/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema1
 				},
 				route2 = {
 					endpoint: '/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema3
 				};
 
 			let server = new Server(config);
 
-			sandbox.spy(server, 'info');
+			sinon.spy(server, 'info');
 
 			// When
 			server = server.addRoute(route1);
@@ -322,8 +320,8 @@ describe('index/server.js', () => {
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 
@@ -347,8 +345,8 @@ describe('index/server.js', () => {
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 
