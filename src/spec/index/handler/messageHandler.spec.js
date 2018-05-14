@@ -35,9 +35,7 @@ const
 
 	expect = chai.expect,
 
-	messageHandler = require('../../../lib/index/handler/messageHandler'),
-
-	sandbox = sinon.createSandbox();
+	messageHandler = require('../../../lib/index/handler/messageHandler');
 
 chai.use(sinonChai);
 
@@ -47,15 +45,15 @@ describe('index/handler/messageHandler.js', () => {
 
 	beforeEach(() => {
 		server = {
-			error: sandbox.stub(),
-			info: sandbox.stub(),
+			error: sinon.stub(),
+			info: sinon.stub(),
 			transport: {
-				decode: sandbox.stub()
+				decode: sinon.stub()
 			}
 		};
 		server.transport.decode.returns('test');
 		config = {
-			handler: sandbox.stub(),
+			handler: sinon.stub(),
 			schema: avsc.Type.forSchema({
 				type: 'record',
 				namespace: 'com.example',
@@ -69,7 +67,7 @@ describe('index/handler/messageHandler.js', () => {
 	});
 
 	afterEach(() => {
-		sandbox.restore();
+		sinon.restore();
 	});
 
 	it('should handle a message where the base handler resolves', async () => {

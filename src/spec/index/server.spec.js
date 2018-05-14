@@ -39,9 +39,7 @@ const
 
 	expect = chai.expect,
 
-	Server = require('../../lib/index/server'),
-
-	sandbox = sinon.createSandbox();
+	Server = require('../../lib/index/server');
 
 chai.use(sinonChai);
 
@@ -84,7 +82,7 @@ describe('index/server.js', () => {
 		});
 
 	afterEach(() => {
-		sandbox.restore();
+		sinon.restore();
 	});
 
 	describe('constructor', () => {
@@ -92,7 +90,7 @@ describe('index/server.js', () => {
 		it('should emit an error event if the configuration is invalid', () => {
 
 			// Given
-			sandbox.spy(EventEmitter.prototype, 'emit');
+			sinon.spy(EventEmitter.prototype, 'emit');
 
 			// When
 			// Then
@@ -130,27 +128,27 @@ describe('index/server.js', () => {
 		it('should add a route to the server', () => {
 
 			// Given
-			sandbox.spy(RouteValidator.prototype, 'validate');
-			sandbox.spy(EventEmitter.prototype, 'emit');
-			sandbox.stub(express.Router, 'use');
+			sinon.spy(RouteValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
+			sinon.stub(express.Router, 'use');
 
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 				route = {
 					endpoint: '/api/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema1
 				};
 
 			let server = new Server(config);
 
-			sandbox.spy(server, 'info');
+			sinon.spy(server, 'info');
 
 			// When
 			server = server.addRoute(route);
@@ -169,21 +167,21 @@ describe('index/server.js', () => {
 		it('should add a route to the server with a version number', () => {
 
 			// Given
-			sandbox.spy(RouteValidator.prototype, 'validate');
-			sandbox.spy(EventEmitter.prototype, 'emit');
-			sandbox.stub(express.Router, 'use');
+			sinon.spy(RouteValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
+			sinon.stub(express.Router, 'use');
 
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 				route = {
 					endpoint: '/api/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema4,
 					pathMapper: (namespace) => {
 						return namespace.replace(/\./g, '/').replace('_', '.');
@@ -192,7 +190,7 @@ describe('index/server.js', () => {
 
 			let server = new Server(config);
 
-			sandbox.spy(server, 'info');
+			sinon.spy(server, 'info');
 
 			// When
 			server = server.addRoute(route);
@@ -211,33 +209,33 @@ describe('index/server.js', () => {
 		it('should multiple routes to the server (with different namespaces on different routers)', () => {
 
 			// Given
-			sandbox.spy(RouteValidator.prototype, 'validate');
-			sandbox.spy(EventEmitter.prototype, 'emit');
-			sandbox.stub(express.Router, 'use');
+			sinon.spy(RouteValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
+			sinon.stub(express.Router, 'use');
 
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 				route1 = {
 					endpoint: '/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema1
 				},
 				route2 = {
 					endpoint: '/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema2
 				};
 
 			let server = new Server(config);
 
-			sandbox.spy(server, 'info');
+			sinon.spy(server, 'info');
 
 			// When
 			server = server.addRoute(route1);
@@ -263,33 +261,33 @@ describe('index/server.js', () => {
 		it('should multiple routes to the server (with the same namespace on the same router)', () => {
 
 			// Given
-			sandbox.spy(RouteValidator.prototype, 'validate');
-			sandbox.spy(EventEmitter.prototype, 'emit');
-			sandbox.stub(express.Router, 'use');
+			sinon.spy(RouteValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
+			sinon.stub(express.Router, 'use');
 
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 				route1 = {
 					endpoint: '/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema1
 				},
 				route2 = {
 					endpoint: '/',
 					method: 'post',
-					middleware: [sandbox.stub()],
+					middleware: [sinon.stub()],
 					schema: schema3
 				};
 
 			let server = new Server(config);
 
-			sandbox.spy(server, 'info');
+			sinon.spy(server, 'info');
 
 			// When
 			server = server.addRoute(route1);
@@ -322,8 +320,8 @@ describe('index/server.js', () => {
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 
@@ -347,8 +345,8 @@ describe('index/server.js', () => {
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 

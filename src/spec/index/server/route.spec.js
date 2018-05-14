@@ -36,9 +36,7 @@ const
 
 	expect = chai.expect,
 
-	route = require('../../../lib/index/server/route'),
-
-	sandbox = sinon.createSandbox();
+	route = require('../../../lib/index/server/route');
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -46,7 +44,7 @@ chai.use(sinonChai);
 describe('index/server/route.js', () => {
 
 	afterEach(() => {
-		sandbox.restore();
+		sinon.restore();
 	});
 
 	describe('create', () => {
@@ -55,9 +53,9 @@ describe('index/server/route.js', () => {
 
 			// Given
 			const
-				server = sandbox.stub(),
-				routeConfiguration = sandbox.stub(),
-				responseWriter = sandbox.stub(),
+				server = sinon.stub(),
+				routeConfiguration = sinon.stub(),
+				responseWriter = sinon.stub(),
 
 				// When
 				routeFunction = route.create(server, routeConfiguration, responseWriter);
@@ -73,7 +71,7 @@ describe('index/server/route.js', () => {
 			const
 				server = {
 					publisher: {
-						publish: sandbox.stub().resolves()
+						publish: sinon.stub().resolves()
 					}
 				},
 				routeConfiguration = {
@@ -87,7 +85,7 @@ describe('index/server/route.js', () => {
 						]
 					})
 				},
-				responseWriter = sandbox.stub().returns(sandbox.stub()),
+				responseWriter = sinon.stub().returns(sinon.stub()),
 
 				routeFunction = route.create(server, routeConfiguration, responseWriter),
 
@@ -104,8 +102,8 @@ describe('index/server/route.js', () => {
 				},
 
 				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
+					status: sinon.stub().returnsThis(),
+					send: sinon.stub().returnsThis()
 				};
 
 			// When
@@ -128,10 +126,10 @@ describe('index/server/route.js', () => {
 			// Given
 			const
 				server = {
-					error: sandbox.stub()
+					error: sinon.stub()
 				},
-				routeConfiguration = sandbox.stub(),
-				responseWriter = sandbox.stub(),
+				routeConfiguration = sinon.stub(),
+				responseWriter = sinon.stub(),
 
 				routeFunction = route.create(server, routeConfiguration, responseWriter),
 
@@ -141,8 +139,8 @@ describe('index/server/route.js', () => {
 					}
 				},
 				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
+					status: sinon.stub().returnsThis(),
+					send: sinon.stub().returnsThis()
 				};
 
 			// When
@@ -161,7 +159,7 @@ describe('index/server/route.js', () => {
 				expectedError = new Error('Failed to publish message'),
 				server = {
 					publisher: {
-						publish: sandbox.stub().rejects(expectedError)
+						publish: sinon.stub().rejects(expectedError)
 					}
 				},
 				routeConfiguration = {
@@ -175,8 +173,8 @@ describe('index/server/route.js', () => {
 						]
 					})
 				},
-				responseFunction = sandbox.stub(),
-				responseWriter = sandbox.stub().returns(responseFunction),
+				responseFunction = sinon.stub(),
+				responseWriter = sinon.stub().returns(responseFunction),
 
 				routeFunction = route.create(server, routeConfiguration, responseWriter),
 
@@ -187,8 +185,8 @@ describe('index/server/route.js', () => {
 				},
 
 				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
+					status: sinon.stub().returnsThis(),
+					send: sinon.stub().returnsThis()
 				};
 
 			// When
@@ -210,7 +208,7 @@ describe('index/server/route.js', () => {
 				expectedError = new Error('Failed to publish message'),
 				server = {
 					publisher: {
-						publish: sandbox.stub().throws(expectedError)
+						publish: sinon.stub().throws(expectedError)
 					}
 				},
 				routeConfiguration = {
@@ -224,8 +222,8 @@ describe('index/server/route.js', () => {
 						]
 					})
 				},
-				responseFunction = sandbox.stub(),
-				responseWriter = sandbox.stub().returns(responseFunction),
+				responseFunction = sinon.stub(),
+				responseWriter = sinon.stub().returns(responseFunction),
 
 				routeFunction = route.create(server, routeConfiguration, responseWriter),
 
@@ -236,8 +234,8 @@ describe('index/server/route.js', () => {
 				},
 
 				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
+					status: sinon.stub().returnsThis(),
+					send: sinon.stub().returnsThis()
 				};
 
 			// When

@@ -35,9 +35,7 @@ const
 
 	expect = chai.expect,
 
-	RouteValidator = require('../../../lib/index/validator/route'),
-
-	sandbox = sinon.createSandbox();
+	RouteValidator = require('../../../lib/index/validator/route');
 
 chai.use(sinonChai);
 
@@ -50,7 +48,7 @@ describe('index/validator/route.js', () => {
 	});
 
 	afterEach(() => {
-		sandbox.restore();
+		sinon.restore();
 	});
 
 	describe('constructor', () => {
@@ -315,12 +313,12 @@ describe('index/validator/route.js', () => {
 				},
 				validatedConfig = routeValidator.validate(config),
 				server = {
-					error: sandbox.stub()
+					error: sinon.stub()
 				},
-				request = sandbox.stub(),
+				request = sinon.stub(),
 				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
+					status: sinon.stub().returnsThis(),
+					send: sinon.stub().returnsThis()
 				};
 
 			// When
@@ -343,12 +341,12 @@ describe('index/validator/route.js', () => {
 				},
 				validatedConfig = routeValidator.validate(config),
 				server = {
-					error: sandbox.stub()
+					error: sinon.stub()
 				},
-				request = sandbox.stub(),
+				request = sinon.stub(),
 				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
+					status: sinon.stub().returnsThis(),
+					send: sinon.stub().returnsThis()
 				};
 
 			// When

@@ -38,9 +38,7 @@ const
 	{ EventEmitter } = require('events'),
 	HandlerValidator = require('../../lib/index/validator/handler'),
 
-	expect = chai.expect,
-
-	sandbox = sinon.createSandbox();
+	expect = chai.expect;
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -61,14 +59,14 @@ describe('index/handler.js', () => {
 			transportConfig: _.noop
 		};
 
-		mocks.handlerValidator = sandbox.stub().returnsThis();
-		mocks.messageHandler = sandbox.stub();
-		mocks.transport = sandbox.stub().returnsThis();
+		mocks.handlerValidator = sinon.stub().returnsThis();
+		mocks.messageHandler = sinon.stub();
+		mocks.transport = sinon.stub().returnsThis();
 
 	});
 
 	afterEach(() => {
-		sandbox.restore();
+		sinon.restore();
 	});
 
 	describe('constructor', () => {
@@ -95,7 +93,7 @@ describe('index/handler.js', () => {
 		it('should emit an error event if the configuration is invalid', () => {
 
 			// Given
-			sandbox.spy(EventEmitter.prototype, 'emit');
+			sinon.spy(EventEmitter.prototype, 'emit');
 
 			// When
 			// Then
@@ -123,7 +121,7 @@ describe('index/handler.js', () => {
 		it('should initialise the transport implementation (subscribe function)', () => {
 
 			// Given
-			mocks.config.transport.subscribe = sandbox.stub();
+			mocks.config.transport.subscribe = sinon.stub();
 
 			// When
 			const handler = new Handler(mocks.config);
@@ -136,7 +134,7 @@ describe('index/handler.js', () => {
 		it('should initialise the transport config', () => {
 
 			// Given
-			mocks.config.transportConfig = sandbox.stub();
+			mocks.config.transportConfig = sinon.stub();
 
 			// When
 			const handler = new Handler(mocks.config);
@@ -180,14 +178,14 @@ describe('index/handler.js', () => {
 		it('should install the handler for a schema', () => {
 
 			// Given
-			mocks.config.transport.subscribe = sandbox.stub().resolves();
-			sandbox.stub(HandlerValidator.prototype, 'validate');
-			sandbox.spy(EventEmitter.prototype, 'emit');
+			mocks.config.transport.subscribe = sinon.stub().resolves();
+			sinon.stub(HandlerValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
 
 			const
 				handler = new Handler(mocks.config),
 				config = {
-					handler: sandbox.stub(),
+					handler: sinon.stub(),
 					schema: avsc.Type.forSchema({
 						type: 'record',
 						namespace: 'com.example',
@@ -222,7 +220,7 @@ describe('index/handler.js', () => {
 			it('if no config is provided', () => {
 
 				// Given
-				sandbox.stub(HandlerValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
+				sinon.stub(HandlerValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
 				const handler = new Handler(mocks.config);
 
