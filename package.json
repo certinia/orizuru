@@ -27,7 +27,7 @@
   "dependencies": {
     "avsc": "5.2.3",
     "express": "4.16.3",
-    "fs-extra": "6.0.0",
+    "fs-extra": "6.0.1",
     "http-status-codes": "1.3.0",
     "lodash": "4.17.10"
   },
@@ -39,11 +39,11 @@
     "debug-plus": "1.2.2",
     "jsdoc": "3.5.5",
     "mocha": "5.1.1",
-    "nyc": "11.7.2",
+    "nyc": "11.7.3",
     "proxyquire": "2.0.1",
     "sinon": "5.0.7",
     "sinon-chai": "3.0.0",
-    "supertest": "3.0.0"
+    "supertest": "3.1.0"
   },
   "nyc": {
     "check-coverage": true,
