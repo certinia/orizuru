@@ -227,6 +227,7 @@ Server.ERROR = ERROR_EVENT;
  */
 Server.INFO = INFO_EVENT;
 
+Server.ROUTE_METHOD = require('./server/routeMethod');
+
 module.exports = Server;
 
-Server.ROUTE_METHOD = require('./server/routeMethod');

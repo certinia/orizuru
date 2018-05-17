@@ -96,6 +96,7 @@ class Publisher extends EventEmitter {
 	 * @param {Object} config.schema - The Apache Avro schema.
 	 * @param {Object} config.message - The message to send.
 	 * @param {Object} config.context - The context for this message.
+	 * @param {Object} [config.config] - Extra configuration options required for publishing this message type.
 	 *
 	 * @returns {Promise} A promise.
 	 */
@@ -116,7 +117,8 @@ class Publisher extends EventEmitter {
 			schema = config.schema,
 			message = config.message,
 			eventName = config.schema.name,
-			context = config.context;
+			context = config.context,
+			transportImplConfig = me[PROPERTY_TRANSPORT_CONFIG] || {};
 
 		let buffer;
 
@@ -139,8 +141,10 @@ class Publisher extends EventEmitter {
 
 		}
 
+		transportImplConfig.config = config.config || {};
+
 		// publish buffer on transport
-		return me[PROPERTY_TRANSPORT_IMPL]({ eventName, buffer, config: me[PROPERTY_TRANSPORT_CONFIG] })
+		return me[PROPERTY_TRANSPORT_IMPL]({ eventName, buffer, config: transportImplConfig })
 			.then(result => {
 				me.info(`Published ${schema.name} event.`);
 				return result;
