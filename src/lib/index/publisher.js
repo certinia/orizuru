@@ -27,6 +27,8 @@
 'use strict';
 
 const
+	_ = require('lodash'),
+
 	EventEmitter = require('events'),
 
 	Transport = require('./transport/transport'),
@@ -118,7 +120,7 @@ class Publisher extends EventEmitter {
 			message = config.message,
 			eventName = config.schema.name,
 			context = config.context,
-			transportImplConfig = me[PROPERTY_TRANSPORT_CONFIG] || {};
+			transportImplConfig = _.cloneDeep(me[PROPERTY_TRANSPORT_CONFIG]) || {};
 
 		let buffer;
 

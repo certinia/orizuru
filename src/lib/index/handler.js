@@ -113,7 +113,7 @@ class Handler extends EventEmitter {
 		const
 			eventName = _.get(config, 'config.eventName') || _.get(config, 'schema.name'),
 			handler = messageHandler(me, config),
-			transportImplConfig = me[PROPERTY_TRANSPORT_CONFIG];
+			transportImplConfig = _.cloneDeep(me[PROPERTY_TRANSPORT_CONFIG]);
 
 		transportImplConfig.config = config.config || {};
 
