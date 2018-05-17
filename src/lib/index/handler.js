@@ -95,7 +95,8 @@ class Handler extends EventEmitter {
 	 *
 	 * @param {Object} config - The handler configuration.
 	 * @param {Object} config.schema - Schema (compiled or uncompiled Avro schema object).
-	 * @param {Object} config.handler - The handler (called with { message, context }), this callback must handle error_EVENTs and should only ever return a promise which resolves or undefined.
+	 * @param {Object} config.handler - The handler (called with { message, context }), this callback must handle ERROR_EVENTs and should only ever return a promise which resolves or undefined.
+	 * @param {Object} [config.config] - Any extra configuration options required for handling this message type.
 	 * @returns {Promise} A promise.
 	 */
 	handle(config) {
@@ -110,15 +111,18 @@ class Handler extends EventEmitter {
 		}
 
 		const
-			eventName = _.get(config, 'schema.name'),
-			handler = messageHandler(me, config);
+			eventName = _.get(config, 'config.eventName') || _.get(config, 'schema.name'),
+			handler = messageHandler(me, config),
+			transportImplConfig = me[PROPERTY_TRANSPORT_CONFIG];
+
+		transportImplConfig.config = config.config || {};
 
 		me.info(`Installing handler for ${eventName} events.`);
 
 		return me[PROPERTY_TRANSPORT_IMPL]({
 			eventName,
 			handler,
-			config: me[PROPERTY_TRANSPORT_CONFIG]
+			config: transportImplConfig
 		});
 
 	}
