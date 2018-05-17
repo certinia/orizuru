@@ -115,7 +115,8 @@ describe('index/server/route.js', () => {
 					expect(server.publisher.publish).to.have.been.calledWith({
 						schema: routeConfiguration.test,
 						message: request.body,
-						context: request.orizuru
+						context: request.orizuru,
+						config: {}
 					});
 				});
 

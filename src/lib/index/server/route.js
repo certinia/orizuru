@@ -28,7 +28,7 @@
 
 const HTTP_STATUS_CODE = require('http-status-codes');
 
-function create(server, routeConfiguration, responseWriter) {
+function create(server, routeConfiguration, responseWriter, transportConfig) {
 
 	return (request, response) => {
 
@@ -38,7 +38,8 @@ function create(server, routeConfiguration, responseWriter) {
 			message = {
 				schema,
 				message: request.body,
-				context: request.orizuru
+				context: request.orizuru,
+				config: transportConfig || {}
 			};
 
 		if (!schema) {

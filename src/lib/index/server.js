@@ -117,6 +117,7 @@ class Server extends EventEmitter {
 	 * @param {Function} config.responseWriter - The function to use before writing the response.
 	 * @param {string} [config.endpoint=/] - The API endpoint.
 	 * @param {Function} [config.pathMapper] - A function to map from a namespace string to a URL path string.
+	 * @param {Object} [config.transportConfig] - Transport configuration options required for publishing this message type.
 	 *
 	 * @returns {Server} The server.
 	 */
@@ -172,7 +173,7 @@ class Server extends EventEmitter {
 		me.info(`Adding route: ${fullSchemaName}.`);
 
 		// Add the router method.
-		router[config.method](PARAMETER_API_SCHEMA_ENDPOINT, route.create(me, routeConfiguration, responseWriter));
+		router[config.method](PARAMETER_API_SCHEMA_ENDPOINT, route.create(me, routeConfiguration, responseWriter, config.transportConfig));
 
 		return this;
 
