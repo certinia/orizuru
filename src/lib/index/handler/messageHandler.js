@@ -32,7 +32,7 @@ function messageHandler(server, config) {
 
 	const
 		schema = config.schema,
-		eventName = _.get(config, 'schema.name'),
+		eventName = _.get(config, 'config.eventName') || _.get(config, 'schema.name'),
 		handleMessage = config.handler;
 
 	return async (content) => {
