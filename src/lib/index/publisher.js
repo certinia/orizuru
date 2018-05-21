@@ -144,6 +144,7 @@ class Publisher extends EventEmitter {
 		}
 
 		transportImplConfig.config = config.config || {};
+		transportImplConfig.config.rawMessage = message;
 
 		// publish buffer on transport
 		return me[PROPERTY_TRANSPORT_IMPL]({ eventName, buffer, config: transportImplConfig })
