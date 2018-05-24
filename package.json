@@ -43,7 +43,8 @@
     "proxyquire": "2.0.1",
     "sinon": "5.0.7",
     "sinon-chai": "3.0.0",
-    "supertest": "3.1.0"
+    "supertest": "3.1.0",
+    "typescript": "2.8.3"
   },
   "nyc": {
     "check-coverage": true,
