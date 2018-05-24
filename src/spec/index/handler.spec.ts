@@ -26,26 +26,23 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	chai = require('chai'),
-	chaiAsPromised = require('chai-as-promised'),
-	proxyquire = require('proxyquire'),
-	sinon = require('sinon'),
-	sinonChai = require('sinon-chai'),
+import _ from 'lodash';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 
-	avsc = require('avsc'),
-	{ EventEmitter } = require('events'),
-	HandlerValidator = require('../../lib/index/validator/handler'),
-
-	expect = chai.expect;
+import { EventEmitter } from 'events';
+import avsc from 'avsc';
+import { Handler } from '../../lib';
+import HandlerValidator from '../../lib/index/validator/handler';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-describe('index/handler.js', () => {
+describe('index/handler', () => {
 
-	let mocks;
+	let mocks: any;
 
 	beforeEach(() => {
 
@@ -66,18 +63,10 @@ describe('index/handler.js', () => {
 	});
 
 	afterEach(() => {
-		sinon.restore();
+
 	});
 
 	describe('constructor', () => {
-
-		let Handler;
-
-		beforeEach(() => {
-			Handler = proxyquire('../../lib/index/handler', {
-				'./transport/transport': mocks.transport
-			});
-		});
 
 		it('should extend EventEmitter', () => {
 
@@ -86,7 +75,7 @@ describe('index/handler.js', () => {
 			const handler = new Handler(mocks.config);
 
 			// Then
-			expect(handler).to.be.an.instanceof(EventEmitter);
+			chai.expect(handler).to.be.an.instanceof(EventEmitter);
 
 		});
 
@@ -97,11 +86,11 @@ describe('index/handler.js', () => {
 
 			// When
 			// Then
-			expect(() => new Handler({})).to.throw(/^Missing required object parameter: transport\.$/g);
+			chai.expect(() => new Handler({})).to.throw(/^Missing required object parameter: transport\.$/g);
 
-			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
-			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
+			chai.expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+			chai.expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
+			chai.expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
 
 		});
 
@@ -112,68 +101,26 @@ describe('index/handler.js', () => {
 			const handler = new Handler(mocks.config);
 
 			// Then
-			expect(mocks.transport).to.have.been.calledOnce;
-			expect(mocks.transport).to.have.been.calledWithNew;
-			expect(handler.transport).to.equal(mocks.transport.firstCall.returnValue);
-
-		});
-
-		it('should initialise the transport implementation (subscribe function)', () => {
-
-			// Given
-			mocks.config.transport.subscribe = sinon.stub();
-
-			// When
-			const handler = new Handler(mocks.config);
-
-			// Then
-			expect(handler.transport_impl).to.equal(mocks.config.transport.subscribe);
-
-		});
-
-		it('should initialise the transport config', () => {
-
-			// Given
-			mocks.config.transportConfig = sinon.stub();
-
-			// When
-			const handler = new Handler(mocks.config);
-
-			// Then
-			expect(handler.transport_config).to.equal(mocks.config.transportConfig);
+			chai.expect(mocks.transport).to.have.been.calledOnce;
+			chai.expect(mocks.transport).to.have.been.calledWithNew;
 
 		});
 
 		it('should initialise the handler validator', () => {
 
 			// Given
-			Handler = proxyquire('../../lib/index/handler', {
-				'./transport/transport': mocks.transport,
-				'./validator/handler': mocks.handlerValidator
-			});
-
 			// When
 			const handler = new Handler(mocks.config);
 
 			// Then
-			expect(mocks.handlerValidator).to.have.been.calledOnce;
-			expect(mocks.handlerValidator).to.have.been.calledWithNew;
-			expect(handler.validator).to.equal(mocks.handlerValidator.firstCall.returnValue);
+			chai.expect(mocks.handlerValidator).to.have.been.calledOnce;
+			chai.expect(mocks.handlerValidator).to.have.been.calledWithNew;
 
 		});
 
 	});
 
 	describe('handle', () => {
-
-		let Handler;
-
-		beforeEach(() => {
-			Handler = proxyquire('../../lib/index/handler', {
-				'./transport/transport': mocks.transport,
-				'./handler/messageHandler': mocks.messageHandler
-			});
-		});
 
 		it('should install the handler for a schema', () => {
 
@@ -203,14 +150,14 @@ describe('index/handler.js', () => {
 
 			// When
 			// Then
-			return expect(handler.handle(config))
+			return chai.expect(handler.handle(config))
 				.to.eventually.be.fulfilled
 				.then(() => {
-					expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
-					expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
-					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Installing handler for com.example.FullName events.');
-					expect(mocks.messageHandler).to.have.been.calledOnce;
+					chai.expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
+					chai.expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+					chai.expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
+					chai.expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Installing handler for com.example.FullName events.');
+					chai.expect(mocks.messageHandler).to.have.been.calledOnce;
 				});
 
 		});
@@ -226,9 +173,9 @@ describe('index/handler.js', () => {
 
 				// When
 				// Then
-				expect(() => handler.handle()).to.throw(/^Missing required object parameter\.$/);
-				expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
-				expect(mocks.messageHandler).to.not.have.been.called;
+				chai.expect(() => handler.handle({})).to.throw(/^Missing required object parameter\.$/);
+				chai.expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
+				chai.expect(mocks.messageHandler).to.not.have.been.called;
 
 			});
 

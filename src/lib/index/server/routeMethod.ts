@@ -24,30 +24,26 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
-
-module.exports = Object.freeze({
-	CHECKOUT: 'checkout',
-	COPY: 'copy',
-	DELETE: 'delete',
-	GET: 'get',
-	HEAD: 'head',
-	LOCK: 'lock',
-	MERGE: 'merge',
-	MKACTIVITY: 'mkactivity',
-	MKCOL: 'mkcol',
-	MOVE: 'move',
-	M_SEARCH: 'm-search',
-	NOTIFY: 'notify',
-	OPTIONS: 'options',
-	PATCH: 'patch',
-	POST: 'post',
-	PURGE: 'purge',
-	PUT: 'put',
-	REPORT: 'report',
-	SEARCH: 'search',
-	SUBSCRIBE: 'subscribe',
-	TRACE: 'trace',
-	UNLOCK: 'unlock',
-	UNSUBSCRIBE: 'unsubscribe'
-});
+export const CHECKOUT: string = 'checkout';
+export const COPY: string = 'copy';
+export const DELETE: string = 'delete';
+export const GET: string = 'get';
+export const HEAD: string = 'head';
+export const LOCK: string = 'lock';
+export const MERGE: string = 'merge';
+export const MKACTIVITY: string = 'mkactivity';
+export const MKCOL: string = 'mkcol';
+export const MOVE: string = 'move';
+export const M_SEARCH: string = 'm-search';
+export const NOTIFY: string = 'notify';
+export const OPTIONS: string = 'options';
+export const PATCH: string = 'patch';
+export const POST: string = 'post';
+export const PURGE: string = 'purge';
+export const PUT: string = 'put';
+export const REPORT: string = 'report';
+export const SEARCH: string = 'search';
+export const SUBSCRIBE: string = 'subscribe';
+export const TRACE: string = 'trace';
+export const UNLOCK: string = 'unlock';
+export const UNSUBSCRIBE: string = 'unsubscribe';

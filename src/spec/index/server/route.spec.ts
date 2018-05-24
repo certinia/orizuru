@@ -26,17 +26,14 @@
 
 'use strict';
 
-const
-	chai = require('chai'),
-	chaiAsPromised = require('chai-as-promised'),
-	sinon = require('sinon'),
-	sinonChai = require('sinon-chai'),
+import chai, { expect } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import avsc from 'avsc';
 
-	avsc = require('avsc'),
-
-	expect = chai.expect,
-
-	route = require('../../../lib/index/server/route');
+import { create } from '../../../lib/index/server/route';
+import { Server } from '../../../lib';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -44,7 +41,7 @@ chai.use(sinonChai);
 describe('index/server/route.js', () => {
 
 	afterEach(() => {
-		sinon.restore();
+		sinon.restore(sinon);
 	});
 
 	describe('create', () => {
@@ -58,7 +55,7 @@ describe('index/server/route.js', () => {
 				responseWriter = sinon.stub(),
 
 				// When
-				routeFunction = route.create(server, routeConfiguration, responseWriter);
+				routeFunction = create(<any>server, routeConfiguration, responseWriter);
 
 			// Then
 			expect(routeFunction).to.be.a('function');
@@ -87,7 +84,7 @@ describe('index/server/route.js', () => {
 				},
 				responseWriter = sinon.stub().returns(sinon.stub()),
 
-				routeFunction = route.create(server, routeConfiguration, responseWriter),
+				routeFunction = create(<any>server, routeConfiguration, responseWriter),
 
 				request = {
 					params: {
@@ -108,7 +105,7 @@ describe('index/server/route.js', () => {
 
 			// When
 			// Then
-			return expect(routeFunction(request, response))
+			return expect(routeFunction(<any>request, <any>response))
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(responseWriter).to.have.been.calledOnce;
@@ -132,7 +129,7 @@ describe('index/server/route.js', () => {
 				routeConfiguration = sinon.stub(),
 				responseWriter = sinon.stub(),
 
-				routeFunction = route.create(server, routeConfiguration, responseWriter),
+				routeFunction = create(<any>server, routeConfiguration, responseWriter),
 
 				request = {
 					params: {
@@ -145,7 +142,7 @@ describe('index/server/route.js', () => {
 				};
 
 			// When
-			routeFunction(request, response);
+			routeFunction(<any>request, <any>response);
 
 			// Then
 			expect(server.error).to.have.been.calledOnce;
@@ -177,7 +174,7 @@ describe('index/server/route.js', () => {
 				responseFunction = sinon.stub(),
 				responseWriter = sinon.stub().returns(responseFunction),
 
-				routeFunction = route.create(server, routeConfiguration, responseWriter),
+				routeFunction = create(<any>server, routeConfiguration, responseWriter),
 
 				request = {
 					params: {
@@ -192,7 +189,7 @@ describe('index/server/route.js', () => {
 
 			// When
 			// Then
-			return expect(routeFunction(request, response))
+			return expect(routeFunction(<any>request, <any>response))
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(responseWriter).to.have.been.calledOnce;
@@ -226,7 +223,7 @@ describe('index/server/route.js', () => {
 				responseFunction = sinon.stub(),
 				responseWriter = sinon.stub().returns(responseFunction),
 
-				routeFunction = route.create(server, routeConfiguration, responseWriter),
+				routeFunction = create(<any>server, routeConfiguration, responseWriter),
 
 				request = {
 					params: {
@@ -241,7 +238,7 @@ describe('index/server/route.js', () => {
 
 			// When
 			// Then
-			return expect(routeFunction(request, response))
+			return expect(routeFunction(<any>request, <any>response))
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(responseWriter).to.have.been.calledOnce;

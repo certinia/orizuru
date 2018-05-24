@@ -26,13 +26,10 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	chai = require('chai'),
+import _ from 'lodash';
+import chai, { expect } from 'chai';
 
-	expect = chai.expect,
-
-	ServerValidator = require('../../../lib/index/validator/server');
+import ServerValidator from '../../../lib/index/validator/server';
 
 describe('index/validator/server.js', () => {
 
@@ -61,7 +58,7 @@ describe('index/validator/server.js', () => {
 				// Given
 				// When
 				// Then
-				expect(() => new ServerValidator()).to.throw(/^Missing required object parameter\.$/);
+				expect(() => new ServerValidator(undefined)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 

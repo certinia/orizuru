@@ -26,18 +26,17 @@
 
 'use strict';
 
-const
-	avsc = require('avsc'),
-	fs = require('fs-extra'),
-	path = require('path'),
-
-	PROPERTY_TRANSPORT_SCHEMA = 'compiledSchema';
+import { Type } from 'avsc';
+import { readJsonSync } from 'fs-extra';
+import { resolve } from 'path';
 
 /**
  * Class used to encode and decode messages using the transport schema.
  * @private
  */
-class Transport {
+export default class Transport {
+
+	private readonly compiledSchema: Type;
 
 	/**
 	 * Creates a new 'Transport' which can then be used to encode and decode messages.
@@ -48,37 +47,30 @@ class Transport {
 	constructor() {
 
 		const
-			schemaPath = path.resolve(__dirname, './transport.avsc'),
-			transport = fs.readJsonSync(schemaPath),
-			compiledSchema = avsc.Type.forSchema(transport);
+			schemaPath = resolve(__dirname, './transport.avsc'),
+			transport = readJsonSync(schemaPath);
 
 		// Define the transport schema as a property.
-		Object.defineProperty(this, PROPERTY_TRANSPORT_SCHEMA, { value: compiledSchema });
+		this.compiledSchema = Type.forSchema(transport);
 
 	}
 
 	/**
 	 * Decode a message using the transport schema.
-	 *
-	 * @param {string} schema - The message schema.
-	 * @param {string} content - The message contents.
-	 * @returns {Object} The decoded message.
 	 */
-	decode(schema, content) {
+	decode(schema: Type, content: Buffer) {
 
 		const
-			decompiledTransportObject = this[PROPERTY_TRANSPORT_SCHEMA].fromBuffer(content),
+			decompiledTransportObject: any = this.compiledSchema.fromBuffer(content),
 
-			compiledContextSchema = avsc.Type.forSchema(JSON.parse(decompiledTransportObject.contextSchema)),
-			compiledWriterMessageSchema = avsc.Type.forSchema(JSON.parse(decompiledTransportObject.messageSchema)),
+			compiledContextSchema = Type.forSchema(JSON.parse(decompiledTransportObject.contextSchema)),
+			compiledWriterMessageSchema = Type.forSchema(JSON.parse(decompiledTransportObject.messageSchema)),
 
 			resolver = schema.createResolver(compiledWriterMessageSchema),
 
 			// Create plain objects from the AVSC types.
-			context = Object.assign({},
-				compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer)),
-			message = Object.assign({},
-				schema.fromBuffer(decompiledTransportObject.messageBuffer, resolver));
+			context = Object.assign({}, compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer)),
+			message = Object.assign({}, schema.fromBuffer(decompiledTransportObject.messageBuffer, resolver));
 
 		return { context, message };
 
@@ -86,16 +78,11 @@ class Transport {
 
 	/**
 	 * Encode a message using the transport schema.
-	 *
-	 * @param {string} schema - The message schema.
-	 * @param {string} message - The message contents.
-	 * @param {string} context - The message context.
-	 * @returns {Buffer} The encoded message.
 	 */
-	encode(schema, message, context = {}) {
+	encode(schema: Type, message: any, context = {}) {
 
 		const
-			compiledContextSchema = avsc.Type.forValue(context),
+			compiledContextSchema = Type.forValue(context),
 			transport = {
 				contextSchema: JSON.stringify(compiledContextSchema),
 				contextBuffer: compiledContextSchema.toBuffer(context),
@@ -103,10 +90,9 @@ class Transport {
 				messageBuffer: schema.toBuffer(message)
 			};
 
-		return this[PROPERTY_TRANSPORT_SCHEMA].toBuffer(transport);
+		return this.compiledSchema.toBuffer(transport);
 
 	}
 
 }
 
-module.exports = Transport;

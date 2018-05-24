@@ -26,13 +26,12 @@
 
 'use strict';
 
-const
-	avsc = require('avsc'),
-	chai = require('chai'),
+import chai, { expect } from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import avsc from 'avsc';
 
-	expect = chai.expect,
-
-	schemaValidator = require('../../../../lib/index/validator/shared/schema');
+import { validate } from '../../../../lib/index/validator/shared/schema';
 
 describe('index/validator/shared/schema.js', () => {
 
@@ -47,7 +46,7 @@ describe('index/validator/shared/schema.js', () => {
 				},
 
 				// When
-				validatedConfig = schemaValidator.validate(config);
+				validatedConfig = validate(config);
 
 			// Then
 			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
@@ -58,15 +57,15 @@ describe('index/validator/shared/schema.js', () => {
 
 			// Given
 			const config = {
-					schema: {
-						name: 'com.example.FullName',
-						type: 'record',
-						fields: []
-					}
-				},
+				schema: {
+					name: 'com.example.FullName',
+					type: 'record',
+					fields: []
+				}
+			},
 
 				// When
-				validatedConfig = schemaValidator.validate(config);
+				validatedConfig = validate(config);
 
 			// Then
 			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
@@ -77,15 +76,15 @@ describe('index/validator/shared/schema.js', () => {
 
 			// Given
 			const config = {
-					schema: avsc.Type.forSchema({
-						name: 'com.example.FullName',
-						type: 'record',
-						fields: []
-					})
-				},
+				schema: avsc.Type.forSchema({
+					name: 'com.example.FullName',
+					type: 'record',
+					fields: []
+				})
+			},
 
 				// When
-				validatedConfig = schemaValidator.validate(config);
+				validatedConfig = validate(config);
 
 			// Then
 			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
@@ -101,7 +100,7 @@ describe('index/validator/shared/schema.js', () => {
 
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
+				expect(() => validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
 
 			});
 
@@ -114,7 +113,7 @@ describe('index/validator/shared/schema.js', () => {
 
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
+				expect(() => validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
 
 			});
 
@@ -127,7 +126,7 @@ describe('index/validator/shared/schema.js', () => {
 
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
+				expect(() => validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
 
 			});
 
@@ -142,7 +141,7 @@ describe('index/validator/shared/schema.js', () => {
 
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
+				expect(() => validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
 
 			});
 
@@ -155,7 +154,7 @@ describe('index/validator/shared/schema.js', () => {
 
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
+				expect(() => validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
 
 			});
 

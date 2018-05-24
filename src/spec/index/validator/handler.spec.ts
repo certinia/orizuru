@@ -26,18 +26,17 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	avsc = require('avsc'),
-	chai = require('chai'),
+import _ from 'lodash';
+import chai, { expect } from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import avsc from 'avsc';
 
-	expect = chai.expect,
-
-	HandlerValidator = require('../../../lib/index/validator/handler');
+import HandlerValidator from '../../../lib/index/validator/handler';
 
 describe('index/validator/handler.js', () => {
 
-	let handlerValidator;
+	let handlerValidator: HandlerValidator;
 
 	beforeEach(() => {
 		handlerValidator = new HandlerValidator();
@@ -102,7 +101,7 @@ describe('index/validator/handler.js', () => {
 				// Given
 				// When
 				// Then
-				expect(() => handlerValidator.validate()).to.throw(/^Missing required object parameter\.$/);
+				expect(() => handlerValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 

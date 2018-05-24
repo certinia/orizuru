@@ -28,13 +28,15 @@
 		"**/.hg": true,
 		"**/CVS": true,
 		"**/.DS_Store": true,
-		"**/coverage": true
+		"**/coverage": true,
+		"lib/**/*.js": true,
+		"test/**/*.js": true
 	},
 	"files.insertFinalNewline": true,
 	"lcov.path": "coverage/lcov.info",
 	"lcov.watch": [
 		{
-			"pattern": "**/*.js",
+			"pattern": "**/*.ts",
 			"command": "npm test"
 		}
 	],

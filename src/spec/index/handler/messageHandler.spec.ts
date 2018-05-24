@@ -24,24 +24,18 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
+import chai, { expect } from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import avsc from 'avsc';
 
-const
-	chai = require('chai'),
-	sinon = require('sinon'),
-	sinonChai = require('sinon-chai'),
-
-	avsc = require('avsc'),
-
-	expect = chai.expect,
-
-	messageHandler = require('../../../lib/index/handler/messageHandler');
+import messageHandler from '../../../lib/index/handler/messageHandler';
 
 chai.use(sinonChai);
 
-describe('index/handler/messageHandler.js', () => {
+describe('index/handler/messageHandler', () => {
 
-	let server, config;
+	let server: any, config: any;
 
 	beforeEach(() => {
 		server = {
@@ -67,7 +61,7 @@ describe('index/handler/messageHandler.js', () => {
 	});
 
 	afterEach(() => {
-		sinon.restore();
+		//sinon.restore({});
 	});
 
 	it('should handle a message where the base handler resolves', async () => {
@@ -77,7 +71,7 @@ describe('index/handler/messageHandler.js', () => {
 		config.handler.resolves();
 
 		// When
-		await messageHandler(server, config)('test');
+		await messageHandler(server, config)(new Buffer('test'));
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
@@ -95,7 +89,7 @@ describe('index/handler/messageHandler.js', () => {
 		config.handler.returns(null);
 
 		// When
-		await messageHandler(server, config)('test');
+		await messageHandler(server, config)(new Buffer('test'));
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
@@ -115,7 +109,7 @@ describe('index/handler/messageHandler.js', () => {
 
 		// When
 
-		await messageHandler(server, config)('test');
+		await messageHandler(server, config)(new Buffer('test'));
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
@@ -135,7 +129,7 @@ describe('index/handler/messageHandler.js', () => {
 
 		// When
 
-		await messageHandler(server, config)('test');
+		await messageHandler(server, config)(new Buffer('test'));
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
@@ -154,7 +148,7 @@ describe('index/handler/messageHandler.js', () => {
 		server.transport.decode.throws(expectedError);
 
 		// When
-		messageHandler(server, config)('test');
+		messageHandler(server, config)(new Buffer('test'));
 
 		// Then
 		expect(server.info).to.have.been.calledOnce;

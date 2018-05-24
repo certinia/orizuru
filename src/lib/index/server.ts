@@ -26,30 +26,16 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	express = require('express'),
+import _ from 'lodash';
+import { EventEmitter } from 'events';
+import { Publisher } from '..';
+import * as ROUTE_METHOD from './server/routeMethod';
+import express, { Express, Router } from 'express';
+import RouteValidator from './validator/route';
+import ServerValidator from './validator/server';
+import { create as createRoute } from './server/route';
 
-	EventEmitter = require('events'),
-	Publisher = require('./publisher'),
-
-	route = require('./server/route'),
-
-	RouteValidator = require('./validator/route'),
-	ServerValidator = require('./validator/server'),
-
-	expressRouter = express.Router,
-
-	PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName',
-
-	PROPERTY_PUBLISHER = 'publisher',
-	PROPERTY_ROUTE_CONFIGURATION = 'route_configuration',
-	PROPERTY_ROUTER_CONFIGURATION = 'router_configuration',
-	PROPERTY_ROUTE_VALIDATOR = 'route_validator',
-	PROPERTY_SERVER = 'server',
-
-	ERROR_EVENT = 'error_event',
-	INFO_EVENT = 'info_event';
+const PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
 
 /**
  * The Server for creating routes in a web dyno based on Avro schemas.
@@ -59,7 +45,25 @@ const
  * @property {string} emitter.ERROR - the error event name
  * @property {string} emitter.INFO - the info event name
  **/
-class Server extends EventEmitter {
+export default class Server extends EventEmitter {
+
+	static readonly ROUTE_METHOD = ROUTE_METHOD;
+
+	/**
+	 * The error event name.
+	 */
+	static readonly ERROR: string = 'error_event';
+
+	/**
+	 * The info event name.
+	 */
+	static readonly INFO: string = 'info_event';
+
+	private readonly publisher: Publisher;
+	private readonly server: Express;
+	private readonly validator: RouteValidator;
+	private readonly routerConfiguration: any;
+	private readonly routeConfiguration: any;
 
 	/**
 	 * Constructs a new 'Server'.
@@ -70,38 +74,34 @@ class Server extends EventEmitter {
 	 * @param {Transport} config.transport - The transport object.
 	 * @param {Object} config.transportConfig - The config for the transport object.
 	 */
-	constructor(config) {
+	constructor(config: any) {
 
 		super();
 
-		const me = this;
-		me.info('Creating server.');
+		this.info('Creating server.');
 
 		try {
 
 			// Validate the config
 			new ServerValidator(config);
 
-			// Create the express server
-			const server = express();
-
 			// Add the server
-			Object.defineProperty(me, PROPERTY_SERVER, { value: server });
+			this.server = express();
 
 			// Add the publisher
-			Object.defineProperty(me, PROPERTY_PUBLISHER, { value: new Publisher(config) });
+			this.publisher = new Publisher(config);
 
 			// Define the router configuration for the server
-			Object.defineProperty(me, PROPERTY_ROUTER_CONFIGURATION, { value: {} });
+			this.routerConfiguration = {};
 
 			// Define the route configuration for the server
-			Object.defineProperty(me, PROPERTY_ROUTE_CONFIGURATION, { value: {} });
+			this.routeConfiguration = {};
 
 			// Define the route validator
-			Object.defineProperty(me, PROPERTY_ROUTE_VALIDATOR, { value: new RouteValidator() });
+			this.validator = new RouteValidator();
 
 		} catch (e) {
-			me.error(e);
+			this.error(e);
 			throw e;
 		}
 
@@ -109,45 +109,33 @@ class Server extends EventEmitter {
 
 	/**
 	 * Adds a 'route' to the server.
-	 *
-	 * @param {Object} config - The route.
-	 * @param {string|Object} config.schema - The Apache Avro schema for this route.
-	 * @param {string} config.method=POST - The method to use for this route.
-	 * @param {Function[]} config.middlewares - The middleware functions for this route.
-	 * @param {Function} config.responseWriter - The function to use before writing the response.
-	 * @param {string} [config.endpoint=/] - The API endpoint.
-	 * @param {Function} [config.pathMapper] - A function to map from a namespace string to a URL path string.
-	 * @param {Object} [config.transportConfig] - Transport configuration options required for publishing this message type.
-	 *
-	 * @returns {Server} The server.
 	 */
-	addRoute(config) {
+	addRoute(config: any) {
 
 		// Validate the route configuration.
-		this[PROPERTY_ROUTE_VALIDATOR].validate(config);
+		this.validator.validate(config);
 
 		// Now we know the configuration is valid, add the route.
 		const
-			me = this,
 			schema = config.schema,
 			responseWriter = config.responseWriter,
 			fullSchemaName = schema.name,
 			schemaNameParts = fullSchemaName.split('.'),
 			schemaNamespace = _.initial(schemaNameParts).join('.'),
-			schemaName = _.last(schemaNameParts),
+			schemaName = <string>_.last(schemaNameParts),
 			apiEndpoint = config.endpoint + config.pathMapper(schemaNamespace);
 
 		let
-			routeConfiguration = me[PROPERTY_ROUTE_CONFIGURATION][apiEndpoint],
-			router = me[PROPERTY_ROUTER_CONFIGURATION][apiEndpoint];
+			routeConfiguration = this.routeConfiguration[apiEndpoint],
+			router = this.routerConfiguration[apiEndpoint];
 
 		// If we don't have the router for this endpoint then we need to create one.
 		if (!router) {
 
-			me.info(`Creating router for namespace: ${apiEndpoint}.`);
+			this.info(`Creating router for namespace: ${apiEndpoint}.`);
 
 			// Create router.
-			router = expressRouter();
+			router = Router();
 
 			// Apply middlewares.
 			_.each(config.middleware, middleware => {
@@ -155,25 +143,25 @@ class Server extends EventEmitter {
 			});
 
 			// Add the router to the server.
-			me[PROPERTY_SERVER].use(apiEndpoint, router);
+			this.server.use(apiEndpoint, router);
 
 			// Update the router configuration.
-			me[PROPERTY_ROUTER_CONFIGURATION][apiEndpoint] = router;
+			this.routerConfiguration[apiEndpoint] = router;
 
 		}
 
 		if (!routeConfiguration) {
 			routeConfiguration = {};
-			me[PROPERTY_ROUTE_CONFIGURATION][apiEndpoint] = routeConfiguration;
+			this.routeConfiguration[apiEndpoint] = routeConfiguration;
 		}
 
 		// Update the route configuration.
 		routeConfiguration[schemaName] = schema;
 
-		me.info(`Adding route: ${fullSchemaName}.`);
+		this.info(`Adding route: ${fullSchemaName}.`);
 
 		// Add the router method.
-		router[config.method](PARAMETER_API_SCHEMA_ENDPOINT, route.create(me, routeConfiguration, responseWriter, config.transportConfig));
+		router[config.method](PARAMETER_API_SCHEMA_ENDPOINT, createRoute(this, routeConfiguration, responseWriter, config.transportConfig));
 
 		return this;
 
@@ -188,7 +176,7 @@ class Server extends EventEmitter {
 	 * @returns {express} The express server.
 	 */
 	getServer() {
-		return this[PROPERTY_SERVER];
+		return this.server;
 	}
 
 	/**
@@ -197,38 +185,25 @@ class Server extends EventEmitter {
 	 * @returns {Publisher} The message publisher.
 	 */
 	getPublisher() {
-		return this[PROPERTY_PUBLISHER];
+		return this.publisher;
 	}
 
 	/**
 	 * Emit an error event.
 	 * @param {Object} event - The error event.
 	 */
-	error(event) {
-		this.emit(ERROR_EVENT, event);
+	error(event: any) {
+		this.emit(Server.ERROR, event);
 	}
 
 	/**
 	 * Emit an info event.
 	 * @param {Object} event - The info event.
 	 */
-	info(event) {
-		this.emit(INFO_EVENT, event);
+	info(event: any) {
+		this.emit(Server.INFO, event);
 	}
 
 }
 
-/**
- * The error event name.
- */
-Server.ERROR = ERROR_EVENT;
-
-/**
- * The info event name.
- */
-Server.INFO = INFO_EVENT;
-
-Server.ROUTE_METHOD = require('./server/routeMethod');
-
-module.exports = Server;
 

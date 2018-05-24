@@ -26,12 +26,9 @@
 
 'use strict';
 
-const
-	chai = require('chai'),
+import chai, { expect } from 'chai';
 
-	expect = chai.expect,
-
-	routeMethod = require('../../../lib/index/server/routeMethod');
+import * as routeMethod from '../../../lib/index/server/routeMethod';
 
 describe('index/server/routeMethod.js', () => {
 

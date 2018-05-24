@@ -26,11 +26,13 @@
 
 'use strict';
 
-const HTTP_STATUS_CODE = require('http-status-codes');
+import { Server, OrizuruRequest } from "../..";
+import * as  HTTP_STATUS_CODE from 'http-status-codes';
+import { Request, Response } from "express";
 
-function create(server, routeConfiguration, responseWriter, transportConfig) {
+export function create(server: Server, routeConfiguration: any, responseWriter: any, transportConfig?: any) {
 
-	return (request, response) => {
+	return (request: OrizuruRequest, response: Response) => {
 
 		const
 			schemaName = request.params.schemaName,
@@ -49,14 +51,10 @@ function create(server, routeConfiguration, responseWriter, transportConfig) {
 		}
 
 		return Promise.resolve(message)
-			.then(server.publisher.publish.bind(server.publisher))
+			.then(server.getPublisher().publish.bind(server.getPublisher()))
 			.then(() => responseWriter(server)(undefined, request, response))
 			.catch((error) => responseWriter(server)(error, request, response));
 
 	};
 
 }
-
-module.exports = {
-	create
-};

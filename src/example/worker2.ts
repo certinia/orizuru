@@ -24,11 +24,10 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
-
 // get the handler
-const { Handler } = require('../src/lib/index'),
+import { Handler } from "../lib";
 
+const
 	// get the transport
 	transport = require('@financialforcedev/orizuru-transport-rabbitmq'),
 
@@ -41,7 +40,7 @@ const { Handler } = require('../src/lib/index'),
 	schemaNameToDefinition = require('./schemas'),
 
 	// create a simple callback
-	handler = ({ message, context }) => {
+	handler = ({ message, context }: { message: any, context: any }) => {
 		// eslint-disable-next-line no-console
 		console.log('worker 2');
 		// eslint-disable-next-line no-console

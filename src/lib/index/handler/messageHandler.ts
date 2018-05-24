@@ -26,22 +26,25 @@
 
 'use strict';
 
-const _ = require('lodash');
+import _ from 'lodash';
+import { Handler } from '../../index'
+import Transport from '../transport/transport';
 
-function messageHandler(server, config) {
+export default function messageHandler(server: Handler, config: any) {
 
 	const
 		schema = config.schema,
 		eventName = _.get(config, 'config.eventName') || _.get(config, 'schema.name'),
-		handleMessage = config.handler;
+		handleMessage = config.handler,
+		transport = new Transport();
 
-	return async (content) => {
+	return async (content: Buffer) => {
 
 		server.info(`Handler received ${eventName} event.`);
 
 		try {
 
-			const decodedContent = server.transport.decode(schema, content);
+			const decodedContent = transport.decode(schema, content);
 			await handleMessage(decodedContent);
 
 		} catch (err) {
@@ -51,5 +54,3 @@ function messageHandler(server, config) {
 	};
 
 }
-
-module.exports = messageHandler;

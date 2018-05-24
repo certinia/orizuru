@@ -24,8 +24,6 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
-
 /**
  * The Index file for project.
  * Returns the Server, Handler and Publisher classes.
@@ -35,25 +33,19 @@
  * @see Publisher
  */
 
-const
-	Server = require('./index/server'),
-	Handler = require('./index/handler'),
-	Publisher = require('./index/publisher');
+import { Request } from 'express';
 
-module.exports = {
-	/**
-	 * Server
-	 * @see Server
-	 */
+import Server from './index/server';
+import Handler from './index/handler';
+import Publisher from './index/publisher';
+
+export {
 	Server,
-	/**
-	 * Handler
-	 * @see Handler
-	 */
 	Handler,
-	/**
-	 * Publisher
-	 * @see Publisher
-	 */
 	Publisher
 };
+
+export interface OrizuruRequest extends Request {
+	orizuru: any
+}
+

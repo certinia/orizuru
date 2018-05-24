@@ -26,29 +26,26 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	avsc = require('avsc'),
-	chai = require('chai'),
-	sinon = require('sinon'),
-	sinonChai = require('sinon-chai'),
+import _ from 'lodash';
+import chai, { expect } from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import avsc from 'avsc';
 
-	expect = chai.expect,
-
-	RouteValidator = require('../../../lib/index/validator/route');
+import RouteValidator from '../../../lib/index/validator/route';
 
 chai.use(sinonChai);
 
 describe('index/validator/route.js', () => {
 
-	let routeValidator;
+	let routeValidator: RouteValidator;
 
 	beforeEach(() => {
 		routeValidator = new RouteValidator();
 	});
 
 	afterEach(() => {
-		sinon.restore();
+		sinon.restore({});
 	});
 
 	describe('constructor', () => {
@@ -125,7 +122,7 @@ describe('index/validator/route.js', () => {
 				// Given
 				// When
 				// Then
-				expect(() => routeValidator.validate()).to.throw(/^Missing required object parameter\.$/);
+				expect(() => routeValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 

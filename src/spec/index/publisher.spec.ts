@@ -26,19 +26,17 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	chai = require('chai'),
-	chaiAsPromised = require('chai-as-promised'),
-	sinon = require('sinon'),
-	sinonChai = require('sinon-chai'),
+import _ from 'lodash';
+import chai, { expect } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import avsc from 'avsc';
 
-	avsc = require('avsc'),
+const
 	{ EventEmitter } = require('events'),
 	PublisherValidator = require('../../lib/index/validator/publisher'),
 	Transport = require('../../lib/index/transport/transport'),
-
-	expect = chai.expect,
 
 	Publisher = require('../../lib/index/publisher');
 
@@ -48,7 +46,7 @@ chai.use(sinonChai);
 describe('index/publisher.js', () => {
 
 	afterEach(() => {
-		sinon.restore();
+		sinon.restore({});
 	});
 
 	describe('constructor', () => {

@@ -24,26 +24,23 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
-
 // schema names to avro schemas
-module.exports = {
-	firstAndLastName: {
-		namespace: 'com.financialforce.orizuru',
-		name: 'firstAndLastName',
-		type: 'record',
-		fields: [
-			{ name: 'firstName', type: 'string' },
-			{ name: 'lastName', type: 'string' }
-		]
-	},
-	ageAndDob: {
-		namespace: 'com.financialforce.orizuru',
-		name: 'ageAndDob',
-		type: 'record',
-		fields: [
-			{ name: 'age', type: 'int' },
-			{ name: 'dob', type: 'string' }
-		]
-	}
+export const firstAndLastName = {
+	namespace: 'com.financialforce.orizuru',
+	name: 'firstAndLastName',
+	type: 'record',
+	fields: [
+		{ name: 'firstName', type: 'string' },
+		{ name: 'lastName', type: 'string' }
+	]
+};
+
+export const ageAndDob = {
+	namespace: 'com.financialforce.orizuru',
+	name: 'ageAndDob',
+	type: 'record',
+	fields: [
+		{ name: 'age', type: 'int' },
+		{ name: 'dob', type: 'string' }
+	]
 };

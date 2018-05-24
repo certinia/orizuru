@@ -24,26 +24,23 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
-
 // get the publisher
-const { Publisher } = require('../src/lib/index'),
+import { Publisher } from '../lib/index';
+import { firstAndLastName } from './schemas';
 
-	// get the transport
+// get the transport
+const
 	transport = require('@financialforcedev/orizuru-transport-rabbitmq'),
 
 	// configure the transport
 	transportConfig = {
 		cloudamqpUrl: 'amqp://localhost'
-	},
-
-	// get schemas
-	schemaNameToDefinition = require('./schemas');
+	};
 
 // Publish using publisher, context is optional
 new Publisher({ transport, transportConfig })
 	.publish({
-		schema: schemaNameToDefinition.firstAndLastName,
+		schema: firstAndLastName,
 		message: {
 			firstName: 'testFirstName',
 			lastName: 'testLastName'

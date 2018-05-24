@@ -26,29 +26,32 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-
-	EventEmitter = require('events'),
-
-	Transport = require('./transport/transport'),
-
-	ServerValidator = require('./validator/server'),
-	PublisherValidator = require('./validator/publisher'),
-
-	PROPERTY_TRANSPORT = 'transport',
-	PROPERTY_TRANSPORT_CONFIG = 'transport_config',
-	PROPERTY_TRANSPORT_IMPL = 'transport_impl',
-	PROPERTY_VALIDATOR = 'validator',
-
-	ERROR_EVENT = 'error_event',
-	INFO_EVENT = 'info_event';
+import _ from 'lodash';
+import { EventEmitter } from 'events';
+import PublisherValidator from './validator/publisher';
+import ServerValidator from './validator/server';
+import Transport from './transport/transport';
 
 /**
  * The Publisher for publishing messages based on Avro schemas.
  * @extends EventEmitter
  */
-class Publisher extends EventEmitter {
+export default class Publisher extends EventEmitter {
+
+	/**
+	 * The error event name.
+	 */
+	static readonly ERROR: string = 'error_event';
+
+	/**
+	 * The info event name.
+	 */
+	static readonly INFO: string = 'info_event';
+
+	private readonly transport: Transport;
+	private readonly transportConfig: any;
+	private readonly transportImpl: (config: any) => Promise<any>;
+	private readonly validator: PublisherValidator;
 
 	/**
 	 * Constructs a new 'Publisher'.
@@ -57,12 +60,11 @@ class Publisher extends EventEmitter {
 	 * @param {transport} config.transport - the transport object
 	 * @param {Object} config.transportConfig - config for the transport object
 	 */
-	constructor(config) {
+	constructor(config: any) {
 
 		super();
 
-		const me = this;
-		me.info('Creating publisher.');
+		this.info('Creating publisher.');
 
 		try {
 
@@ -70,15 +72,15 @@ class Publisher extends EventEmitter {
 			new ServerValidator(config);
 
 			// Define the transport
-			Object.defineProperty(me, PROPERTY_TRANSPORT, { value: new Transport() });
-			Object.defineProperty(me, PROPERTY_TRANSPORT_IMPL, { value: config.transport.publish });
-			Object.defineProperty(me, PROPERTY_TRANSPORT_CONFIG, { value: config.transportConfig });
+			this.transport = new Transport();
+			this.transportConfig = config.transportConfig;
+			this.transportImpl = config.transport.publish;
 
 			// Define the publisher validator
-			Object.defineProperty(me, PROPERTY_VALIDATOR, { value: new PublisherValidator() });
+			this.validator = new PublisherValidator();
 
 		} catch (err) {
-			me.error(err);
+			this.error(err);
 			throw err;
 		}
 
@@ -93,24 +95,14 @@ class Publisher extends EventEmitter {
 	 * @example
 	 * // publishes a message
 	 * publisher.publish({ schema, message, context });
-	 *
-	 * @param {Object} config - The message arguments.
-	 * @param {Object} config.schema - The Apache Avro schema.
-	 * @param {Object} config.message - The message to send.
-	 * @param {Object} config.context - The context for this message.
-	 * @param {Object} [config.config] - Extra configuration options required for publishing this message type.
-	 *
-	 * @returns {Promise} A promise.
 	 */
-	publish(config) {
-
-		var me = this;
+	publish(config: any) {
 
 		// Validate the arguments.
 		try {
-			me[PROPERTY_VALIDATOR].validate(config);
+			this.validator.validate(config);
 		} catch (err) {
-			me.error(err);
+			this.error(err);
 			throw err;
 		}
 
@@ -120,25 +112,25 @@ class Publisher extends EventEmitter {
 			message = config.message,
 			eventName = config.schema.name,
 			context = config.context,
-			transportImplConfig = _.cloneDeep(me[PROPERTY_TRANSPORT_CONFIG]) || {};
+			transportImplConfig = _.cloneDeep(this.transportConfig) || {};
 
 		let buffer;
 
 		try {
-			buffer = me[PROPERTY_TRANSPORT].encode(schema, message, context);
+			buffer = this.transport.encode(schema, message, context);
 		} catch (err) {
 
-			const errors = [];
+			const errors = new Array<String>();
 
 			errors.push(`Error encoding message for schema (${eventName}):`);
 
 			schema.isValid(config.message, {
-				errorHook: (path, any, type) => {
+				errorHook: (path: any, any: any, type: any) => {
 					errors.push(`invalid value (${any}) for path (${path.join()}) it should be of type (${type.typeName})`);
 				}
 			});
 
-			me.error(errors.join('\n'));
+			this.error(errors.join('\n'));
 			throw new Error(errors.join('\n'));
 
 		}
@@ -147,13 +139,13 @@ class Publisher extends EventEmitter {
 		transportImplConfig.config.rawMessage = message;
 
 		// publish buffer on transport
-		return me[PROPERTY_TRANSPORT_IMPL]({ eventName, buffer, config: transportImplConfig })
+		return this.transportImpl({ eventName, buffer, config: transportImplConfig })
 			.then(result => {
-				me.info(`Published ${schema.name} event.`);
+				this.info(`Published ${schema.name} event.`);
 				return result;
 			})
 			.catch(err => {
-				me.error('Error publishing message on transport.');
+				this.error('Error publishing message on transport.');
 				throw err;
 			});
 
@@ -163,28 +155,16 @@ class Publisher extends EventEmitter {
 	 * Emit an error event.
 	 * @param {Object} event - The error event.
 	 */
-	error(event) {
-		this.emit(ERROR_EVENT, event);
+	error(event: any) {
+		this.emit(Publisher.ERROR, event);
 	}
 
 	/**
 	 * Emit an info event.
 	 * @param {Object} event - The info event.
 	 */
-	info(event) {
-		this.emit(INFO_EVENT, event);
+	info(event: any) {
+		this.emit(Publisher.INFO, event);
 	}
 
 }
-
-/**
- * The error event name.
- */
-Publisher.ERROR = ERROR_EVENT;
-
-/**
- * The info event name.
- */
-Publisher.INFO = INFO_EVENT;
-
-module.exports = Publisher;

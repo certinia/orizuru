@@ -26,18 +26,14 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	avsc = require('avsc');
+import _ from 'lodash';
+import { Type } from 'avsc';
 
 /**
  * Parses the schema from a JSON string.
  * @private
- * @param {string} schema - The JSON schema string.
- * @throws An error if the JSON string cannot be parsed.
- * @returns {Object} The parsed schema.
  */
-function parseSchema(schema) {
+function parseSchema(schema: string) {
 
 	try {
 		return JSON.parse(schema);
@@ -50,21 +46,18 @@ function parseSchema(schema) {
 /**
  * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc library}.
  * @private
- * @param {Object} uncompiledSchema - The JSON representation of an Apache Avro Schema.
- * @throws An error if the schema is invalid.
- * @returns {Object} The compiled schema.
  */
-function compileSchema(uncompiledSchema) {
+function compileSchema(uncompiledSchema: any) {
 
 	try {
-		return avsc.Type.forSchema(uncompiledSchema);
+		return Type.forSchema(uncompiledSchema);
 	} catch (error) {
 		throw new Error(`Invalid Avro Schema. Schema error: ${error.message}.`);
 	}
 
 }
 
-function validate(config) {
+export function validate(config: any) {
 
 	if (!config.schema) {
 		throw new Error('Missing required avro-schema parameter: schema.');
@@ -89,6 +82,3 @@ function validate(config) {
 
 }
 
-module.exports = {
-	validate
-};

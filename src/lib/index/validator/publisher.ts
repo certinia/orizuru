@@ -26,17 +26,16 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	schema = require('./shared/schema');
+import _ from 'lodash';
+import * as schema from './shared/schema';
 
 /**
  * Validate the publisher configuration.
  * @private
  */
-class PublisherValidator {
+export default class PublisherValidator {
 
-	validate(config) {
+	validate(config: any) {
 
 		if (!config) {
 			throw new Error('Missing required object parameter.');
@@ -55,4 +54,3 @@ class PublisherValidator {
 
 }
 
-module.exports = PublisherValidator;

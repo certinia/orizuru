@@ -26,17 +26,14 @@
 
 'use strict';
 
-const
-	avsc = require('avsc'),
-	chai = require('chai'),
+import chai, { expect } from 'chai';
+import avsc from 'avsc';
 
-	expect = chai.expect,
-
-	PublisherValidator = require('../../../lib/index/validator/publisher');
+import PublisherValidator from '../../../lib/index/validator/publisher';
 
 describe('index/validator/publisher.js', () => {
 
-	let publisherValidator;
+	let publisherValidator: PublisherValidator;
 
 	beforeEach(() => {
 		publisherValidator = new PublisherValidator();
@@ -98,7 +95,7 @@ describe('index/validator/publisher.js', () => {
 				// Given
 				// When
 				// Then
-				expect(() => publisherValidator.validate()).to.throw(/^Missing required object parameter\.$/);
+				expect(() => publisherValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 

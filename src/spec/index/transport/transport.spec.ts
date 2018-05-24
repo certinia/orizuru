@@ -24,18 +24,14 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
+import chai, { expect } from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import avsc from 'avsc';
+import fs from 'fs-extra';
 
 const
-	avsc = require('avsc'),
-	chai = require('chai'),
-	sinon = require('sinon'),
-	sinonChai = require('sinon-chai'),
-
-	fs = require('fs-extra'),
 	transportSchema = fs.readJsonSync(__dirname + '/../../../lib/index/transport/transport.avsc'),
-
-	expect = chai.expect,
 
 	Transport = require('../../../lib/index/transport/transport');
 
@@ -91,7 +87,7 @@ describe('index/transport/transport.js', () => {
 		compiledTransportSchema = avsc.Type.forSchema(transportSchema);
 
 	afterEach(() => {
-		sinon.restore();
+		sinon.restore({});
 	});
 
 	describe('constructor', () => {

@@ -24,22 +24,20 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
-
-const
-	_ = require('lodash'),
-	schema = require('./shared/schema'),
-
-	HTTP_STATUS_CODE = require('http-status-codes'),
-	ROUTE_METHOD = require('../server/routeMethod');
+import _ from 'lodash';
+import * as schema from './shared/schema';
+import * as HTTP_STATUS_CODE from 'http-status-codes';
+import * as ROUTE_METHOD from '../server/routeMethod';
+import { Server } from '../..';
+import { Request, Response } from 'express';
 
 /**
  * Validates routes.
  * @private
  */
-class RouteValidator {
+export default class RouteValidator {
 
-	validate(config) {
+	validate(config: any) {
 
 		if (!config) {
 			throw new Error('Missing required object parameter.');
@@ -84,7 +82,7 @@ class RouteValidator {
 		});
 
 		if (!config.responseWriter) {
-			config.responseWriter = (server) => (error, request, response) => {
+			config.responseWriter = (server: Server) => (error: Error, request: Request, response: Response) => {
 				if (error) {
 					server.error(error);
 					response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(error);
@@ -99,7 +97,7 @@ class RouteValidator {
 		}
 
 		if (!config.pathMapper) {
-			config.pathMapper = (namespace => namespace.replace(/\./g, '/'));
+			config.pathMapper = (namespace: string) => namespace.replace(/\./g, '/');
 		}
 
 		if (!_.isFunction(config.pathMapper)) {
@@ -113,5 +111,3 @@ class RouteValidator {
 	}
 
 }
-
-module.exports = RouteValidator;

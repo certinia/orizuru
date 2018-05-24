@@ -26,17 +26,16 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	schema = require('./shared/schema');
+import _ from 'lodash';
+import * as schema from './shared/schema';
 
 /**
  * Validates handlers.
  * @private
  */
-class HandlerValidator {
+export default class HandlerValidator {
 
-	validate(config) {
+	validate(config: any) {
 
 		if (!config) {
 			throw new Error('Missing required object parameter.');
@@ -62,5 +61,3 @@ class HandlerValidator {
 	}
 
 }
-
-module.exports = HandlerValidator;

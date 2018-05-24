@@ -26,29 +26,31 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	EventEmitter = require('events'),
-
-	HandlerValidator = require('./validator/handler'),
-	ServerValidator = require('./validator/server'),
-	Transport = require('./transport/transport'),
-
-	messageHandler = require('./handler/messageHandler'),
-
-	PROPERTY_TRANSPORT = 'transport',
-	PROPERTY_TRANSPORT_CONFIG = 'transport_config',
-	PROPERTY_TRANSPORT_IMPL = 'transport_impl',
-	PROPERTY_VALIDATOR = 'validator',
-
-	ERROR_EVENT = 'error_event',
-	INFO_EVENT = 'info_event';
+import _ from 'lodash';
+import { EventEmitter } from 'events';
+import HandlerValidator from './validator/handler';
+import ServerValidator from './validator/server';
+import messageHandler from './handler/messageHandler';
 
 /**
  * The Handler for consuming messages in a worker dyno created by Server.
  * @extends EventEmitter
  */
-class Handler extends EventEmitter {
+export default class Handler extends EventEmitter {
+
+	/**
+	 * The error event name.
+	 */
+	static readonly ERROR: string = 'error_event';
+
+	/**
+	 * The info event name.
+	 */
+	static readonly INFO: string = 'info_event';
+
+	private readonly tranportConfig: any;
+	private readonly tranportImpl: any;
+	private readonly validator: HandlerValidator;
 
 	/**
 	 * Constructs a new 'Handler'.
@@ -57,12 +59,11 @@ class Handler extends EventEmitter {
 	 * @param {transport} config.transport - The transport object.
 	 * @param {Object} config.transportConfig - The configuration for the transport object.
 	 */
-	constructor(config) {
+	constructor(config: any) {
 
 		super();
 
-		const me = this;
-		me.info('Creating handler.');
+		this.info('Creating handler.');
 
 		try {
 
@@ -70,15 +71,14 @@ class Handler extends EventEmitter {
 			new ServerValidator(config);
 
 			// Define the transport
-			Object.defineProperty(me, PROPERTY_TRANSPORT, { value: new Transport() });
-			Object.defineProperty(me, PROPERTY_TRANSPORT_IMPL, { value: config.transport.subscribe });
-			Object.defineProperty(me, PROPERTY_TRANSPORT_CONFIG, { value: config.transportConfig });
+			this.tranportConfig = config.transportConfig;
+			this.tranportImpl = config.transport.subscribe;
 
 			// Define the handler validator
-			Object.defineProperty(me, PROPERTY_VALIDATOR, { value: new HandlerValidator() });
+			this.validator = new HandlerValidator();
 
 		} catch (err) {
-			me.error(err);
+			this.error(err);
 			throw err;
 		}
 
@@ -92,34 +92,26 @@ class Handler extends EventEmitter {
 	 * 	console.log(message);
 	 * 	console.log(context);
 	 * }})
-	 *
-	 * @param {Object} config - The handler configuration.
-	 * @param {Object} config.schema - Schema (compiled or uncompiled Avro schema object).
-	 * @param {Object} config.handler - The handler (called with { message, context }), this callback must handle error events and should only ever return a promise which resolves or undefined.
-	 * @param {Object} [config.config] - Extra configuration options required for handling this message type.
-	 * @returns {Promise} A promise.
 	 */
-	handle(config) {
-
-		var me = this;
+	handle(config: any) {
 
 		try {
-			me[PROPERTY_VALIDATOR].validate(config);
+			this.validator.validate(config);
 		} catch (err) {
-			me.error(err);
+			this.error(err);
 			throw err;
 		}
 
 		const
 			eventName = _.get(config, 'config.eventName') || _.get(config, 'schema.name'),
-			handler = messageHandler(me, config),
-			transportImplConfig = _.cloneDeep(me[PROPERTY_TRANSPORT_CONFIG]);
+			handler = messageHandler(this, config),
+			transportImplConfig = _.cloneDeep(this.tranportConfig);
 
 		transportImplConfig.config = config.config || {};
 
-		me.info(`Installing handler for ${eventName} events.`);
+		this.info(`Installing handler for ${eventName} events.`);
 
-		return me[PROPERTY_TRANSPORT_IMPL]({
+		return this.tranportImpl({
 			eventName,
 			handler,
 			config: transportImplConfig
@@ -131,28 +123,17 @@ class Handler extends EventEmitter {
 	 * Emit an error event.
 	 * @param {Object} event - The error event.
 	 */
-	error(event) {
-		this.emit(ERROR_EVENT, event);
+	error(event: any) {
+		this.emit(Handler.ERROR, event);
 	}
 
 	/**
 	 * Emit an info event.
 	 * @param {Object} event - The info event.
 	 */
-	info(event) {
-		this.emit(INFO_EVENT, event);
+	info(event: any) {
+		this.emit(Handler.INFO, event);
 	}
 
 }
 
-/**
- * The error event name.
- */
-Handler.ERROR = ERROR_EVENT;
-
-/**
- * The info event name.
- */
-Handler.INFO = INFO_EVENT;
-
-module.exports = Handler;

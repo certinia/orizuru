@@ -26,18 +26,16 @@
 
 'use strict';
 
-const
-	_ = require('lodash'),
-	chai = require('chai'),
-	sinon = require('sinon'),
-	sinonChai = require('sinon-chai'),
+import _ from 'lodash';
+import chai, { expect } from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import avsc from 'avsc';
 
-	avsc = require('avsc'),
+const
 	express = require('express'),
 	{ EventEmitter } = require('events'),
 	RouteValidator = require('../../lib/index/validator/route'),
-
-	expect = chai.expect,
 
 	Server = require('../../lib/index/server');
 
@@ -82,7 +80,7 @@ describe('index/server.js', () => {
 		});
 
 	afterEach(() => {
-		sinon.restore();
+		sinon.restore({});
 	});
 
 	describe('constructor', () => {
@@ -183,7 +181,7 @@ describe('index/server.js', () => {
 					method: 'post',
 					middleware: [sinon.stub()],
 					schema: schema4,
-					pathMapper: (namespace) => {
+					pathMapper: (namespace: string) => {
 						return namespace.replace(/\./g, '/').replace('_', '.');
 					}
 				};

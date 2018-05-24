@@ -26,11 +26,11 @@
 
 'use strict';
 
-const _ = require('lodash');
+import _ from 'lodash';
 
-class ServerValidator {
+export default class ServerValidator {
 
-	constructor(config) {
+	constructor(config: any) {
 
 		if (!config) {
 			throw new Error('Missing required object parameter.');
@@ -69,5 +69,3 @@ class ServerValidator {
 	}
 
 }
-
-module.exports = ServerValidator;

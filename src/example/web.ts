@@ -24,13 +24,12 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
+// get the server
+import { Server, OrizuruRequest } from '../lib/index';
+import { Response, NextFunction } from 'express';
 
 const
 	debug = require('debug-plus')('web'),
-
-	// get the server
-	{ Server } = require('../lib/index'),
 
 	// get the transport
 	transport = require('@financialforcedev/orizuru-transport-rabbitmq'),
@@ -50,7 +49,7 @@ const
 	apiEndpoint = '/api/',
 
 	// define middlewares (in order of usage)
-	middlewares = [(req, res, next) => {
+	middlewares = [(req: OrizuruRequest, res: Response, next: NextFunction) => {
 		// just sets auth on the body for transport, should in reality authenticate
 		// and then send a 403 if authentication fails first
 		req.orizuru = { auth: 'test auth token or whatever, object containing id, name, etc' };
@@ -60,7 +59,7 @@ const
 // Create a simple extension of the server to debug out error and info events.
 class Web extends Server {
 
-	constructor(config) {
+	constructor(config: any) {
 
 		super(config);
 
