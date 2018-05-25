@@ -24,40 +24,35 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
+import { Server, OrizuruRequest } from "../..";
+import * as  HTTP_STATUS_CODE from 'http-status-codes';
+import { Request, Response } from "express";
 
-import _ from 'lodash';
-import * as schema from './shared/schema';
+export function create(server: Server, routeConfiguration: any, responseWriter: any, transportConfig?: any) {
 
-/**
- * Validates handlers.
- * @private
- */
-export default class HandlerValidator {
+	return (request: OrizuruRequest, response: Response) => {
 
-	validate(config: any) {
+		const
+			schemaName = request.params.schemaName,
+			schema = routeConfiguration[schemaName],
+			message = {
+				schema,
+				message: request.body,
+				context: request.orizuru,
+				config: transportConfig || {}
+			};
 
-		if (!config) {
-			throw new Error('Missing required object parameter.');
+		if (!schema) {
+			const errorMsg = `No schema for '${schemaName}' found.`;
+			server.error(errorMsg);
+			return response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(errorMsg);
 		}
 
-		if (!_.isPlainObject(config)) {
-			throw new Error(`Invalid parameter: ${config} is not an object.`);
-		}
+		return Promise.resolve(message)
+			.then(server.getPublisher().publish.bind(server.getPublisher()))
+			.then(() => responseWriter(server)(undefined, request, response))
+			.catch((error) => responseWriter(server)(error, request, response));
 
-		if (!config.handler) {
-			throw new Error('Missing required function parameter: handler.');
-		}
-
-		if (!_.isFunction(config.handler)) {
-			throw new Error('Invalid parameter: handler is not a function.');
-		}
-
-		// Validate the schema
-		schema.validate(config);
-
-		return config;
-
-	}
+	};
 
 }

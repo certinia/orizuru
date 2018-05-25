@@ -27,26 +27,28 @@
 'use strict';
 
 import _ from 'lodash';
-import chai, { expect } from 'chai';
+import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import avsc from 'avsc';
+import { EventEmitter } from 'events';
 
-const
-	{ EventEmitter } = require('events'),
-	PublisherValidator = require('../../lib/index/validator/publisher'),
-	Transport = require('../../lib/index/transport/transport'),
-
-	Publisher = require('../../lib/index/publisher');
+import PublisherValidator from '../../src/index/validator/publisher';
+import Publisher from '../../src/index/publisher';
+import Transport from '../../src/index/transport/transport';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
+const
+	expect = chai.expect,
+	sandbox = sinon.createSandbox();
+
 describe('index/publisher.js', () => {
 
 	afterEach(() => {
-		sinon.restore({});
+		sandbox.restore();
 	});
 
 	describe('constructor', () => {
@@ -54,7 +56,7 @@ describe('index/publisher.js', () => {
 		it('should emit an error event if the configuration is invalid', () => {
 
 			// Given
-			sinon.spy(EventEmitter.prototype, 'emit');
+			sandbox.spy(EventEmitter.prototype, 'emit');
 
 			// When
 			// Then
@@ -92,15 +94,15 @@ describe('index/publisher.js', () => {
 		it('should publish a message', () => {
 
 			// Given
-			sinon.stub(PublisherValidator.prototype, 'validate');
-			sinon.spy(EventEmitter.prototype, 'emit');
-			sinon.spy(Transport.prototype, 'encode');
+			sandbox.stub(PublisherValidator.prototype, 'validate');
+			sandbox.spy(EventEmitter.prototype, 'emit');
+			sandbox.spy(Transport.prototype, 'encode');
 
 			const
 				config = {
 					transport: {
-						publish: sinon.stub().resolves(),
-						subscribe: sinon.stub().resolves()
+						publish: sandbox.stub().resolves(),
+						subscribe: sandbox.stub().resolves()
 					}
 				},
 				publisher = new Publisher(config),
@@ -125,7 +127,7 @@ describe('index/publisher.js', () => {
 					}
 				};
 
-			sinon.spy(publisher, 'info');
+			sandbox.spy(publisher, 'info');
 
 			// When
 			// Then
@@ -149,20 +151,20 @@ describe('index/publisher.js', () => {
 			it('if no config is provided', () => {
 
 				// Given
-				sinon.stub(PublisherValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
+				sandbox.stub(PublisherValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
 				const
 					config = {
 						transport: {
-							publish: sinon.stub().resolves(),
-							subscribe: sinon.stub().resolves()
+							publish: sandbox.stub().resolves(),
+							subscribe: sandbox.stub().resolves()
 						}
 					},
 					publisher = new Publisher(config);
 
 				// When
 				// Then
-				expect(() => publisher.publish()).to.throw(/^Missing required object parameter\.$/);
+				expect(() => publisher.publish(undefined)).to.throw(/^Missing required object parameter\.$/);
 				expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
 
 			});
@@ -170,13 +172,13 @@ describe('index/publisher.js', () => {
 			it('if the transport cannot be encoded', () => {
 
 				// Given
-				sinon.stub(PublisherValidator.prototype, 'validate');
+				sandbox.stub(PublisherValidator.prototype, 'validate');
 
 				const
 					config = {
 						transport: {
-							publish: sinon.stub().resolves(),
-							subscribe: sinon.stub().resolves()
+							publish: sandbox.stub().resolves(),
+							subscribe: sandbox.stub().resolves()
 						}
 					},
 					publishMessage = {
@@ -193,7 +195,7 @@ describe('index/publisher.js', () => {
 					},
 					publisher = new Publisher(config);
 
-				sinon.spy(publisher, 'error');
+				sandbox.spy(publisher, 'error');
 
 				// When
 				// Then
@@ -206,15 +208,15 @@ describe('index/publisher.js', () => {
 			it('if the publishing the message fails', () => {
 
 				// Given
-				sinon.stub(PublisherValidator.prototype, 'validate');
-				sinon.spy(EventEmitter.prototype, 'emit');
+				sandbox.stub(PublisherValidator.prototype, 'validate');
+				sandbox.spy(EventEmitter.prototype, 'emit');
 
 				const
 					expectedError = new Error('Failed to publish message.'),
 					config = {
 						transport: {
-							publish: sinon.stub().rejects(expectedError),
-							subscribe: sinon.stub().resolves()
+							publish: sandbox.stub().rejects(expectedError),
+							subscribe: sandbox.stub().resolves()
 						}
 					},
 					publishMessage = {
@@ -234,7 +236,7 @@ describe('index/publisher.js', () => {
 					},
 					publisher = new Publisher(config);
 
-				sinon.spy(publisher, 'error');
+				sandbox.spy(publisher, 'error');
 
 				// When
 				// Then

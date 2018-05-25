@@ -26,35 +26,59 @@
 
 'use strict';
 
-import { Server, OrizuruRequest } from "../..";
-import * as  HTTP_STATUS_CODE from 'http-status-codes';
-import { Request, Response } from "express";
+import _ from 'lodash';
+import { Type } from 'avsc';
 
-export function create(server: Server, routeConfiguration: any, responseWriter: any, transportConfig?: any) {
+/**
+ * Parses the schema from a JSON string.
+ * @private
+ */
+function parseSchema(schema: string) {
 
-	return (request: OrizuruRequest, response: Response) => {
-
-		const
-			schemaName = request.params.schemaName,
-			schema = routeConfiguration[schemaName],
-			message = {
-				schema,
-				message: request.body,
-				context: request.orizuru,
-				config: transportConfig || {}
-			};
-
-		if (!schema) {
-			const errorMsg = `No schema for '${schemaName}' found.`;
-			server.error(errorMsg);
-			return response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(errorMsg);
-		}
-
-		return Promise.resolve(message)
-			.then(server.getPublisher().publish.bind(server.getPublisher()))
-			.then(() => responseWriter(server)(undefined, request, response))
-			.catch((error) => responseWriter(server)(error, request, response));
-
-	};
+	try {
+		return JSON.parse(schema);
+	} catch (error) {
+		throw new Error(`Invalid Avro Schema. Failed to parse JSON string: ${schema}.`);
+	}
 
 }
+
+/**
+ * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc srcrary}.
+ * @private
+ */
+function compileSchema(uncompiledSchema: any) {
+
+	try {
+		return Type.forSchema(uncompiledSchema);
+	} catch (error) {
+		throw new Error(`Invalid Avro Schema. Schema error: ${error.message}.`);
+	}
+
+}
+
+export function validate(config: any) {
+
+	if (!config.schema) {
+		throw new Error('Missing required avro-schema parameter: schema.');
+	}
+
+	if (_.isString(config.schema)) {
+		const parsedSchema = parseSchema(config.schema);
+		config.schema = compileSchema(parsedSchema);
+	} else if (_.isPlainObject(config.schema)) {
+		config.schema = compileSchema(config.schema);
+	} else if (_.hasIn(config.schema, 'toJSON') && _.hasIn(config.schema, 'toBuffer')) {
+		// Already have a compiled schema
+	} else {
+		throw new Error(`Invalid Avro Schema. Unexpected value type: ${typeof config.schema}.`);
+	}
+
+	if (!config.schema.name) {
+		throw new Error('Missing required string parameter: schema[name].');
+	}
+
+	return config;
+
+}
+

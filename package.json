@@ -2,14 +2,12 @@
 	"name": "@financialforcedev/orizuru",
 	"version": "6.1.0",
 	"description": "Streamlined communication between Heroku dynos / other worker processes",
-	"main": "src/lib/index.js",
+	"main": "src/src/index.js",
 	"scripts": {
-		"doc": "jsdoc -c config/jsdoc.json",
+		"doc": "tsdoc",
 		"init-project": "cp run.properties local.run.properties && cp test.properties local.test.properties",
 		"pretest": "tslint ./src",
-		"single-test": "nyc --all=false mocha",
-		"test": "NODE_ENV=test mocha --recursive",
-		"cover": "NODE_ENV=test nyc npm t"
+		"test": "nyc mocha"
 	},
 	"repository": {
 		"type": "git",
@@ -47,36 +45,36 @@
 		"chai": "4.1.2",
 		"chai-as-promised": "7.1.1",
 		"debug-plus": "1.2.2",
-		"jsdoc": "3.5.5",
 		"mocha": "5.1.1",
 		"nyc": "11.8.0",
 		"proxyquire": "2.0.1",
 		"sinon": "5.0.10",
 		"sinon-chai": "3.0.0",
-		"source-map-support": "0.5.6",
 		"supertest": "3.1.0",
 		"ts-node": "6.0.4",
 		"tslint": "5.10.0",
 		"typescript": "2.8.3"
 	},
 	"nyc": {
-		"include": [
-			"app/*.ts",
-			"app/**/*.ts"
-		],
-		"exclude": [
-			"typings"
+		"check-coverage": true,
+		"per-file": true,
+		"lines": 100,
+		"statements": 100,
+		"functions": 100,
+		"branches": 100,
+		"require": [
+			"ts-node/register"
 		],
 		"extension": [
 			".ts"
 		],
-		"require": [
-			"ts-node/register"
-		],
 		"reporter": [
-			"json",
-			"html"
+			"lcov",
+			"html",
+			"text",
+			"text-summary"
 		],
-		"all": true
+		"sourceMap": true,
+		"instrument": true
 	}
 }

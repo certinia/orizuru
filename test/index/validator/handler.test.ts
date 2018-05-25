@@ -26,30 +26,37 @@
 
 'use strict';
 
-import chai, { expect } from 'chai';
+import _ from 'lodash';
+import chai from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import avsc from 'avsc';
 
-import { validate } from '../../../../lib/index/validator/shared/schema';
+import HandlerValidator from '../../../src/index/validator/handler';
 
-describe('index/validator/shared/schema.js', () => {
+const expect = chai.expect;
+
+describe('index/validator/handler.js', () => {
+
+	let handlerValidator: HandlerValidator;
+
+	beforeEach(() => {
+		handlerValidator = new HandlerValidator();
+	});
 
 	describe('constructor', () => {
 
 		it('should return the schema if it is valid (string format)', () => {
 
 			// Given
-			const
-				config = {
-					schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
-				},
+			const config = {
+				handler: _.noop,
+				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
+			};
 
-				// When
-				validatedConfig = validate(config);
-
+			// When
 			// Then
-			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
+			expect(handlerValidator.validate(config)).to.eql(config);
 
 		});
 
@@ -57,18 +64,17 @@ describe('index/validator/shared/schema.js', () => {
 
 			// Given
 			const config = {
+				handler: _.noop,
 				schema: {
 					name: 'com.example.FullName',
 					type: 'record',
 					fields: []
 				}
-			},
+			};
 
-				// When
-				validatedConfig = validate(config);
-
+			// When
 			// Then
-			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
+			expect(handlerValidator.validate(config)).to.eql(config);
 
 		});
 
@@ -76,31 +82,71 @@ describe('index/validator/shared/schema.js', () => {
 
 			// Given
 			const config = {
+				handler: _.noop,
 				schema: avsc.Type.forSchema({
 					name: 'com.example.FullName',
 					type: 'record',
 					fields: []
 				})
-			},
+			};
 
-				// When
-				validatedConfig = validate(config);
-
+			// When
 			// Then
-			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
+			expect(handlerValidator.validate(config)).to.eql(config);
 
 		});
 
 		describe('should throw an error', () => {
 
+			it('if no config is provided', () => {
+
+				// Given
+				// When
+				// Then
+				expect(() => handlerValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
+
+			});
+
+			it('if config is not an object', () => {
+
+				// Given
+				// When
+				// Then
+				expect(() => handlerValidator.validate(2)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
+
+			});
+
+			it('if no handler is provided', () => {
+
+				// Given
+				// When
+				// Then
+				expect(() => handlerValidator.validate({})).to.throw(/^Missing required function parameter: handler\.$/);
+
+			});
+
+			it('if the handler is not a function', () => {
+
+				// Given
+				const config = {
+					handler: 2
+				};
+				// When
+				// Then
+				expect(() => handlerValidator.validate(config)).to.throw(/^Invalid parameter: handler is not a function\.$/);
+
+			});
+
 			it('if no schema is provided', () => {
 
 				// Given
-				const config = {};
+				const config = {
+					handler: _.noop
+				};
 
 				// When
 				// Then
-				expect(() => validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
+				expect(() => handlerValidator.validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
 
 			});
 
@@ -108,12 +154,13 @@ describe('index/validator/shared/schema.js', () => {
 
 				// Given
 				const config = {
+					handler: _.noop,
 					schema: 2
 				};
 
 				// When
 				// Then
-				expect(() => validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
+				expect(() => handlerValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
 
 			});
 
@@ -121,12 +168,13 @@ describe('index/validator/shared/schema.js', () => {
 
 				// Given
 				const config = {
+					handler: _.noop,
 					schema: '{"type":record","fields":[]}'
 				};
 
 				// When
 				// Then
-				expect(() => validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
+				expect(() => handlerValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
 
 			});
 
@@ -134,6 +182,7 @@ describe('index/validator/shared/schema.js', () => {
 
 				// Given
 				const config = {
+					handler: _.noop,
 					schema: {
 						name: 'com.example.FullName'
 					}
@@ -141,7 +190,7 @@ describe('index/validator/shared/schema.js', () => {
 
 				// When
 				// Then
-				expect(() => validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
+				expect(() => handlerValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
 
 			});
 
@@ -149,12 +198,13 @@ describe('index/validator/shared/schema.js', () => {
 
 				// Given
 				const config = {
+					handler: _.noop,
 					schema: '{"type":"record","fields":[]}'
 				};
 
 				// When
 				// Then
-				expect(() => validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
+				expect(() => handlerValidator.validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
 
 			});
 

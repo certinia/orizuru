@@ -30,12 +30,14 @@ import _ from 'lodash';
 import { EventEmitter } from 'events';
 import { Publisher } from '..';
 import * as ROUTE_METHOD from './server/routeMethod';
-import express, { Express, Router } from 'express';
+import express from 'express';
 import RouteValidator from './validator/route';
 import ServerValidator from './validator/server';
 import { create as createRoute } from './server/route';
 
-const PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
+const
+	Router = express.Router,
+	PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
 
 /**
  * The Server for creating routes in a web dyno based on Avro schemas.
@@ -60,7 +62,7 @@ export default class Server extends EventEmitter {
 	static readonly INFO: string = 'info_event';
 
 	private readonly publisher: Publisher;
-	private readonly server: Express;
+	private readonly server: express.Express;
 	private readonly validator: RouteValidator;
 	private readonly routerConfiguration: any;
 	private readonly routeConfiguration: any;

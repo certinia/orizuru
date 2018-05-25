@@ -26,87 +26,76 @@
 
 'use strict';
 
-import chai, { expect } from 'chai';
+import chai from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import avsc from 'avsc';
 
-import PublisherValidator from '../../../lib/index/validator/publisher';
+import { validate } from '../../../../src/index/validator/shared/schema';
 
-describe('index/validator/publisher.js', () => {
+const expect = chai.expect;
 
-	let publisherValidator: PublisherValidator;
-
-	beforeEach(() => {
-		publisherValidator = new PublisherValidator();
-	});
+describe('index/validator/shared/schema.js', () => {
 
 	describe('constructor', () => {
 
 		it('should return the schema if it is valid (string format)', () => {
 
 			// Given
-			const config = {
-				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
-			};
+			const
+				config = {
+					schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
+				},
 
-			// When
+				// When
+				validatedConfig = validate(config);
+
 			// Then
-			expect(publisherValidator.validate(config)).to.eql(config);
+			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
 
 		});
 
 		it('should return the schema if it is valid (JSON format)', () => {
 
 			// Given
-			const config = {
-				schema: {
-					name: 'com.example.FullName',
-					type: 'record',
-					fields: []
-				}
-			};
+			const
+				config = {
+					schema: {
+						name: 'com.example.FullName',
+						type: 'record',
+						fields: []
+					}
+				},
 
-			// When
+				// When
+				validatedConfig = validate(config);
+
 			// Then
-			expect(publisherValidator.validate(config)).to.eql(config);
+			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
 
 		});
 
 		it('should return the schema if it is valid (Compiled format)', () => {
 
 			// Given
-			const config = {
-				schema: avsc.Type.forSchema({
-					name: 'com.example.FullName',
-					type: 'record',
-					fields: []
-				})
-			};
+			const
+				config = {
+					schema: avsc.Type.forSchema({
+						name: 'com.example.FullName',
+						type: 'record',
+						fields: []
+					})
+				},
 
-			// When
+				// When
+				validatedConfig = validate(config);
+
 			// Then
-			expect(publisherValidator.validate(config)).to.eql(config);
+			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
 
 		});
 
 		describe('should throw an error', () => {
-
-			it('if no config is provided', () => {
-
-				// Given
-				// When
-				// Then
-				expect(() => publisherValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
-
-			});
-
-			it('if config is not an object', () => {
-
-				// Given
-				// When
-				// Then
-				expect(() => publisherValidator.validate(2)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
-
-			});
 
 			it('if no schema is provided', () => {
 
@@ -115,7 +104,7 @@ describe('index/validator/publisher.js', () => {
 
 				// When
 				// Then
-				expect(() => publisherValidator.validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
+				expect(() => validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
 
 			});
 
@@ -128,7 +117,7 @@ describe('index/validator/publisher.js', () => {
 
 				// When
 				// Then
-				expect(() => publisherValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
+				expect(() => validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
 
 			});
 
@@ -141,7 +130,7 @@ describe('index/validator/publisher.js', () => {
 
 				// When
 				// Then
-				expect(() => publisherValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
+				expect(() => validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
 
 			});
 
@@ -156,7 +145,7 @@ describe('index/validator/publisher.js', () => {
 
 				// When
 				// Then
-				expect(() => publisherValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
+				expect(() => validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
 
 			});
 
@@ -169,7 +158,7 @@ describe('index/validator/publisher.js', () => {
 
 				// When
 				// Then
-				expect(() => publisherValidator.validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
+				expect(() => validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
 
 			});
 

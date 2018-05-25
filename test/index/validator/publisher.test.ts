@@ -24,22 +24,17 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
-
-import _ from 'lodash';
-import chai, { expect } from 'chai';
-import sinon from 'sinon';
-import sinonChai from 'sinon-chai';
+import { expect } from 'chai';
 import avsc from 'avsc';
 
-import HandlerValidator from '../../../lib/index/validator/handler';
+import PublisherValidator from '../../../src/index/validator/publisher';
 
-describe('index/validator/handler.js', () => {
+describe('index/validator/publisher.js', () => {
 
-	let handlerValidator: HandlerValidator;
+	let publisherValidator: PublisherValidator;
 
 	beforeEach(() => {
-		handlerValidator = new HandlerValidator();
+		publisherValidator = new PublisherValidator();
 	});
 
 	describe('constructor', () => {
@@ -48,13 +43,12 @@ describe('index/validator/handler.js', () => {
 
 			// Given
 			const config = {
-				handler: _.noop,
 				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 			};
 
 			// When
 			// Then
-			expect(handlerValidator.validate(config)).to.eql(config);
+			expect(publisherValidator.validate(config)).to.eql(config);
 
 		});
 
@@ -62,7 +56,6 @@ describe('index/validator/handler.js', () => {
 
 			// Given
 			const config = {
-				handler: _.noop,
 				schema: {
 					name: 'com.example.FullName',
 					type: 'record',
@@ -72,7 +65,7 @@ describe('index/validator/handler.js', () => {
 
 			// When
 			// Then
-			expect(handlerValidator.validate(config)).to.eql(config);
+			expect(publisherValidator.validate(config)).to.eql(config);
 
 		});
 
@@ -80,7 +73,6 @@ describe('index/validator/handler.js', () => {
 
 			// Given
 			const config = {
-				handler: _.noop,
 				schema: avsc.Type.forSchema({
 					name: 'com.example.FullName',
 					type: 'record',
@@ -90,7 +82,7 @@ describe('index/validator/handler.js', () => {
 
 			// When
 			// Then
-			expect(handlerValidator.validate(config)).to.eql(config);
+			expect(publisherValidator.validate(config)).to.eql(config);
 
 		});
 
@@ -101,7 +93,7 @@ describe('index/validator/handler.js', () => {
 				// Given
 				// When
 				// Then
-				expect(() => handlerValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
+				expect(() => publisherValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 
@@ -110,41 +102,18 @@ describe('index/validator/handler.js', () => {
 				// Given
 				// When
 				// Then
-				expect(() => handlerValidator.validate(2)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
-
-			});
-
-			it('if no handler is provided', () => {
-
-				// Given
-				// When
-				// Then
-				expect(() => handlerValidator.validate({})).to.throw(/^Missing required function parameter: handler\.$/);
-
-			});
-
-			it('if the handler is not a function', () => {
-
-				// Given
-				const config = {
-					handler: 2
-				};
-				// When
-				// Then
-				expect(() => handlerValidator.validate(config)).to.throw(/^Invalid parameter: handler is not a function\.$/);
+				expect(() => publisherValidator.validate(2)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
 
 			});
 
 			it('if no schema is provided', () => {
 
 				// Given
-				const config = {
-					handler: _.noop
-				};
+				const config = {};
 
 				// When
 				// Then
-				expect(() => handlerValidator.validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
+				expect(() => publisherValidator.validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
 
 			});
 
@@ -152,13 +121,12 @@ describe('index/validator/handler.js', () => {
 
 				// Given
 				const config = {
-					handler: _.noop,
 					schema: 2
 				};
 
 				// When
 				// Then
-				expect(() => handlerValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
+				expect(() => publisherValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
 
 			});
 
@@ -166,13 +134,12 @@ describe('index/validator/handler.js', () => {
 
 				// Given
 				const config = {
-					handler: _.noop,
 					schema: '{"type":record","fields":[]}'
 				};
 
 				// When
 				// Then
-				expect(() => handlerValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
+				expect(() => publisherValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
 
 			});
 
@@ -180,7 +147,6 @@ describe('index/validator/handler.js', () => {
 
 				// Given
 				const config = {
-					handler: _.noop,
 					schema: {
 						name: 'com.example.FullName'
 					}
@@ -188,7 +154,7 @@ describe('index/validator/handler.js', () => {
 
 				// When
 				// Then
-				expect(() => handlerValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
+				expect(() => publisherValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
 
 			});
 
@@ -196,13 +162,12 @@ describe('index/validator/handler.js', () => {
 
 				// Given
 				const config = {
-					handler: _.noop,
 					schema: '{"type":"record","fields":[]}'
 				};
 
 				// When
 				// Then
-				expect(() => handlerValidator.validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
+				expect(() => publisherValidator.validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
 
 			});
 

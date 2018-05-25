@@ -28,7 +28,7 @@
 
 import chai, { expect } from 'chai';
 
-import * as routeMethod from '../../../lib/index/server/routeMethod';
+import * as routeMethod from '../../../src/index/server/routeMethod';
 
 describe('index/server/routeMethod.js', () => {
 

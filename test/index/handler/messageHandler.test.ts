@@ -24,30 +24,33 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-import chai, { expect } from 'chai';
+import chai from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import avsc from 'avsc';
 
-import messageHandler from '../../../lib/index/handler/messageHandler';
+import messageHandler from '../../../src/index/handler/messageHandler';
+import Transport from '../../../src/index/transport/transport';
 
 chai.use(sinonChai);
+
+const
+	expect = chai.expect,
+	sandbox = sinon.createSandbox();
 
 describe('index/handler/messageHandler', () => {
 
 	let server: any, config: any;
 
 	beforeEach(() => {
+
 		server = {
-			error: sinon.stub(),
-			info: sinon.stub(),
-			transport: {
-				decode: sinon.stub()
-			}
+			error: sandbox.stub(),
+			info: sandbox.stub(),
 		};
-		server.transport.decode.returns('test');
+
 		config = {
-			handler: sinon.stub(),
+			handler: sandbox.stub(),
 			schema: avsc.Type.forSchema({
 				type: 'record',
 				namespace: 'com.example',
@@ -58,20 +61,22 @@ describe('index/handler/messageHandler', () => {
 				]
 			})
 		};
+
 	});
 
 	afterEach(() => {
-		//sinon.restore({});
+		sandbox.restore();
 	});
 
 	it('should handle a message where the base handler resolves', async () => {
 
 		// Given
+		sandbox.stub(Transport.prototype, 'decode').returns('test');
 
 		config.handler.resolves();
 
 		// When
-		await messageHandler(server, config)(new Buffer('test'));
+		await messageHandler(server, config)(Buffer.from('test'));
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
@@ -85,6 +90,7 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler returns', async () => {
 
 		// Given
+		sandbox.stub(Transport.prototype, 'decode').returns('test');
 
 		config.handler.returns(null);
 
@@ -103,6 +109,8 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler rejects', async () => {
 
 		// Given
+		sandbox.stub(Transport.prototype, 'decode').returns('test');
+
 		const expectedError = new Error('Error');
 
 		config.handler.rejects(expectedError);
@@ -123,12 +131,13 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler throws', async () => {
 
 		// Given
+		sandbox.stub(Transport.prototype, 'decode').returns('test');
+
 		const expectedError = new Error('Error');
 
 		config.handler.throws(expectedError);
 
 		// When
-
 		await messageHandler(server, config)(new Buffer('test'));
 
 		// Then
@@ -145,7 +154,7 @@ describe('index/handler/messageHandler', () => {
 		// Given
 		const expectedError = new Error('Failed to decode message.');
 
-		server.transport.decode.throws(expectedError);
+		sandbox.stub(Transport.prototype, 'decode').throws(expectedError);
 
 		// When
 		messageHandler(server, config)(new Buffer('test'));

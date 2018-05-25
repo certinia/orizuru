@@ -54,10 +54,6 @@ export default class Handler extends EventEmitter {
 
 	/**
 	 * Constructs a new 'Handler'.
-	 *
-	 * @param {Object} config - The handler configuration.
-	 * @param {transport} config.transport - The transport object.
-	 * @param {Object} config.transportConfig - The configuration for the transport object.
 	 */
 	constructor(config: any) {
 
@@ -88,10 +84,13 @@ export default class Handler extends EventEmitter {
 	 * Sets the handler function for a schema type.
 	 *
 	 * @example
+	 * ```typescript
+	 * 
 	 * handler.handle({ schema, handler: ({ message, context }) => {
 	 * 	console.log(message);
 	 * 	console.log(context);
-	 * }})
+	 * }});
+	 * ```
 	 */
 	handle(config: any) {
 

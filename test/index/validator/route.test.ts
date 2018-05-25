@@ -27,14 +27,18 @@
 'use strict';
 
 import _ from 'lodash';
-import chai, { expect } from 'chai';
+import chai from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import avsc from 'avsc';
 
-import RouteValidator from '../../../lib/index/validator/route';
+import RouteValidator from '../../../src/index/validator/route';
 
 chai.use(sinonChai);
+
+const
+	expect = chai.expect,
+	sandbox = sinon.createSandbox();
 
 describe('index/validator/route.js', () => {
 
@@ -45,7 +49,7 @@ describe('index/validator/route.js', () => {
 	});
 
 	afterEach(() => {
-		sinon.restore({});
+		sandbox.restore();
 	});
 
 	describe('constructor', () => {
@@ -310,12 +314,12 @@ describe('index/validator/route.js', () => {
 				},
 				validatedConfig = routeValidator.validate(config),
 				server = {
-					error: sinon.stub()
+					error: sandbox.stub()
 				},
-				request = sinon.stub(),
+				request = sandbox.stub(),
 				response = {
-					status: sinon.stub().returnsThis(),
-					send: sinon.stub().returnsThis()
+					status: sandbox.stub().returnsThis(),
+					send: sandbox.stub().returnsThis()
 				};
 
 			// When
@@ -338,12 +342,12 @@ describe('index/validator/route.js', () => {
 				},
 				validatedConfig = routeValidator.validate(config),
 				server = {
-					error: sinon.stub()
+					error: sandbox.stub()
 				},
-				request = sinon.stub(),
+				request = sandbox.stub(),
 				response = {
-					status: sinon.stub().returnsThis(),
-					send: sinon.stub().returnsThis()
+					status: sandbox.stub().returnsThis(),
+					send: sandbox.stub().returnsThis()
 				};
 
 			// When

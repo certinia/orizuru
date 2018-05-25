@@ -24,18 +24,21 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-import chai, { expect } from 'chai';
+import chai from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import avsc from 'avsc';
 import fs from 'fs-extra';
+import Transport from '../../../src/index/transport/transport';
 
 const
-	transportSchema = fs.readJsonSync(__dirname + '/../../../lib/index/transport/transport.avsc'),
-
-	Transport = require('../../../lib/index/transport/transport');
+	transportSchema = fs.readJsonSync(__dirname + '/../../../src/index/transport/transport.avsc');
 
 chai.use(sinonChai);
+
+const
+	expect = chai.expect,
+	sandbox = sinon.createSandbox();
 
 describe('index/transport/transport.js', () => {
 
@@ -87,7 +90,7 @@ describe('index/transport/transport.js', () => {
 		compiledTransportSchema = avsc.Type.forSchema(transportSchema);
 
 	afterEach(() => {
-		sinon.restore({});
+		sandbox.restore();
 	});
 
 	describe('constructor', () => {
@@ -95,8 +98,8 @@ describe('index/transport/transport.js', () => {
 		it('should read the transport schema and store it in a property', () => {
 
 			// Given
-			sinon.stub(fs, 'readJsonSync').returns(JSON.parse('{"namespace":"com.ffdc.orizuru.transport","name":"Transport","type":"record","fields":[{"name":"contextSchema","type":"string"},{"name":"contextBuffer","type":"bytes"},{"name":"messageSchema","type":"string"},{"name":"messageBuffer","type":"bytes"}]}'));
-			sinon.stub(avsc.Type, 'forSchema');
+			sandbox.stub(fs, 'readJsonSync').returns(JSON.parse('{"namespace":"com.ffdc.orizuru.transport","name":"Transport","type":"record","fields":[{"name":"contextSchema","type":"string"},{"name":"contextBuffer","type":"bytes"},{"name":"messageSchema","type":"string"},{"name":"messageBuffer","type":"bytes"}]}'));
+			sandbox.stub(avsc.Type, 'forSchema');
 
 			// When
 			const transport = new Transport();

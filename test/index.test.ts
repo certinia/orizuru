@@ -31,9 +31,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import avsc from 'avsc';
 
-const
-	proxyquire = require('proxyquire');
-
 describe('index.js', () => {
 
 	/*it('should load and expose apis correctly', () => {
@@ -43,7 +40,7 @@ describe('index.js', () => {
 			mockServer = { mock: 'mockServer' },
 			mockHandler = { mock: 'mockHandler' },
 			mockPublisher = { mock: 'mockPublisher' },
-			index = proxyquire('../lib/index', {
+			index = proxyquire('../src/index', {
 				['./index/server']: mockServer,
 				['./index/handler']: mockHandler,
 				['./index/publisher']: mockPublisher

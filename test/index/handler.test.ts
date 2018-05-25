@@ -34,11 +34,15 @@ import sinonChai from 'sinon-chai';
 
 import { EventEmitter } from 'events';
 import avsc from 'avsc';
-import { Handler } from '../../lib';
-import HandlerValidator from '../../lib/index/validator/handler';
+import { Handler } from '../../src';
+import HandlerValidator from '../../src/index/validator/handler';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
+
+const
+	expect = chai.expect,
+	sandbox = sinon.createSandbox();
 
 describe('index/handler', () => {
 
@@ -56,14 +60,10 @@ describe('index/handler', () => {
 			transportConfig: _.noop
 		};
 
-		mocks.handlerValidator = sinon.stub().returnsThis();
-		mocks.messageHandler = sinon.stub();
-		mocks.transport = sinon.stub().returnsThis();
-
 	});
 
 	afterEach(() => {
-
+		sandbox.restore();
 	});
 
 	describe('constructor', () => {
@@ -75,46 +75,22 @@ describe('index/handler', () => {
 			const handler = new Handler(mocks.config);
 
 			// Then
-			chai.expect(handler).to.be.an.instanceof(EventEmitter);
+			expect(handler).to.be.an.instanceof(EventEmitter);
 
 		});
 
 		it('should emit an error event if the configuration is invalid', () => {
 
 			// Given
-			sinon.spy(EventEmitter.prototype, 'emit');
+			sandbox.spy(EventEmitter.prototype, 'emit');
 
 			// When
 			// Then
-			chai.expect(() => new Handler({})).to.throw(/^Missing required object parameter: transport\.$/g);
+			expect(() => new Handler({})).to.throw(/^Missing required object parameter: transport\.$/g);
 
-			chai.expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			chai.expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
-			chai.expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
-
-		});
-
-		it('should initialise the transport', () => {
-
-			// Given
-			// When
-			const handler = new Handler(mocks.config);
-
-			// Then
-			chai.expect(mocks.transport).to.have.been.calledOnce;
-			chai.expect(mocks.transport).to.have.been.calledWithNew;
-
-		});
-
-		it('should initialise the handler validator', () => {
-
-			// Given
-			// When
-			const handler = new Handler(mocks.config);
-
-			// Then
-			chai.expect(mocks.handlerValidator).to.have.been.calledOnce;
-			chai.expect(mocks.handlerValidator).to.have.been.calledWithNew;
+			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
 
 		});
 
@@ -125,14 +101,14 @@ describe('index/handler', () => {
 		it('should install the handler for a schema', () => {
 
 			// Given
-			mocks.config.transport.subscribe = sinon.stub().resolves();
-			sinon.stub(HandlerValidator.prototype, 'validate');
-			sinon.spy(EventEmitter.prototype, 'emit');
+			mocks.config.transport.subscribe = sandbox.stub().resolves();
+			sandbox.stub(HandlerValidator.prototype, 'validate');
+			sandbox.spy(EventEmitter.prototype, 'emit');
 
 			const
 				handler = new Handler(mocks.config),
 				config = {
-					handler: sinon.stub(),
+					handler: sandbox.stub(),
 					schema: avsc.Type.forSchema({
 						type: 'record',
 						namespace: 'com.example',
@@ -150,14 +126,13 @@ describe('index/handler', () => {
 
 			// When
 			// Then
-			return chai.expect(handler.handle(config))
+			return expect(handler.handle(config))
 				.to.eventually.be.fulfilled
 				.then(() => {
-					chai.expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
-					chai.expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-					chai.expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
-					chai.expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Installing handler for com.example.FullName events.');
-					chai.expect(mocks.messageHandler).to.have.been.calledOnce;
+					expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
+					expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
+					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Installing handler for com.example.FullName events.');
 				});
 
 		});
@@ -167,15 +142,14 @@ describe('index/handler', () => {
 			it('if no config is provided', () => {
 
 				// Given
-				sinon.stub(HandlerValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
+				sandbox.stub(HandlerValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
 				const handler = new Handler(mocks.config);
 
 				// When
 				// Then
-				chai.expect(() => handler.handle({})).to.throw(/^Missing required object parameter\.$/);
-				chai.expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
-				chai.expect(mocks.messageHandler).to.not.have.been.called;
+				expect(() => handler.handle({})).to.throw(/^Missing required object parameter\.$/);
+				expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
 
 			});
 

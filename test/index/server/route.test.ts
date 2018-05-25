@@ -26,22 +26,26 @@
 
 'use strict';
 
-import chai, { expect } from 'chai';
+import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import avsc from 'avsc';
 
-import { create } from '../../../lib/index/server/route';
-import { Server } from '../../../lib';
+import { create } from '../../../src/index/server/route';
+import { Server } from '../../../src';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
+const
+	expect = chai.expect,
+	sandbox = sinon.createSandbox();
+
 describe('index/server/route.js', () => {
 
 	afterEach(() => {
-		sinon.restore(sinon);
+		sandbox.restore();
 	});
 
 	describe('create', () => {
@@ -50,9 +54,9 @@ describe('index/server/route.js', () => {
 
 			// Given
 			const
-				server = sinon.stub(),
-				routeConfiguration = sinon.stub(),
-				responseWriter = sinon.stub(),
+				server = sandbox.stub(),
+				routeConfiguration = sandbox.stub(),
+				responseWriter = sandbox.stub(),
 
 				// When
 				routeFunction = create(<any>server, routeConfiguration, responseWriter);
@@ -67,9 +71,9 @@ describe('index/server/route.js', () => {
 			// Given
 			const
 				server = {
-					publisher: {
-						publish: sinon.stub().resolves()
-					}
+					getPublisher: sandbox.stub().returns({
+						publish: sandbox.stub().resolves()
+					})
 				},
 				routeConfiguration = {
 					test: avsc.Type.forSchema({
@@ -82,7 +86,7 @@ describe('index/server/route.js', () => {
 						]
 					})
 				},
-				responseWriter = sinon.stub().returns(sinon.stub()),
+				responseWriter = sandbox.stub().returns(sandbox.stub()),
 
 				routeFunction = create(<any>server, routeConfiguration, responseWriter),
 
@@ -99,8 +103,8 @@ describe('index/server/route.js', () => {
 				},
 
 				response = {
-					status: sinon.stub().returnsThis(),
-					send: sinon.stub().returnsThis()
+					status: sandbox.stub().returnsThis(),
+					send: sandbox.stub().returnsThis()
 				};
 
 			// When
@@ -109,7 +113,7 @@ describe('index/server/route.js', () => {
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(responseWriter).to.have.been.calledOnce;
-					expect(server.publisher.publish).to.have.been.calledWith({
+					expect(server.getPublisher().publish).to.have.been.calledWith({
 						schema: routeConfiguration.test,
 						message: request.body,
 						context: request.orizuru,
@@ -124,10 +128,10 @@ describe('index/server/route.js', () => {
 			// Given
 			const
 				server = {
-					error: sinon.stub()
+					error: sandbox.stub()
 				},
-				routeConfiguration = sinon.stub(),
-				responseWriter = sinon.stub(),
+				routeConfiguration = sandbox.stub(),
+				responseWriter = sandbox.stub(),
 
 				routeFunction = create(<any>server, routeConfiguration, responseWriter),
 
@@ -137,8 +141,8 @@ describe('index/server/route.js', () => {
 					}
 				},
 				response = {
-					status: sinon.stub().returnsThis(),
-					send: sinon.stub().returnsThis()
+					status: sandbox.stub().returnsThis(),
+					send: sandbox.stub().returnsThis()
 				};
 
 			// When
@@ -156,9 +160,9 @@ describe('index/server/route.js', () => {
 			const
 				expectedError = new Error('Failed to publish message'),
 				server = {
-					publisher: {
-						publish: sinon.stub().rejects(expectedError)
-					}
+					getPublisher: sandbox.stub().returns({
+						publish: sandbox.stub().rejects(expectedError)
+					})
 				},
 				routeConfiguration = {
 					test: avsc.Type.forSchema({
@@ -171,8 +175,8 @@ describe('index/server/route.js', () => {
 						]
 					})
 				},
-				responseFunction = sinon.stub(),
-				responseWriter = sinon.stub().returns(responseFunction),
+				responseFunction = sandbox.stub(),
+				responseWriter = sandbox.stub().returns(responseFunction),
 
 				routeFunction = create(<any>server, routeConfiguration, responseWriter),
 
@@ -183,8 +187,8 @@ describe('index/server/route.js', () => {
 				},
 
 				response = {
-					status: sinon.stub().returnsThis(),
-					send: sinon.stub().returnsThis()
+					status: sandbox.stub().returnsThis(),
+					send: sandbox.stub().returnsThis()
 				};
 
 			// When
@@ -205,9 +209,9 @@ describe('index/server/route.js', () => {
 			const
 				expectedError = new Error('Failed to publish message'),
 				server = {
-					publisher: {
-						publish: sinon.stub().throws(expectedError)
-					}
+					getPublisher: sandbox.stub().returns({
+						publish: sandbox.stub().rejects(expectedError)
+					})
 				},
 				routeConfiguration = {
 					test: avsc.Type.forSchema({
@@ -220,8 +224,8 @@ describe('index/server/route.js', () => {
 						]
 					})
 				},
-				responseFunction = sinon.stub(),
-				responseWriter = sinon.stub().returns(responseFunction),
+				responseFunction = sandbox.stub(),
+				responseWriter = sandbox.stub().returns(responseFunction),
 
 				routeFunction = create(<any>server, routeConfiguration, responseWriter),
 
@@ -232,8 +236,8 @@ describe('index/server/route.js', () => {
 				},
 
 				response = {
-					status: sinon.stub().returnsThis(),
-					send: sinon.stub().returnsThis()
+					status: sandbox.stub().returnsThis(),
+					send: sandbox.stub().returnsThis()
 				};
 
 			// When

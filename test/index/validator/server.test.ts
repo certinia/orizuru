@@ -27,9 +27,11 @@
 'use strict';
 
 import _ from 'lodash';
-import chai, { expect } from 'chai';
+import chai from 'chai';
 
-import ServerValidator from '../../../lib/index/validator/server';
+import ServerValidator from '../../../src/index/validator/server';
+
+const expect = chai.expect;
 
 describe('index/validator/server.js', () => {
 
