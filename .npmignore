@@ -1,0 +1,13 @@
+.nyc_output
+.vscode
+
+coverage
+src
+test
+
+.travis.yml
+
+tsconfig.json
+
+*.properties
+*.tgz
