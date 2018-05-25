@@ -1,7 +1,7 @@
+dist
 node_modules
 .nyc_output
 coverage
 *.sfdx
 local.*.properties
-
-src/**/*.js
+*.tgz
