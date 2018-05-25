@@ -22,21 +22,20 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
-import _ from 'lodash';
+import avsc from 'avsc';
 import chai from 'chai';
+import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import avsc from 'avsc';
 
 import RouteValidator from '../../../src/index/validator/route';
 
 chai.use(sinonChai);
 
-const
-	expect = chai.expect,
-	sandbox = sinon.createSandbox();
+const expect = chai.expect;
+const sandbox = sinon.createSandbox();
 
 describe('index/validator/route.js', () => {
 
@@ -70,9 +69,9 @@ describe('index/validator/route.js', () => {
 			// Given
 			const config = {
 				schema: {
+					fields: [],
 					name: 'com.example.FullName',
-					type: 'record',
-					fields: []
+					type: 'record'
 				}
 			};
 
@@ -87,9 +86,9 @@ describe('index/validator/route.js', () => {
 			// Given
 			const config = {
 				schema: avsc.Type.forSchema({
+					fields: [],
 					name: 'com.example.FullName',
-					type: 'record',
-					fields: []
+					type: 'record'
 				})
 			};
 
@@ -103,12 +102,12 @@ describe('index/validator/route.js', () => {
 
 			// Given
 			const config = {
+				pathMapper: _.noop,
 				schema: avsc.Type.forSchema({
+					fields: [],
 					name: 'com.example.FullName',
-					type: 'record',
-					fields: []
-				}),
-				pathMapper: _.noop
+					type: 'record'
+				})
 			};
 
 			// When
@@ -271,8 +270,8 @@ describe('index/validator/route.js', () => {
 
 				// Given
 				const config = {
-					schema: '{"name":"com.example.FullName","type":"record","fields":[]}',
-					responseWriter: 2
+					responseWriter: 2,
+					schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 				};
 
 				// When
@@ -285,9 +284,9 @@ describe('index/validator/route.js', () => {
 
 				// Given
 				const config = {
-					schema: '{"name":"com.example.FullName","type":"record","fields":[]}',
+					pathMapper: 23,
 					responseWriter: _.noop,
-					pathMapper: 23
+					schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 				};
 
 				// When
@@ -305,20 +304,23 @@ describe('index/validator/route.js', () => {
 		it('should send a 400 status if the request fails', () => {
 
 			// Given
-			const
-				config = {
-					schema: '{"name":"com.example.FullName","type":"record","fields":[]}',
-					middleware: [_.noop]
-				},
-				validatedConfig = routeValidator.validate(config),
-				server = {
-					error: sandbox.stub()
-				},
-				request = sandbox.stub(),
-				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
-				};
+			const config = {
+				middleware: [_.noop],
+				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
+			};
+
+			const validatedConfig = routeValidator.validate(config);
+
+			const server = {
+				error: sandbox.stub()
+			};
+
+			const request = sandbox.stub();
+
+			const response = {
+				send: sandbox.stub().returnsThis(),
+				status: sandbox.stub().returnsThis()
+			};
 
 			// When
 			validatedConfig.responseWriter(server)('error', request, response);
@@ -334,19 +336,22 @@ describe('index/validator/route.js', () => {
 		it('should send a 200 status if the request succeeds', () => {
 
 			// Given
-			const
-				config = {
-					schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
-				},
-				validatedConfig = routeValidator.validate(config),
-				server = {
-					error: sandbox.stub()
-				},
-				request = sandbox.stub(),
-				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
-				};
+			const config = {
+				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
+			};
+
+			const validatedConfig = routeValidator.validate(config);
+
+			const server = {
+				error: sandbox.stub()
+			};
+
+			const request = sandbox.stub();
+
+			const response = {
+				send: sandbox.stub().returnsThis(),
+				status: sandbox.stub().returnsThis()
+			};
 
 			// When
 			validatedConfig.responseWriter(server)(undefined, request, response);

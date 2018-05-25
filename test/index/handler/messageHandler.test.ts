@@ -22,43 +22,43 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
+import avsc from 'avsc';
 import chai from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import avsc from 'avsc';
 
 import messageHandler from '../../../src/index/handler/messageHandler';
 import Transport from '../../../src/index/transport/transport';
 
 chai.use(sinonChai);
 
-const
-	expect = chai.expect,
-	sandbox = sinon.createSandbox();
+const expect = chai.expect;
+const sandbox = sinon.createSandbox();
 
 describe('index/handler/messageHandler', () => {
 
-	let server: any, config: any;
+	let config: any;
+	let server: any;
 
 	beforeEach(() => {
 
 		server = {
 			error: sandbox.stub(),
-			info: sandbox.stub(),
+			info: sandbox.stub()
 		};
 
 		config = {
 			handler: sandbox.stub(),
 			schema: avsc.Type.forSchema({
-				type: 'record',
-				namespace: 'com.example',
-				name: 'FullName',
 				fields: [
 					{ name: 'first', type: 'string' },
 					{ name: 'last', type: 'string' }
-				]
+				],
+				name: 'FullName',
+				namespace: 'com.example',
+				type: 'record'
 			})
 		};
 

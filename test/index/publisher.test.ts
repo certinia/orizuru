@@ -22,26 +22,25 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
-import _ from 'lodash';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 import { EventEmitter } from 'events';
-import PublisherValidator from '../../src/index/validator/publisher';
 import Publisher from '../../src/index/publisher';
 import Transport from '../../src/index/transport/transport';
+import PublisherValidator from '../../src/index/validator/publisher';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-const
-	expect = chai.expect,
-	sandbox = sinon.createSandbox();
+const expect = chai.expect;
+const sandbox = sinon.createSandbox();
 
 describe('index/publisher.js', () => {
 
@@ -69,16 +68,15 @@ describe('index/publisher.js', () => {
 		it('should extend EventEmitter', () => {
 
 			// Given
-			const
-				config = {
-					transport: {
-						publish: _.noop,
-						subscribe: _.noop
-					}
-				},
+			const config = {
+				transport: {
+					publish: _.noop,
+					subscribe: _.noop
+				}
+			};
 
-				// When
-				publisher = new Publisher(config);
+			// When
+			const publisher = new Publisher(config);
 
 			// Then
 			expect(publisher).to.be.an.instanceof(EventEmitter);
@@ -96,34 +94,35 @@ describe('index/publisher.js', () => {
 			sandbox.spy(EventEmitter.prototype, 'emit');
 			sandbox.spy(Transport.prototype, 'encode');
 
-			const
-				config = {
-					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+			const config = {
+				transport: {
+					publish: sandbox.stub().resolves(),
+					subscribe: sandbox.stub().resolves()
+				}
+			};
+
+			const publisher = new Publisher(config);
+
+			const message = {
+				context: {
+					user: {
+						username: 'test@test.com'
 					}
 				},
-				publisher = new Publisher(config),
-				message = {
-					schema: avsc.Type.forSchema({
-						type: 'record',
-						namespace: 'com.example',
-						name: 'FullName',
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						]
-					}),
-					message: {
-						first: 'First',
-						last: 'Last'
-					},
-					context: {
-						user: {
-							username: 'test@test.com'
-						}
-					}
-				};
+				message: {
+					first: 'First',
+					last: 'Last'
+				},
+				schema: avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				})
+			};
 
 			sandbox.spy(publisher, 'info');
 
@@ -151,14 +150,14 @@ describe('index/publisher.js', () => {
 				// Given
 				sandbox.stub(PublisherValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
-				const
-					config = {
-						transport: {
-							publish: sandbox.stub().resolves(),
-							subscribe: sandbox.stub().resolves()
-						}
-					},
-					publisher = new Publisher(config);
+				const config = {
+					transport: {
+						publish: sandbox.stub().resolves(),
+						subscribe: sandbox.stub().resolves()
+					}
+				};
+
+				const publisher = new Publisher(config);
 
 				// When
 				// Then
@@ -172,26 +171,27 @@ describe('index/publisher.js', () => {
 				// Given
 				sandbox.stub(PublisherValidator.prototype, 'validate');
 
-				const
-					config = {
-						transport: {
-							publish: sandbox.stub().resolves(),
-							subscribe: sandbox.stub().resolves()
-						}
-					},
-					publishMessage = {
-						schema: avsc.Type.forSchema({
-							type: 'record',
-							namespace: 'com.example',
-							name: 'FullName',
-							fields: [
-								{ name: 'first', type: 'string' },
-								{ name: 'last', type: 'string' }
-							]
-						}),
-						message: 'test'
-					},
-					publisher = new Publisher(config);
+				const config = {
+					transport: {
+						publish: sandbox.stub().resolves(),
+						subscribe: sandbox.stub().resolves()
+					}
+				};
+
+				const publishMessage = {
+					message: 'test',
+					schema: avsc.Type.forSchema({
+						fields: [
+							{ name: 'first', type: 'string' },
+							{ name: 'last', type: 'string' }
+						],
+						name: 'FullName',
+						namespace: 'com.example',
+						type: 'record'
+					})
+				};
+
+				const publisher = new Publisher(config);
 
 				sandbox.spy(publisher, 'error');
 
@@ -209,30 +209,32 @@ describe('index/publisher.js', () => {
 				sandbox.stub(PublisherValidator.prototype, 'validate');
 				sandbox.spy(EventEmitter.prototype, 'emit');
 
-				const
-					expectedError = new Error('Failed to publish message.'),
-					config = {
-						transport: {
-							publish: sandbox.stub().rejects(expectedError),
-							subscribe: sandbox.stub().resolves()
-						}
+				const expectedError = new Error('Failed to publish message.');
+
+				const config = {
+					transport: {
+						publish: sandbox.stub().rejects(expectedError),
+						subscribe: sandbox.stub().resolves()
+					}
+				};
+
+				const publishMessage = {
+					message: {
+						first: 'Test',
+						last: 'Tester'
 					},
-					publishMessage = {
-						schema: avsc.Type.forSchema({
-							type: 'record',
-							namespace: 'com.example',
-							name: 'FullName',
-							fields: [
-								{ name: 'first', type: 'string' },
-								{ name: 'last', type: 'string' }
-							]
-						}),
-						message: {
-							first: 'Test',
-							last: 'Tester'
-						}
-					},
-					publisher = new Publisher(config);
+					schema: avsc.Type.forSchema({
+						fields: [
+							{ name: 'first', type: 'string' },
+							{ name: 'last', type: 'string' }
+						],
+						name: 'FullName',
+						namespace: 'com.example',
+						type: 'record'
+					})
+				};
+
+				const publisher = new Publisher(config);
 
 				sandbox.spy(publisher, 'error');
 

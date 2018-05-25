@@ -22,12 +22,12 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
+import avsc from 'avsc';
 import chai from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import avsc from 'avsc';
 
 import { validate } from '../../../../src/index/validator/shared/schema';
 
@@ -40,13 +40,12 @@ describe('index/validator/shared/schema.js', () => {
 		it('should return the schema if it is valid (string format)', () => {
 
 			// Given
-			const
-				config = {
-					schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
-				},
+			const config = {
+				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
+			};
 
-				// When
-				validatedConfig = validate(config);
+			// When
+			const validatedConfig = validate(config);
 
 			// Then
 			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
@@ -56,17 +55,16 @@ describe('index/validator/shared/schema.js', () => {
 		it('should return the schema if it is valid (JSON format)', () => {
 
 			// Given
-			const
-				config = {
-					schema: {
-						name: 'com.example.FullName',
-						type: 'record',
-						fields: []
-					}
-				},
+			const config = {
+				schema: {
+					fields: [],
+					name: 'com.example.FullName',
+					type: 'record'
+				}
+			};
 
-				// When
-				validatedConfig = validate(config);
+			// When
+			const validatedConfig = validate(config);
 
 			// Then
 			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
@@ -76,17 +74,16 @@ describe('index/validator/shared/schema.js', () => {
 		it('should return the schema if it is valid (Compiled format)', () => {
 
 			// Given
-			const
-				config = {
-					schema: avsc.Type.forSchema({
-						name: 'com.example.FullName',
-						type: 'record',
-						fields: []
-					})
-				},
+			const config = {
+				schema: avsc.Type.forSchema({
+					fields: [],
+					name: 'com.example.FullName',
+					type: 'record'
+				})
+			};
 
-				// When
-				validatedConfig = validate(config);
+			// When
+			const validatedConfig = validate(config);
 
 			// Then
 			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);

@@ -22,61 +22,62 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
-import _ from 'lodash';
+import avsc from 'avsc';
 import chai from 'chai';
+import { EventEmitter } from 'events';
+import { Router } from 'express';
+import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import avsc from 'avsc';
-import { Router } from 'express';
-import { EventEmitter } from 'events';
 import { Server } from '../../src';
 import RouteValidator from '../../src/index/validator/route';
 
 chai.use(sinonChai);
 
-const
-	expect = chai.expect,
-	sandbox = sinon.createSandbox();
+const expect = chai.expect;
+const sandbox = sinon.createSandbox();
 
 describe('index/server.js', () => {
 
-	const
-		schema1 = avsc.Type.forSchema({
-			type: 'record',
-			namespace: 'com.example',
-			name: 'FullName',
-			fields: [
-				{ name: 'first', type: 'string' },
-				{ name: 'last', type: 'string' }
-			]
-		}),
-		schema2 = avsc.Type.forSchema({
-			type: 'record',
-			namespace: 'com.example.two',
-			name: 'FullName',
-			fields: [
-				{ name: 'first', type: 'string' },
-				{ name: 'last', type: 'string' }
-			]
-		}),
-		schema3 = avsc.Type.forSchema({
-			type: 'record',
-			namespace: 'com.example',
-			name: 'Surname',
-			fields: [
-				{ name: 'last', type: 'string' }
-			]
-		}),
-		schema4 = avsc.Type.forSchema({
-			type: 'record',
-			namespace: 'com.example.v1_0',
-			name: 'Surname',
-			fields: [
-				{ name: 'last', type: 'string' }
-			]
-		});
+	const schema1 = avsc.Type.forSchema({
+		fields: [
+			{ name: 'first', type: 'string' },
+			{ name: 'last', type: 'string' }
+		],
+		name: 'FullName',
+		namespace: 'com.example',
+		type: 'record'
+	});
+
+	const schema2 = avsc.Type.forSchema({
+		fields: [
+			{ name: 'first', type: 'string' },
+			{ name: 'last', type: 'string' }
+		],
+		name: 'FullName',
+		namespace: 'com.example.two',
+		type: 'record'
+	});
+
+	const schema3 = avsc.Type.forSchema({
+		fields: [
+			{ name: 'last', type: 'string' }
+		],
+		name: 'Surname',
+		namespace: 'com.example',
+		type: 'record'
+	});
+
+	const schema4 = avsc.Type.forSchema({
+		fields: [
+			{ name: 'last', type: 'string' }
+		],
+		name: 'Surname',
+		namespace: 'com.example.v1_0',
+		type: 'record'
+	});
 
 	afterEach(() => {
 		sandbox.restore();
@@ -102,16 +103,15 @@ describe('index/server.js', () => {
 		it('should extend EventEmitter', () => {
 
 			// Given
-			const
-				config = {
-					transport: {
-						publish: _.noop,
-						subscribe: _.noop
-					}
-				},
+			const config = {
+				transport: {
+					publish: _.noop,
+					subscribe: _.noop
+				}
+			};
 
-				// When
-				server = new Server(config);
+			// When
+			const server = new Server(config);
 
 			// Then
 			expect(server).to.be.an.instanceof(EventEmitter);
@@ -127,21 +127,21 @@ describe('index/server.js', () => {
 			// Given
 			sandbox.spy(RouteValidator.prototype, 'validate');
 			sandbox.spy(EventEmitter.prototype, 'emit');
-			//sandbox.stub(Router, 'use');
+			// sandbox.stub(Router, 'use');
 
-			const
-				config = {
-					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
-					}
-				},
-				route = {
-					endpoint: '/api/',
-					method: 'post',
-					middleware: [sandbox.stub()],
-					schema: schema1
-				};
+			const config = {
+				transport: {
+					publish: sandbox.stub().resolves(),
+					subscribe: sandbox.stub().resolves()
+				}
+			};
+
+			const route = {
+				endpoint: '/api/',
+				method: 'post',
+				middleware: [sandbox.stub()],
+				schema: schema1
+			};
 
 			let server = new Server(config);
 
@@ -154,9 +154,9 @@ describe('index/server.js', () => {
 			expect(server.info).to.have.been.calledTwice;
 			expect(server.info).to.have.been.calledWith('Creating router for namespace: /api/com/example.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
-			//expect(_.size(server.router_configuration)).to.eql(1);
-			//expect(server.route_configuration).to.eql({ '/api/com/example': { FullName: schema1 } });
-			//expect(Router.use).to.have.been.calledWith(route.middleware[0]);
+			// expect(_.size(server.router_configuration)).to.eql(1);
+			// expect(server.route_configuration).to.eql({ '/api/com/example': { FullName: schema1 } });
+			// expect(Router.use).to.have.been.calledWith(route.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
 		});
@@ -166,24 +166,24 @@ describe('index/server.js', () => {
 			// Given
 			sandbox.spy(RouteValidator.prototype, 'validate');
 			sandbox.spy(EventEmitter.prototype, 'emit');
-			//sandbox.stub(Router, 'use');
+			// sandbox.stub(Router, 'use');
 
-			const
-				config = {
-					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
-					}
+			const config = {
+				transport: {
+					publish: sandbox.stub().resolves(),
+					subscribe: sandbox.stub().resolves()
+				}
+			};
+
+			const route = {
+				endpoint: '/api/',
+				method: 'post',
+				middleware: [sandbox.stub()],
+				pathMapper: (namespace: string) => {
+					return namespace.replace(/\./g, '/').replace('_', '.');
 				},
-				route = {
-					endpoint: '/api/',
-					method: 'post',
-					middleware: [sandbox.stub()],
-					schema: schema4,
-					pathMapper: (namespace: string) => {
-						return namespace.replace(/\./g, '/').replace('_', '.');
-					}
-				};
+				schema: schema4
+			};
 
 			let server = new Server(config);
 
@@ -196,9 +196,9 @@ describe('index/server.js', () => {
 			expect(server.info).to.have.been.calledTwice;
 			expect(server.info).to.have.been.calledWith('Creating router for namespace: /api/com/example/v1.0.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.v1_0.Surname.');
-			//expect(_.size(server.router_configuration)).to.eql(1);
-			//expect(server.route_configuration).to.eql({ '/api/com/example/v1.0': { Surname: schema4 } });
-			//expect(Router.use).to.have.been.calledWith(route.middleware[0]);
+			// expect(_.size(server.router_configuration)).to.eql(1);
+			// expect(server.route_configuration).to.eql({ '/api/com/example/v1.0': { Surname: schema4 } });
+			// expect(Router.use).to.have.been.calledWith(route.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
 		});
@@ -208,27 +208,28 @@ describe('index/server.js', () => {
 			// Given
 			sandbox.spy(RouteValidator.prototype, 'validate');
 			sandbox.spy(EventEmitter.prototype, 'emit');
-			//sandbox.stub(Router, 'use');
+			// sandbox.stub(Router, 'use');
 
-			const
-				config = {
-					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
-					}
-				},
-				route1 = {
-					endpoint: '/',
-					method: 'post',
-					middleware: [sandbox.stub()],
-					schema: schema1
-				},
-				route2 = {
-					endpoint: '/',
-					method: 'post',
-					middleware: [sandbox.stub()],
-					schema: schema2
-				};
+			const config = {
+				transport: {
+					publish: sandbox.stub().resolves(),
+					subscribe: sandbox.stub().resolves()
+				}
+			};
+
+			const route1 = {
+				endpoint: '/',
+				method: 'post',
+				middleware: [sandbox.stub()],
+				schema: schema1
+			};
+
+			const route2 = {
+				endpoint: '/',
+				method: 'post',
+				middleware: [sandbox.stub()],
+				schema: schema2
+			};
 
 			let server = new Server(config);
 
@@ -244,13 +245,13 @@ describe('index/server.js', () => {
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
 			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example/two.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.two.FullName.');
-			//expect(_.size(server.router_configuration)).to.eql(2);
-			//expect(server.route_configuration).to.eql({
-			//	'/com/example': { FullName: schema1 },
-			//	'/com/example/two': { FullName: schema2 }
-			//});
-			//expect(Router.use).to.have.been.calledWith(route1.middleware[0]);
-			//expect(Router.use).to.have.been.calledWith(route2.middleware[0]);
+			// expect(_.size(server.router_configuration)).to.eql(2);
+			// expect(server.route_configuration).to.eql({
+			// 	'/com/example': { FullName: schema1 },
+			// 	'/com/example/two': { FullName: schema2 }
+			// });
+			// expect(Router.use).to.have.been.calledWith(route1.middleware[0]);
+			// expect(Router.use).to.have.been.calledWith(route2.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledTwice;
 
 		});
@@ -260,27 +261,28 @@ describe('index/server.js', () => {
 			// Given
 			sandbox.spy(RouteValidator.prototype, 'validate');
 			sandbox.spy(EventEmitter.prototype, 'emit');
-			//sandbox.stub(Router, 'use');
+			// sandbox.stub(Router, 'use');
 
-			const
-				config = {
-					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
-					}
-				},
-				route1 = {
-					endpoint: '/',
-					method: 'post',
-					middleware: [sandbox.stub()],
-					schema: schema1
-				},
-				route2 = {
-					endpoint: '/',
-					method: 'post',
-					middleware: [sandbox.stub()],
-					schema: schema3
-				};
+			const config = {
+				transport: {
+					publish: sandbox.stub().resolves(),
+					subscribe: sandbox.stub().resolves()
+				}
+			};
+
+			const route1 = {
+				endpoint: '/',
+				method: 'post',
+				middleware: [sandbox.stub()],
+				schema: schema1
+			};
+
+			const route2 = {
+				endpoint: '/',
+				method: 'post',
+				middleware: [sandbox.stub()],
+				schema: schema3
+			};
 
 			let server = new Server(config);
 
@@ -302,7 +304,7 @@ describe('index/server.js', () => {
 			// 		Surname: schema3
 			// 	}
 			// });
-			//expect(Router.use).to.have.been.calledWith(route1.middleware[0]);
+			// expect(Router.use).to.have.been.calledWith(route1.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledTwice;
 
 		});
@@ -314,18 +316,17 @@ describe('index/server.js', () => {
 		it('should return the express server', () => {
 
 			// Given
-			const
-				config = {
-					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
-					}
-				},
+			const config = {
+				transport: {
+					publish: sandbox.stub().resolves(),
+					subscribe: sandbox.stub().resolves()
+				}
+			};
 
-				server = new Server(config),
+			const server = new Server(config);
 
-				// When
-				expressServer = server.getServer();
+			// When
+			const expressServer = server.getServer();
 
 			// Then
 			expect(expressServer).to.not.be.undefined;
@@ -339,18 +340,17 @@ describe('index/server.js', () => {
 		it('should return the publisher', () => {
 
 			// Given
-			const
-				config = {
-					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
-					}
-				},
+			const config = {
+				transport: {
+					publish: sandbox.stub().resolves(),
+					subscribe: sandbox.stub().resolves()
+				}
+			};
 
-				server = new Server(config),
+			const server = new Server(config);
 
-				// When
-				publisher = server.getPublisher();
+			// When
+			const publisher = server.getPublisher();
 
 			// Then
 			expect(publisher).to.not.be.undefined;

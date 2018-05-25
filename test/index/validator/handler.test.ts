@@ -22,13 +22,13 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
-import _ from 'lodash';
+import avsc from 'avsc';
 import chai from 'chai';
+import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import avsc from 'avsc';
 
 import HandlerValidator from '../../../src/index/validator/handler';
 
@@ -64,9 +64,9 @@ describe('index/validator/handler.js', () => {
 			const config = {
 				handler: _.noop,
 				schema: {
+					fields: [],
 					name: 'com.example.FullName',
-					type: 'record',
-					fields: []
+					type: 'record'
 				}
 			};
 
@@ -82,9 +82,9 @@ describe('index/validator/handler.js', () => {
 			const config = {
 				handler: _.noop,
 				schema: avsc.Type.forSchema({
+					fields: [],
 					name: 'com.example.FullName',
-					type: 'record',
-					fields: []
+					type: 'record'
 				})
 			};
 

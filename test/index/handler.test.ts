@@ -22,11 +22,11 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
-import _ from 'lodash';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
@@ -38,9 +38,8 @@ import HandlerValidator from '../../src/index/validator/handler';
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-const
-	expect = chai.expect,
-	sandbox = sinon.createSandbox();
+const expect = chai.expect;
+const sandbox = sinon.createSandbox();
 
 describe('index/handler', () => {
 
@@ -84,7 +83,7 @@ describe('index/handler', () => {
 
 			// When
 			// Then
-			expect(() => new Handler(<any>{})).to.throw(/^Missing required object parameter: transport\.$/g);
+			expect(() => new Handler({} as any)).to.throw(/^Missing required object parameter: transport\.$/g);
 
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
@@ -103,28 +102,28 @@ describe('index/handler', () => {
 			sandbox.stub(HandlerValidator.prototype, 'validate');
 			sandbox.spy(EventEmitter.prototype, 'emit');
 
-			const
-				handler = new Handler(mocks.config),
-				config = {
-					handler: sandbox.stub(),
-					schema: avsc.Type.forSchema({
-						type: 'record',
-						namespace: 'com.example',
-						name: 'FullName',
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						]
-					}),
-					message: {
-						first: 'First',
-						last: 'Last'
-					}
-				};
+			const handler = new Handler(mocks.config);
+
+			const config = {
+				handler: sandbox.stub(),
+				message: {
+					first: 'First',
+					last: 'Last'
+				},
+				schema: avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				})
+			};
 
 			// When
 			// Then
-			return expect(handler.handle(<any>config))
+			return expect(handler.handle(config as any))
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
@@ -146,7 +145,7 @@ describe('index/handler', () => {
 
 				// When
 				// Then
-				expect(() => handler.handle(<any>{})).to.throw(/^Missing required object parameter\.$/);
+				expect(() => handler.handle({} as any)).to.throw(/^Missing required object parameter\.$/);
 				expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
 
 			});

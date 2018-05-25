@@ -22,72 +22,76 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
+import avsc from 'avsc';
 import chai from 'chai';
+import fs from 'fs-extra';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import avsc from 'avsc';
-import fs from 'fs-extra';
 import Transport from '../../../src/index/transport/transport';
-
-const
-	transportSchema = fs.readJsonSync(__dirname + '/../../../src/index/transport/transport.avsc');
 
 chai.use(sinonChai);
 
-const
-	expect = chai.expect,
-	sandbox = sinon.createSandbox();
+const expect = chai.expect;
+const sandbox = sinon.createSandbox();
+const transportSchema = fs.readJsonSync(__dirname + '/../../../src/index/transport/transport.avsc');
 
 describe('index/transport/transport.js', () => {
 
-	const
-		messageSchemaV1 = avsc.Type.forSchema({
-			namespace: 'example.avro',
-			type: 'record',
-			name: 'user',
-			fields: [
-				{ name: 'name', type: 'string' },
-				{ name: 'favorite_number', type: 'int' }
-			]
-		}),
-		messageSchemaV2 = avsc.Type.forSchema({
-			namespace: 'example.avro',
-			type: 'record',
-			name: 'user',
-			fields: [
-				{ name: 'name', type: 'string' },
-				{ name: 'favorite_color', type: 'string', ['default']: 'green' },
-				{ name: 'favorite_number', type: 'int' }
-			]
-		}),
-		messageV1 = {
-			name: 'Bob',
-			['favorite_number']: 10
-		},
-		messageV2 = {
-			name: 'Bob',
-			['favorite_color']: 'blue',
-			['favorite_number']: 10
-		},
-		context = {
-			test: 'A'
-		},
-		contextSchema = avsc.Type.forValue(context),
-		transportContentsV1 = {
-			contextSchema: JSON.stringify(contextSchema),
-			contextBuffer: contextSchema.toBuffer(context),
-			messageSchema: JSON.stringify(messageSchemaV1),
-			messageBuffer: messageSchemaV1.toBuffer(messageV1)
-		},
-		transportContentsV2 = {
-			contextSchema: JSON.stringify(contextSchema),
-			contextBuffer: contextSchema.toBuffer(context),
-			messageSchema: JSON.stringify(messageSchemaV2),
-			messageBuffer: messageSchemaV2.toBuffer(messageV2)
-		},
-		compiledTransportSchema = avsc.Type.forSchema(transportSchema);
+	const messageSchemaV1 = avsc.Type.forSchema({
+		fields: [
+			{ name: 'name', type: 'string' },
+			{ name: 'favorite_number', type: 'int' }
+		],
+		name: 'user',
+		namespace: 'example.avro',
+		type: 'record'
+	});
+
+	const messageSchemaV2 = avsc.Type.forSchema({
+		fields: [
+			{ name: 'name', type: 'string' },
+			{ name: 'favorite_color', type: 'string', ['default']: 'green' },
+			{ name: 'favorite_number', type: 'int' }
+		],
+		name: 'user',
+		namespace: 'example.avro',
+		type: 'record'
+	});
+
+	const messageV1 = {
+		name: 'Bob',
+		['favorite_number']: 10
+	};
+
+	const messageV2 = {
+		name: 'Bob',
+		['favorite_color']: 'blue',
+		['favorite_number']: 10
+	};
+
+	const context = {
+		test: 'A'
+	};
+
+	const contextSchema = avsc.Type.forValue(context);
+
+	const transportContentsV1 = {
+		contextBuffer: contextSchema.toBuffer(context),
+		contextSchema: JSON.stringify(contextSchema),
+		messageBuffer: messageSchemaV1.toBuffer(messageV1),
+		messageSchema: JSON.stringify(messageSchemaV1)
+	};
+
+	const transportContentsV2 = {
+		contextBuffer: contextSchema.toBuffer(context),
+		contextSchema: JSON.stringify(contextSchema),
+		messageBuffer: messageSchemaV2.toBuffer(messageV2),
+		messageSchema: JSON.stringify(messageSchemaV2)
+	};
+
+	const compiledTransportSchema = avsc.Type.forSchema(transportSchema);
 
 	afterEach(() => {
 		sandbox.restore();
@@ -133,12 +137,12 @@ describe('index/transport/transport.js', () => {
 		it('reads the correct data with the same schema', () => {
 
 			// Given
-			const
-				transport = new Transport(),
+			const transport = new Transport();
 
-				// When
-				result = transport.decode(messageSchemaV1, compiledTransportSchema.toBuffer(transportContentsV1)),
-				expected = { context, message: messageV1 };
+			const expected = { context, message: messageV1 };
+
+			// When
+			const result = transport.decode(messageSchemaV1, compiledTransportSchema.toBuffer(transportContentsV1));
 
 			// Then
 			expect(result).to.deep.equal(expected);
@@ -148,19 +152,19 @@ describe('index/transport/transport.js', () => {
 		it('is backward compatible', () => {
 
 			// Given
-			const
-				transport = new Transport(),
+			const transport = new Transport();
 
-				// When
-				result = transport.decode(messageSchemaV2, compiledTransportSchema.toBuffer(transportContentsV1)),
-				expected = {
-					context,
-					message: {
-						name: 'Bob',
-						['favorite_color']: 'green',
-						['favorite_number']: 10
-					}
-				};
+			const expected = {
+				context,
+				message: {
+					name: 'Bob',
+					['favorite_color']: 'green',
+					['favorite_number']: 10
+				}
+			};
+
+			// When
+			const result = transport.decode(messageSchemaV2, compiledTransportSchema.toBuffer(transportContentsV1));
 
 			// Then
 			expect(result).to.deep.equal(expected);
@@ -170,18 +174,18 @@ describe('index/transport/transport.js', () => {
 		it('is forward compatible', () => {
 
 			// Given
-			const
-				transport = new Transport(),
+			const transport = new Transport();
 
-				// When
-				result = transport.decode(messageSchemaV1, compiledTransportSchema.toBuffer(transportContentsV2)),
-				expected = {
-					context,
-					message: {
-						name: 'Bob',
-						['favorite_number']: 10
-					}
-				};
+			const expected = {
+				context,
+				message: {
+					name: 'Bob',
+					['favorite_number']: 10
+				}
+			};
+
+			// When
+			const result = transport.decode(messageSchemaV1, compiledTransportSchema.toBuffer(transportContentsV2));
 
 			// Then
 			expect(result).to.deep.equal(expected);

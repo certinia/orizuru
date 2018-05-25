@@ -22,10 +22,10 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
-import { expect } from 'chai';
 import avsc from 'avsc';
+import { expect } from 'chai';
 
 import PublisherValidator from '../../../src/index/validator/publisher';
 
@@ -57,9 +57,9 @@ describe('index/validator/publisher.js', () => {
 			// Given
 			const config = {
 				schema: {
+					fields: [],
 					name: 'com.example.FullName',
-					type: 'record',
-					fields: []
+					type: 'record'
 				}
 			};
 
@@ -74,9 +74,9 @@ describe('index/validator/publisher.js', () => {
 			// Given
 			const config = {
 				schema: avsc.Type.forSchema({
+					fields: [],
 					name: 'com.example.FullName',
-					type: 'record',
-					fields: []
+					type: 'record'
 				})
 			};
 

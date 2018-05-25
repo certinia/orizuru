@@ -22,23 +22,22 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
+import avsc from 'avsc';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import avsc from 'avsc';
 
-import { create } from '../../../src/index/server/route';
 import { Server } from '../../../src';
+import { create } from '../../../src/index/server/route';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-const
-	expect = chai.expect,
-	sandbox = sinon.createSandbox();
+const expect = chai.expect;
+const sandbox = sinon.createSandbox();
 
 describe('index/server/route.js', () => {
 
@@ -51,13 +50,12 @@ describe('index/server/route.js', () => {
 		it('should return a function', () => {
 
 			// Given
-			const
-				server = sandbox.stub(),
-				routeConfiguration = sandbox.stub(),
-				responseWriter = sandbox.stub(),
+			const server = sandbox.stub();
+			const routeConfiguration = sandbox.stub();
+			const responseWriter = sandbox.stub();
 
-				// When
-				routeFunction = create(<any>server, routeConfiguration, responseWriter);
+			// When
+			const routeFunction = create(server as any, routeConfiguration, responseWriter);
 
 			// Then
 			expect(routeFunction).to.be.a('function');
@@ -67,55 +65,56 @@ describe('index/server/route.js', () => {
 		it('should publish a message', () => {
 
 			// Given
-			const
-				server = {
-					getPublisher: sandbox.stub().returns({
-						publish: sandbox.stub().resolves()
-					})
-				},
-				routeConfiguration = {
-					test: avsc.Type.forSchema({
-						type: 'record',
-						namespace: 'com.example',
-						name: 'FullName',
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						]
-					})
-				},
-				responseWriter = sandbox.stub().returns(sandbox.stub()),
+			const server = {
+				getPublisher: sandbox.stub().returns({
+					publish: sandbox.stub().resolves()
+				})
+			};
 
-				routeFunction = create(<any>server, routeConfiguration, responseWriter),
+			const routeConfiguration = {
+				test: avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				})
+			};
 
-				request = {
-					params: {
-						schemaName: 'test'
-					},
-					body: { something: 10 },
-					orizuru: {
-						user: {
-							username: 'test'
-						}
+			const responseWriter = sandbox.stub().returns(sandbox.stub());
+
+			const routeFunction = create(server as any, routeConfiguration, responseWriter);
+
+			const request = {
+				body: { something: 10 },
+				orizuru: {
+					user: {
+						username: 'test'
 					}
 				},
+				params: {
+					schemaName: 'test'
+				}
+			};
 
-				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
-				};
+			const response = {
+				send: sandbox.stub().returnsThis(),
+				status: sandbox.stub().returnsThis()
+			};
 
 			// When
 			// Then
-			return expect(routeFunction(<any>request, <any>response))
+			return expect(routeFunction(request as any, response as any))
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(responseWriter).to.have.been.calledOnce;
 					expect(server.getPublisher().publish).to.have.been.calledWith({
-						schema: routeConfiguration.test,
-						message: request.body,
+						config: {},
 						context: request.orizuru,
-						config: {}
+						message: request.body,
+						schema: routeConfiguration.test
 					});
 				});
 
@@ -124,27 +123,28 @@ describe('index/server/route.js', () => {
 		it('should error if a schema is not found for the request', () => {
 
 			// Given
-			const
-				server = {
-					error: sandbox.stub()
-				},
-				routeConfiguration = sandbox.stub(),
-				responseWriter = sandbox.stub(),
+			const server = {
+				error: sandbox.stub()
+			};
 
-				routeFunction = create(<any>server, routeConfiguration, responseWriter),
+			const routeConfiguration = sandbox.stub();
+			const responseWriter = sandbox.stub();
 
-				request = {
-					params: {
-						schemaName: 'test'
-					}
-				},
-				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
-				};
+			const routeFunction = create(server as any, routeConfiguration, responseWriter);
+
+			const request = {
+				params: {
+					schemaName: 'test'
+				}
+			};
+
+			const response = {
+				send: sandbox.stub().returnsThis(),
+				status: sandbox.stub().returnsThis()
+			};
 
 			// When
-			routeFunction(<any>request, <any>response);
+			routeFunction(request as any, response as any);
 
 			// Then
 			expect(server.error).to.have.been.calledOnce;
@@ -155,43 +155,45 @@ describe('index/server/route.js', () => {
 		it('should error if publishing the message rejects', () => {
 
 			// Given
-			const
-				expectedError = new Error('Failed to publish message'),
-				server = {
-					getPublisher: sandbox.stub().returns({
-						publish: sandbox.stub().rejects(expectedError)
-					})
-				},
-				routeConfiguration = {
-					test: avsc.Type.forSchema({
-						type: 'record',
-						namespace: 'com.example',
-						name: 'FullName',
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						]
-					})
-				},
-				responseFunction = sandbox.stub(),
-				responseWriter = sandbox.stub().returns(responseFunction),
+			const expectedError = new Error('Failed to publish message');
 
-				routeFunction = create(<any>server, routeConfiguration, responseWriter),
+			const server = {
+				getPublisher: sandbox.stub().returns({
+					publish: sandbox.stub().rejects(expectedError)
+				})
+			};
 
-				request = {
-					params: {
-						schemaName: 'test'
-					}
-				},
+			const routeConfiguration = {
+				test: avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				})
+			};
 
-				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
-				};
+			const responseFunction = sandbox.stub();
+			const responseWriter = sandbox.stub().returns(responseFunction);
+
+			const routeFunction = create(server as any, routeConfiguration, responseWriter);
+
+			const request = {
+				params: {
+					schemaName: 'test'
+				}
+			};
+
+			const response = {
+				send: sandbox.stub().returnsThis(),
+				status: sandbox.stub().returnsThis()
+			};
 
 			// When
 			// Then
-			return expect(routeFunction(<any>request, <any>response))
+			return expect(routeFunction(request as any, response as any))
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(responseWriter).to.have.been.calledOnce;
@@ -204,43 +206,45 @@ describe('index/server/route.js', () => {
 		it('should error if publishing the message throws an error', () => {
 
 			// Given
-			const
-				expectedError = new Error('Failed to publish message'),
-				server = {
-					getPublisher: sandbox.stub().returns({
-						publish: sandbox.stub().rejects(expectedError)
-					})
-				},
-				routeConfiguration = {
-					test: avsc.Type.forSchema({
-						type: 'record',
-						namespace: 'com.example',
-						name: 'FullName',
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						]
-					})
-				},
-				responseFunction = sandbox.stub(),
-				responseWriter = sandbox.stub().returns(responseFunction),
+			const expectedError = new Error('Failed to publish message');
 
-				routeFunction = create(<any>server, routeConfiguration, responseWriter),
+			const server = {
 
-				request = {
-					params: {
-						schemaName: 'test'
-					}
-				},
+				getPublisher: sandbox.stub().returns({
+					publish: sandbox.stub().rejects(expectedError)
+				})
+			};
 
-				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
-				};
+			const routeConfiguration = {
+				test: avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				})
+			};
+
+			const responseFunction = sandbox.stub();
+			const responseWriter = sandbox.stub().returns(responseFunction);
+			const routeFunction = create(server as any, routeConfiguration, responseWriter);
+
+			const request = {
+				params: {
+					schemaName: 'test'
+				}
+			};
+
+			const response = {
+				send: sandbox.stub().returnsThis(),
+				status: sandbox.stub().returnsThis()
+			};
 
 			// When
 			// Then
-			return expect(routeFunction(<any>request, <any>response))
+			return expect(routeFunction(request as any, response as any))
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(responseWriter).to.have.been.calledOnce;
