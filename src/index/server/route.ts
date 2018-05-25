@@ -26,11 +26,10 @@
 
 import { Server, OrizuruRequest } from "../..";
 import * as  HTTP_STATUS_CODE from 'http-status-codes';
-import { Request, Response } from "express";
 
 export function create(server: Server, routeConfiguration: any, responseWriter: any, transportConfig?: any) {
 
-	return (request: OrizuruRequest, response: Response) => {
+	return (request: OrizuruRequest, response: any) => {
 
 		const
 			schemaName = request.params.schemaName,
