@@ -22,22 +22,19 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
-'use strict';
-
-import _ from 'lodash';
 import { EventEmitter } from 'events';
-import { Publisher } from '..';
-import * as ROUTE_METHOD from './server/routeMethod';
 import express from 'express';
+import _ from 'lodash';
+import { Publisher } from '..';
+import { create as createRoute } from './server/route';
+import * as ROUTE_METHOD from './server/routeMethod';
 import RouteValidator from './validator/route';
 import ServerValidator from './validator/server';
-import { create as createRoute } from './server/route';
 
-const
-	Router = express.Router,
-	PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
+const Router = express.Router;
+const PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
 
 /**
  * The Server for creating routes in a web dyno based on Avro schemas.
@@ -46,20 +43,20 @@ const
  * @extends EventEmitter
  * @property {string} emitter.ERROR - the error event name
  * @property {string} emitter.INFO - the info event name
- **/
+ */
 export default class Server extends EventEmitter {
 
-	static readonly ROUTE_METHOD = ROUTE_METHOD;
+	public static readonly ROUTE_METHOD = ROUTE_METHOD;
 
 	/**
 	 * The error event name.
 	 */
-	static readonly ERROR: string = 'error_event';
+	public static readonly ERROR: string = 'error_event';
 
 	/**
 	 * The info event name.
 	 */
-	static readonly INFO: string = 'info_event';
+	public static readonly INFO: string = 'info_event';
 
 	private readonly publisher: Publisher;
 	private readonly server: express.Express;
@@ -112,24 +109,22 @@ export default class Server extends EventEmitter {
 	/**
 	 * Adds a 'route' to the server.
 	 */
-	addRoute(config: any) {
+	public addRoute(config: any) {
 
 		// Validate the route configuration.
 		this.validator.validate(config);
 
 		// Now we know the configuration is valid, add the route.
-		const
-			schema = config.schema,
-			responseWriter = config.responseWriter,
-			fullSchemaName = schema.name,
-			schemaNameParts = fullSchemaName.split('.'),
-			schemaNamespace = _.initial(schemaNameParts).join('.'),
-			schemaName = <string>_.last(schemaNameParts),
-			apiEndpoint = config.endpoint + config.pathMapper(schemaNamespace);
+		const schema = config.schema;
+		const responseWriter = config.responseWriter;
+		const fullSchemaName = schema.name;
+		const schemaNameParts = fullSchemaName.split('.');
+		const schemaNamespace = _.initial(schemaNameParts).join('.');
+		const schemaName = _.last(schemaNameParts) as string;
+		const apiEndpoint = config.endpoint + config.pathMapper(schemaNamespace);
 
-		let
-			routeConfiguration = this.routeConfiguration[apiEndpoint],
-			router = this.routerConfiguration[apiEndpoint];
+		let routeConfiguration = this.routeConfiguration[apiEndpoint];
+		let router = this.routerConfiguration[apiEndpoint];
 
 		// If we don't have the router for this endpoint then we need to create one.
 		if (!router) {
@@ -140,7 +135,7 @@ export default class Server extends EventEmitter {
 			router = Router();
 
 			// Apply middlewares.
-			_.each(config.middleware, middleware => {
+			_.each(config.middleware, (middleware) => {
 				router.use(middleware);
 			});
 
@@ -177,7 +172,7 @@ export default class Server extends EventEmitter {
 	 * server.getServer().listen('8080');
 	 * @returns {express} The express server.
 	 */
-	getServer() {
+	public getServer() {
 		return this.server;
 	}
 
@@ -186,7 +181,7 @@ export default class Server extends EventEmitter {
 	 *
 	 * @returns {Publisher} The message publisher.
 	 */
-	getPublisher() {
+	public getPublisher() {
 		return this.publisher;
 	}
 
@@ -194,7 +189,7 @@ export default class Server extends EventEmitter {
 	 * Emit an error event.
 	 * @param {Object} event - The error event.
 	 */
-	error(event: any) {
+	public error(event: any) {
 		this.emit(Server.ERROR, event);
 	}
 
@@ -202,10 +197,8 @@ export default class Server extends EventEmitter {
 	 * Emit an info event.
 	 * @param {Object} event - The info event.
 	 */
-	info(event: any) {
+	public info(event: any) {
 		this.emit(Server.INFO, event);
 	}
 
 }
-
-

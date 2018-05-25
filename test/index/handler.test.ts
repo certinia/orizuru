@@ -24,16 +24,14 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
-
 import _ from 'lodash';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
-import { EventEmitter } from 'events';
 import avsc from 'avsc';
+import { EventEmitter } from 'events';
 import { Handler } from '../../src';
 import HandlerValidator from '../../src/index/validator/handler';
 
@@ -86,7 +84,7 @@ describe('index/handler', () => {
 
 			// When
 			// Then
-			expect(() => new Handler({})).to.throw(/^Missing required object parameter: transport\.$/g);
+			expect(() => new Handler(<any>{})).to.throw(/^Missing required object parameter: transport\.$/g);
 
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
@@ -126,7 +124,7 @@ describe('index/handler', () => {
 
 			// When
 			// Then
-			return expect(handler.handle(config))
+			return expect(handler.handle(<any>config))
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
@@ -148,7 +146,7 @@ describe('index/handler', () => {
 
 				// When
 				// Then
-				expect(() => handler.handle({})).to.throw(/^Missing required object parameter\.$/);
+				expect(() => handler.handle(<any>{})).to.throw(/^Missing required object parameter\.$/);
 				expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
 
 			});

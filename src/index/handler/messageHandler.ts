@@ -22,21 +22,18 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
-
-'use strict';
+ */
 
 import _ from 'lodash';
-import { Handler } from '../../index'
+import { Handler } from '../../index';
 import Transport from '../transport/transport';
 
 export default function messageHandler(server: Handler, config: any) {
 
-	const
-		schema = config.schema,
-		eventName = _.get(config, 'config.eventName') || _.get(config, 'schema.name'),
-		handleMessage = config.handler,
-		transport = new Transport();
+	const schema = config.schema;
+	const eventName = _.get(config, 'config.eventName') || _.get(config, 'schema.name');
+	const handleMessage = config.handler;
+	const transport = new Transport();
 
 	return async (content: Buffer) => {
 

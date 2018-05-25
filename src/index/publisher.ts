@@ -22,15 +22,13 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
-'use strict';
-
-import _ from 'lodash';
 import { EventEmitter } from 'events';
+import _ from 'lodash';
+import Transport from './transport/transport';
 import PublisherValidator from './validator/publisher';
 import ServerValidator from './validator/server';
-import Transport from './transport/transport';
 
 /**
  * The Publisher for publishing messages based on Avro schemas.
@@ -41,12 +39,12 @@ export default class Publisher extends EventEmitter {
 	/**
 	 * The error event name.
 	 */
-	static readonly ERROR: string = 'error_event';
+	public static readonly ERROR: string = 'error_event';
 
 	/**
 	 * The info event name.
 	 */
-	static readonly INFO: string = 'info_event';
+	public static readonly INFO: string = 'info_event';
 
 	private readonly transport: Transport;
 	private readonly transportConfig: any;
@@ -96,7 +94,7 @@ export default class Publisher extends EventEmitter {
 	 * // publishes a message
 	 * publisher.publish({ schema, message, context });
 	 */
-	publish(config: any) {
+	public publish(config: any) {
 
 		// Validate the arguments.
 		try {
@@ -107,12 +105,11 @@ export default class Publisher extends EventEmitter {
 		}
 
 		// Generate transport buffer.
-		const
-			schema = config.schema,
-			message = config.message,
-			eventName = config.schema.name,
-			context = config.context,
-			transportImplConfig = _.cloneDeep(this.transportConfig) || {};
+		const schema = config.schema;
+		const message = config.message;
+		const eventName = config.schema.name;
+		const context = config.context;
+		const transportImplConfig = _.cloneDeep(this.transportConfig) || {};
 
 		let buffer;
 
@@ -120,13 +117,13 @@ export default class Publisher extends EventEmitter {
 			buffer = this.transport.encode(schema, message, context);
 		} catch (err) {
 
-			const errors = new Array<String>();
+			const errors = new Array<string>();
 
 			errors.push(`Error encoding message for schema (${eventName}):`);
 
 			schema.isValid(config.message, {
-				errorHook: (path: any, any: any, type: any) => {
-					errors.push(`invalid value (${any}) for path (${path.join()}) it should be of type (${type.typeName})`);
+				errorHook: (path: any, value: any, type: any) => {
+					errors.push(`invalid value (${value}) for path (${path.join()}) it should be of type (${type.typeName})`);
 				}
 			});
 
@@ -140,11 +137,11 @@ export default class Publisher extends EventEmitter {
 
 		// publish buffer on transport
 		return this.transportImpl({ eventName, buffer, config: transportImplConfig })
-			.then(result => {
+			.then((result) => {
 				this.info(`Published ${schema.name} event.`);
 				return result;
 			})
-			.catch(err => {
+			.catch((err) => {
 				this.error('Error publishing message on transport.');
 				throw err;
 			});
@@ -155,7 +152,7 @@ export default class Publisher extends EventEmitter {
 	 * Emit an error event.
 	 * @param {Object} event - The error event.
 	 */
-	error(event: any) {
+	public error(event: any) {
 		this.emit(Publisher.ERROR, event);
 	}
 
@@ -163,7 +160,7 @@ export default class Publisher extends EventEmitter {
 	 * Emit an info event.
 	 * @param {Object} event - The info event.
 	 */
-	info(event: any) {
+	public info(event: any) {
 		this.emit(Publisher.INFO, event);
 	}
 

@@ -22,7 +22,7 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
 /**
  * The Index file for project.
@@ -35,17 +35,16 @@
 
 import { Request } from 'express';
 
-import Server from './index/server';
 import Handler from './index/handler';
 import Publisher from './index/publisher';
+import Server from './index/server';
 
 export {
-	Server,
 	Handler,
-	Publisher
+	Publisher,
+	Server
 };
 
-export interface OrizuruRequest extends Request {
-	orizuru: any
+export interface IOrizuruRequest extends Request {
+	orizuru: any;
 }
-

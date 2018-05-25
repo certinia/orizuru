@@ -22,14 +22,14 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
-import _ from 'lodash';
-import * as schema from './shared/schema';
-import * as HTTP_STATUS_CODE from 'http-status-codes';
-import * as ROUTE_METHOD from '../server/routeMethod';
-import { Server } from '../..';
 import { Request, Response } from 'express';
+import * as HTTP_STATUS_CODE from 'http-status-codes';
+import _ from 'lodash';
+import { Server } from '../..';
+import * as ROUTE_METHOD from '../server/routeMethod';
+import * as schema from './shared/schema';
 
 /**
  * Validates routes.
@@ -37,7 +37,7 @@ import { Request, Response } from 'express';
  */
 export default class RouteValidator {
 
-	validate(config: any) {
+	public validate(config: any) {
 
 		if (!config) {
 			throw new Error('Missing required object parameter.');

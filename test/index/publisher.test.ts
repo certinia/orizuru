@@ -24,16 +24,14 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-'use strict';
-
 import _ from 'lodash';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+
 import avsc from 'avsc';
 import { EventEmitter } from 'events';
-
 import PublisherValidator from '../../src/index/validator/publisher';
 import Publisher from '../../src/index/publisher';
 import Transport from '../../src/index/transport/transport';

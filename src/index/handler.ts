@@ -22,15 +22,28 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
-'use strict';
-
-import _ from 'lodash';
 import { EventEmitter } from 'events';
+import _ from 'lodash';
+import messageHandler from './handler/messageHandler';
 import HandlerValidator from './validator/handler';
 import ServerValidator from './validator/server';
-import messageHandler from './handler/messageHandler';
+
+export interface IHandlerOptions {
+	transportConfig: any;
+	transport: {
+		subscribe: any
+	};
+}
+
+export interface IHandleOptions {
+	schema: any;
+	handler: any;
+	config: {
+		eventName?: string
+	};
+}
 
 /**
  * The Handler for consuming messages in a worker dyno created by Server.
@@ -41,12 +54,12 @@ export default class Handler extends EventEmitter {
 	/**
 	 * The error event name.
 	 */
-	static readonly ERROR: string = 'error_event';
+	public static readonly ERROR: string = 'error_event';
 
 	/**
 	 * The info event name.
 	 */
-	static readonly INFO: string = 'info_event';
+	public static readonly INFO: string = 'info_event';
 
 	private readonly tranportConfig: any;
 	private readonly tranportImpl: any;
@@ -55,7 +68,7 @@ export default class Handler extends EventEmitter {
 	/**
 	 * Constructs a new 'Handler'.
 	 */
-	constructor(config: any) {
+	constructor(options: IHandlerOptions) {
 
 		super();
 
@@ -64,11 +77,11 @@ export default class Handler extends EventEmitter {
 		try {
 
 			// Validate the config
-			new ServerValidator(config);
+			new ServerValidator(options);
 
 			// Define the transport
-			this.tranportConfig = config.transportConfig;
-			this.tranportImpl = config.transport.subscribe;
+			this.tranportConfig = options.transportConfig;
+			this.tranportImpl = options.transport.subscribe;
 
 			// Define the handler validator
 			this.validator = new HandlerValidator();
@@ -85,35 +98,34 @@ export default class Handler extends EventEmitter {
 	 *
 	 * @example
 	 * ```typescript
-	 * 
+	 *
 	 * handler.handle({ schema, handler: ({ message, context }) => {
 	 * 	console.log(message);
 	 * 	console.log(context);
 	 * }});
 	 * ```
 	 */
-	handle(config: any) {
+	public handle(options: IHandleOptions) {
 
 		try {
-			this.validator.validate(config);
+			this.validator.validate(options);
 		} catch (err) {
 			this.error(err);
 			throw err;
 		}
 
-		const
-			eventName = _.get(config, 'config.eventName') || _.get(config, 'schema.name'),
-			handler = messageHandler(this, config),
-			transportImplConfig = _.cloneDeep(this.tranportConfig);
+		const eventName = _.get(options, 'config.eventName') || _.get(options, 'schema.name');
+		const handler = messageHandler(this, options);
+		const transportImplConfig = _.cloneDeep(this.tranportConfig);
 
-		transportImplConfig.config = config.config || {};
+		transportImplConfig.config = options.config || {};
 
 		this.info(`Installing handler for ${eventName} events.`);
 
 		return this.tranportImpl({
+			config: transportImplConfig,
 			eventName,
-			handler,
-			config: transportImplConfig
+			handler
 		});
 
 	}
@@ -122,7 +134,7 @@ export default class Handler extends EventEmitter {
 	 * Emit an error event.
 	 * @param {Object} event - The error event.
 	 */
-	error(event: any) {
+	public error(event: any) {
 		this.emit(Handler.ERROR, event);
 	}
 
@@ -130,9 +142,8 @@ export default class Handler extends EventEmitter {
 	 * Emit an info event.
 	 * @param {Object} event - The info event.
 	 */
-	info(event: any) {
+	public info(event: any) {
 		this.emit(Handler.INFO, event);
 	}
 
 }
-

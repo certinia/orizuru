@@ -22,24 +22,23 @@
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **/
+ */
 
-import { Server, OrizuruRequest } from "../..";
 import * as  HTTP_STATUS_CODE from 'http-status-codes';
+import { IOrizuruRequest, Server } from '../..';
 
 export function create(server: Server, routeConfiguration: any, responseWriter: any, transportConfig?: any) {
 
-	return (request: OrizuruRequest, response: any) => {
+	return (request: IOrizuruRequest, response: any) => {
 
-		const
-			schemaName = request.params.schemaName,
-			schema = routeConfiguration[schemaName],
-			message = {
-				schema,
-				message: request.body,
-				context: request.orizuru,
-				config: transportConfig || {}
-			};
+		const schemaName = request.params.schemaName;
+		const schema = routeConfiguration[schemaName];
+		const message = {
+			config: transportConfig || {},
+			context: request.orizuru,
+			message: request.body,
+			schema
+		};
 
 		if (!schema) {
 			const errorMsg = `No schema for '${schemaName}' found.`;
