@@ -9,6 +9,7 @@ test
 .travis.yml
 
 tsconfig.json
+tslint.json
 
 *.properties
 *.tgz
