@@ -24,10 +24,8 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Request, Response } from 'express';
 import * as HTTP_STATUS_CODE from 'http-status-codes';
 import _ from 'lodash';
-import { Server } from '../..';
 import { IRouteOptions, IValidatedRouteOptions } from '../server';
 import * as ROUTE_METHOD from '../server/routeMethod';
 import * as schema from './shared/schema';

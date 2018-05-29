@@ -24,10 +24,9 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc/types';
 import { EventEmitter } from 'events';
 import _ from 'lodash';
-import { IHandlerOptions, IServerOptions, ITransport, ITransportConfig, ITransportSubscribeOptions } from '..';
+import { IHandlerOptions, IServerOptions, ITransportConfig, ITransportSubscribeOptions } from '..';
 import messageHandler from './handler/messageHandler';
 import HandlerValidator from './validator/handler';
 import ServerValidator from './validator/server';

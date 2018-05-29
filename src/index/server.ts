@@ -26,7 +26,7 @@
 
 import { Type } from 'avsc/types';
 import { EventEmitter } from 'events';
-import express, { IRouterHandler } from 'express';
+import express from 'express';
 import _ from 'lodash';
 import { IOrizuruRequest, IOrizuruResponse, IServerOptions, ITransportConfig, Publisher } from '..';
 import { create as createRoute } from './server/route';
@@ -125,7 +125,6 @@ export default class Server extends EventEmitter {
 
 		// Now we know the options are valid, add the route.
 		const schema = validatedOptions.schema;
-		const responseWriter = validatedOptions.responseWriter;
 		const fullSchemaName = schema.name as string;
 		const schemaNameParts = fullSchemaName.split('.');
 		const schemaNamespace = _.initial(schemaNameParts).join('.');

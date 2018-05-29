@@ -26,7 +26,7 @@
 
 import { Type } from 'avsc/types';
 import * as  HTTP_STATUS_CODE from 'http-status-codes';
-import { IOrizuruRequest, IOrizuruResponse, ITransportConfig, Server } from '../..';
+import { IOrizuruRequest, IOrizuruResponse, Server } from '../..';
 import { IRouteOptions } from '../server';
 
 /**
