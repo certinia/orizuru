@@ -28,6 +28,9 @@ import _ from 'lodash';
 import { Handler } from '../../index';
 import Transport from '../transport/transport';
 
+/**
+ * @private
+ */
 export default function messageHandler(server: Handler, config: any) {
 
 	const schema = config.schema;

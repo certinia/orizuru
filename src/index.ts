@@ -35,15 +35,20 @@
 
 import { Request } from 'express';
 
-import Handler from './index/handler';
-import Publisher from './index/publisher';
-import Server from './index/server';
+/**
+ * Handler
+ */
+export { default as Handler } from './index/handler';
 
-export {
-	Handler,
-	Publisher,
-	Server
-};
+/**
+ * Publisher
+ */
+export { default as Publisher } from './index/publisher';
+
+/**
+ * Server
+ */
+export { default as Server } from './index/server';
 
 export interface IOrizuruRequest extends Request {
 	orizuru: any;

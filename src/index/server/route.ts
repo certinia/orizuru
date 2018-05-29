@@ -27,6 +27,9 @@
 import * as  HTTP_STATUS_CODE from 'http-status-codes';
 import { IOrizuruRequest, Server } from '../..';
 
+/**
+ * @private
+ */
 export function create(server: Server, routeConfiguration: any, responseWriter: any, transportConfig?: any) {
 
 	return (request: IOrizuruRequest, response: any) => {

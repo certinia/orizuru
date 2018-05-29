@@ -55,6 +55,10 @@ function compileSchema(uncompiledSchema: any) {
 
 }
 
+/**
+ * Validates the Apache Avro schema.
+ * @private
+ */
 export function validate(config: any) {
 
 	if (!config.schema) {

@@ -38,11 +38,8 @@ const PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
 
 /**
  * The Server for creating routes in a web dyno based on Avro schemas.
- * Messages are consumed by Handler
  *
- * @extends EventEmitter
- * @property {string} emitter.ERROR - the error event name
- * @property {string} emitter.INFO - the info event name
+ * Messages are consumed by {@link Handler}.
  */
 export default class Server extends EventEmitter {
 
@@ -69,9 +66,6 @@ export default class Server extends EventEmitter {
 	 *
 	 * @example
 	 * const server = new Server();
-	 * @param {Object} config - The server configuration.
-	 * @param {Transport} config.transport - The transport object.
-	 * @param {Object} config.transportConfig - The config for the transport object.
 	 */
 	constructor(config: any) {
 

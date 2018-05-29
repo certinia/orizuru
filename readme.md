@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/financialforcedev/orizuru.svg?branch=master)](https://travis-ci.org/financialforcedev/orizuru)
 [![NSP Status](https://nodesecurity.io/orgs/ffres/projects/4b0e31c0-4913-4d2f-b1de-802ac4de447f/badge)](https://nodesecurity.io/orgs/ffres/projects/4b0e31c0-4913-4d2f-b1de-802ac4de447f)
 
-Orizuru is a srcrary that streamlines strongly typed communication between Heroku dynos (or other processes).
+Orizuru is a library that streamlines strongly typed communication between Heroku dynos (or other processes).
 It leverages [Apache Avro](https://avro.apache.org/) for schema validation and communication.
 
 ## Install
@@ -11,7 +11,6 @@ It leverages [Apache Avro](https://avro.apache.org/) for schema validation and c
 ```bash
 npm install @financialforcedev/orizuru
 ```
-
 
 ## Usage
 
@@ -21,6 +20,7 @@ All Orizuru classes require reference to a transport layer. The transport layer 
 subscribed to. We inject this as a class constructor configuration parameter.
 
 ```javascript
+
 const
 	{ Server } = require('@financialforcedev/orizuru'),
 	transport = require('@financialforcedev/orizuru-transport-rabbitmq'),

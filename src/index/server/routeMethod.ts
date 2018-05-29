@@ -24,10 +24,33 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * A CHECKOUT request can be applied to a checked-in version-controlled resource to allow modifications
+ * to the content and dead properties of that version-controlled resource.
+ */
 export const CHECKOUT: string = 'checkout';
+
+/**
+ * The COPY method creates a duplicate of the source resource identified by the Request-URI,
+ * in the destination resource identified by the URI in the Destination header.
+ * The Destination header MUST be present. The exact behavior of the COPY method 
+ * depends on the type of the source resource.
+ */
 export const COPY: string = 'copy';
 export const DELETE: string = 'delete';
+
+/**
+ * The GET method requests transfer of a current selected representation for the target resource.
+ * GET is the primary mechanism of information retrieval and the focus of almost all performance optimizations.
+ * Hence, when people speak of retrieving some identifiable information via HTTP, they are generally referring to making a GET request.
+ *
+ * {@link https://tools.ietf.org/html/rfc7231#page-24}
+ */
 export const GET: string = 'get';
+
+/**
+ * The HEAD method asks for a response identical to that of a GET request, but without the response body.
+ */
 export const HEAD: string = 'head';
 export const LOCK: string = 'lock';
 export const MERGE: string = 'merge';
@@ -38,6 +61,10 @@ export const M_SEARCH: string = 'm-search';
 export const NOTIFY: string = 'notify';
 export const OPTIONS: string = 'options';
 export const PATCH: string = 'patch';
+
+/**
+ * The POST method is used to submit an entity to the specified resource, often causing a change in state or side effects on the server.
+ */
 export const POST: string = 'post';
 export const PURGE: string = 'purge';
 export const PUT: string = 'put';

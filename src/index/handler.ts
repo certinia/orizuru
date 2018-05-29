@@ -46,7 +46,7 @@ export interface IHandleOptions {
 }
 
 /**
- * The Handler for consuming messages in a worker dyno created by Server.
+ * The Handler for consuming messages in a worker dyno created by {@link Server}.
  * @extends EventEmitter
  */
 export default class Handler extends EventEmitter {

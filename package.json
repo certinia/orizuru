@@ -5,9 +5,10 @@
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
-		"prepare": "npm run build && cp src/index/transport/transport.avsc dist/index/transport",
 		"build": "tsc",
+		"doc": "typedoc --out docs src/**/* --excludePrivate --mode file",
 		"init-project": "cp run.properties local.run.properties && cp test.properties local.test.properties",
+		"prepare": "npm run build && cp src/index/transport/transport.avsc dist/index/transport",
 		"pretest": "tslint 'src/**/*.ts' 'test/**/*.ts'",
 		"test": "nyc mocha --require ts-node/register --watch-extensions ts test/**/*.test.ts test/**/**/*.test.ts"
 	},
@@ -42,8 +43,6 @@
 		"@types/chai": "4.1.3",
 		"@types/chai-as-promised": "7.1.0",
 		"@types/mocha": "5.2.0",
-		"@types/sinon": "5.0.0",
-		"@types/sinon-chai": "2.7.32",
 		"chai": "4.1.2",
 		"chai-as-promised": "7.1.1",
 		"debug-plus": "1.2.2",
@@ -55,6 +54,7 @@
 		"supertest": "3.1.0",
 		"ts-node": "6.0.5",
 		"tslint": "5.10.0",
+		"typedoc": "0.11.1",
 		"typescript": "2.8.3"
 	},
 	"nyc": {
