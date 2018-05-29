@@ -28,6 +28,7 @@ import { Request, Response } from 'express';
 import * as HTTP_STATUS_CODE from 'http-status-codes';
 import _ from 'lodash';
 import { Server } from '../..';
+import { IRouteOptions, IValidatedRouteOptions } from '../server';
 import * as ROUTE_METHOD from '../server/routeMethod';
 import * as schema from './shared/schema';
 
@@ -37,7 +38,7 @@ import * as schema from './shared/schema';
  */
 export default class RouteValidator {
 
-	public validate(config: any) {
+	public validate(config: IRouteOptions): IValidatedRouteOptions {
 
 		if (!config) {
 			throw new Error('Missing required object parameter.');
@@ -82,7 +83,7 @@ export default class RouteValidator {
 		});
 
 		if (!config.responseWriter) {
-			config.responseWriter = (server: Server) => (error: Error, request: Request, response: Response) => {
+			config.responseWriter = (server) => (error, request, response) => {
 				if (error) {
 					server.error(error);
 					response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(error);

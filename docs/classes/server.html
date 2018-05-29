@@ -146,13 +146,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Server<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/iorizuruoptions.html" class="tsd-signature-type">IOrizuruOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="server.html" class="tsd-signature-type">Server</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Server<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/iserveroptions.html" class="tsd-signature-type">IServerOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="server.html" class="tsd-signature-type">Server</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L62">index/server.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L77">index/server.ts:77</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -168,7 +168,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>options: <a href="../interfaces/iorizuruoptions.html" class="tsd-signature-type">IOrizuruOptions</a></h5>
+									<h5>options: <a href="../interfaces/iserveroptions.html" class="tsd-signature-type">IServerOptions</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="server.html" class="tsd-signature-type">Server</a></h4>
@@ -184,29 +184,50 @@
 					<div class="tsd-signature tsd-kind-icon">publisher<span class="tsd-signature-symbol">:</span> <a href="publisher.html" class="tsd-signature-type">Publisher</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L58">index/server.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L73">index/server.ts:73</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="routeconfiguration" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> route<wbr>Configuration</h3>
-					<div class="tsd-signature tsd-kind-icon">route<wbr>Configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<div class="tsd-signature tsd-kind-icon">route<wbr>Configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L62">index/server.ts:62</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L77">index/server.ts:77</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>s: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">object</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-index-signature">
+										<h5><span class="tsd-signature-symbol">[</span>s: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">Type</span></h5>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="routerconfiguration" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> router<wbr>Configuration</h3>
-					<div class="tsd-signature tsd-kind-icon">router<wbr>Configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<div class="tsd-signature tsd-kind-icon">router<wbr>Configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L61">index/server.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L76">index/server.ts:76</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>s: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">express.Router</span></h5>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="server-1" class="tsd-anchor"></a>
@@ -214,7 +235,7 @@
 					<div class="tsd-signature tsd-kind-icon">server<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">express.Express</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L59">index/server.ts:59</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L74">index/server.ts:74</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -224,7 +245,7 @@
 					<div class="tsd-signature tsd-kind-icon">validator<span class="tsd-signature-symbol">:</span> <a href="routevalidator.html" class="tsd-signature-type">RouteValidator</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L60">index/server.ts:60</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L75">index/server.ts:75</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -234,7 +255,7 @@
 					<div class="tsd-signature tsd-kind-icon">ERROR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;error_event&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L51">index/server.ts:51</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L66">index/server.ts:66</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -249,7 +270,7 @@
 					<div class="tsd-signature tsd-kind-icon">INFO<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;info_event&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L56">index/server.ts:56</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L71">index/server.ts:71</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -264,7 +285,7 @@
 					<div class="tsd-signature tsd-kind-icon">ROUTE_<wbr>METHOD<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;/Users/Matthew/GIT/financialforcedev/orizuru/src/index/server/routeMethod&quot;</span><span class="tsd-signature-symbol"> =&nbsp;ROUTE_METHOD</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L46">index/server.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L61">index/server.ts:61</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -332,13 +353,13 @@
 					<a name="addroute" class="tsd-anchor"></a>
 					<h3>add<wbr>Route</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Route<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Route<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/irouteoptions.html" class="tsd-signature-type">IRouteOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L106">index/server.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L121">index/server.ts:121</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -349,7 +370,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>config: <span class="tsd-signature-type">any</span></h5>
+									<h5>options: <a href="../interfaces/irouteoptions.html" class="tsd-signature-type">IRouteOptions</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
@@ -394,7 +415,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L186">index/server.ts:186</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L201">index/server.ts:201</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -463,7 +484,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L178">index/server.ts:178</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L193">index/server.ts:193</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -486,7 +507,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L169">index/server.ts:169</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L184">index/server.ts:184</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -515,7 +536,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/server.ts#L194">index/server.ts:194</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/server.ts#L209">index/server.ts:209</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1106,17 +1127,41 @@
 					<li class=" tsd-kind-class tsd-is-private">
 						<a href="transport.html" class="tsd-kind-icon">Transport</a>
 					</li>
-					<li class=" tsd-kind-interface">
+					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="../interfaces/ihandleroptions.html" class="tsd-kind-icon">IHandler<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="../interfaces/iorizuruoptions.html" class="tsd-kind-icon">IOrizuru<wbr>Options</a>
+						<a href="../interfaces/iorizurumessage.html" class="tsd-kind-icon">IOrizuru<wbr>Message</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="../interfaces/iorizururequest.html" class="tsd-kind-icon">IOrizuru<wbr>Request</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="../interfaces/iorizururesponse.html" class="tsd-kind-icon">IOrizuru<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/ipublisheroptions.html" class="tsd-kind-icon">IPublisher<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/irouteoptions.html" class="tsd-kind-icon">IRoute<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/iserveroptions.html" class="tsd-kind-icon">IServer<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/itransport.html" class="tsd-kind-icon">ITransport</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/itransportconfig.html" class="tsd-kind-icon">ITransport<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/itransportpublishoptions.html" class="tsd-kind-icon">ITransport<wbr>Publish<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/itransportsubscribeoptions.html" class="tsd-kind-icon">ITransport<wbr>Subscribe<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ivalidatedrouteoptions.html" class="tsd-kind-icon">IValidated<wbr>Route<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="../globals.html#delete" class="tsd-kind-icon">DELETE</a>

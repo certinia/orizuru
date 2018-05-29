@@ -55,7 +55,7 @@ describe('index/server/route.js', () => {
 			const responseWriter = sandbox.stub();
 
 			// When
-			const routeFunction = create(server as any, routeConfiguration, responseWriter);
+			const routeFunction = create(server as any, routeConfiguration as any, { responseWriter } as any);
 
 			// Then
 			expect(routeFunction).to.be.a('function');
@@ -85,7 +85,7 @@ describe('index/server/route.js', () => {
 
 			const responseWriter = sandbox.stub().returns(sandbox.stub());
 
-			const routeFunction = create(server as any, routeConfiguration, responseWriter);
+			const routeFunction = create(server as any, routeConfiguration, { responseWriter } as any);
 
 			const request = {
 				body: { something: 10 },
@@ -130,7 +130,7 @@ describe('index/server/route.js', () => {
 			const routeConfiguration = sandbox.stub();
 			const responseWriter = sandbox.stub();
 
-			const routeFunction = create(server as any, routeConfiguration, responseWriter);
+			const routeFunction = create(server as any, routeConfiguration as any, { responseWriter } as any);
 
 			const request = {
 				params: {
@@ -178,7 +178,7 @@ describe('index/server/route.js', () => {
 			const responseFunction = sandbox.stub();
 			const responseWriter = sandbox.stub().returns(responseFunction);
 
-			const routeFunction = create(server as any, routeConfiguration, responseWriter);
+			const routeFunction = create(server as any, routeConfiguration, { responseWriter } as any);
 
 			const request = {
 				params: {
@@ -229,7 +229,7 @@ describe('index/server/route.js', () => {
 
 			const responseFunction = sandbox.stub();
 			const responseWriter = sandbox.stub().returns(responseFunction);
-			const routeFunction = create(server as any, routeConfiguration, responseWriter);
+			const routeFunction = create(server as any, routeConfiguration, { responseWriter } as any);
 
 			const request = {
 				params: {

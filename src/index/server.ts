@@ -24,10 +24,11 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { Type } from 'avsc/types';
 import { EventEmitter } from 'events';
-import express from 'express';
+import express, { IRouterHandler } from 'express';
 import _ from 'lodash';
-import { IServerOptions, Publisher } from '..';
+import { IOrizuruRequest, IOrizuruResponse, IServerOptions, ITransportConfig, Publisher } from '..';
 import { create as createRoute } from './server/route';
 import * as ROUTE_METHOD from './server/routeMethod';
 import RouteValidator from './validator/route';
@@ -35,6 +36,20 @@ import ServerValidator from './validator/server';
 
 const Router = express.Router;
 const PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
+
+export interface IRouteOptions {
+	method: string;
+	endpoint: string;
+	middleware: any;
+	pathMapper: (schemaNamespace: string) => string;
+	responseWriter: (server: Server) => (error: Error | undefined, request: IOrizuruRequest, response: IOrizuruResponse) => void;
+	schema: any;
+	transportConfig?: ITransportConfig;
+}
+
+export interface IValidatedRouteOptions extends IRouteOptions {
+	schema: Type;
+}
 
 /**
  * The Server for creating routes in a web dyno based on Avro schemas.
@@ -58,8 +73,8 @@ export default class Server extends EventEmitter {
 	private readonly publisher: Publisher;
 	private readonly server: express.Express;
 	private readonly validator: RouteValidator;
-	private readonly routerConfiguration: any;
-	private readonly routeConfiguration: any;
+	private readonly routerConfiguration: { [s: string]: express.Router };
+	private readonly routeConfiguration: { [s: string]: { [s: string]: Type } };
 
 	/**
 	 * Constructs a new 'Server'.
@@ -103,19 +118,19 @@ export default class Server extends EventEmitter {
 	/**
 	 * Adds a 'route' to the server.
 	 */
-	public addRoute(config: any) {
+	public addRoute(options: IRouteOptions) {
 
-		// Validate the route configuration.
-		this.validator.validate(config);
+		// Validate the route options.
+		const validatedOptions = this.validator.validate(options);
 
-		// Now we know the configuration is valid, add the route.
-		const schema = config.schema;
-		const responseWriter = config.responseWriter;
-		const fullSchemaName = schema.name;
+		// Now we know the options are valid, add the route.
+		const schema = validatedOptions.schema;
+		const responseWriter = validatedOptions.responseWriter;
+		const fullSchemaName = schema.name as string;
 		const schemaNameParts = fullSchemaName.split('.');
 		const schemaNamespace = _.initial(schemaNameParts).join('.');
 		const schemaName = _.last(schemaNameParts) as string;
-		const apiEndpoint = config.endpoint + config.pathMapper(schemaNamespace);
+		const apiEndpoint = validatedOptions.endpoint + validatedOptions.pathMapper(schemaNamespace);
 
 		let routeConfiguration = this.routeConfiguration[apiEndpoint];
 		let router = this.routerConfiguration[apiEndpoint];
@@ -129,7 +144,7 @@ export default class Server extends EventEmitter {
 			router = Router();
 
 			// Apply middlewares.
-			_.each(config.middleware, (middleware) => {
+			_.each(validatedOptions.middleware, (middleware) => {
 				router.use(middleware);
 			});
 
@@ -152,7 +167,7 @@ export default class Server extends EventEmitter {
 		this.info(`Adding route: ${fullSchemaName}.`);
 
 		// Add the router method.
-		router[config.method](PARAMETER_API_SCHEMA_ENDPOINT, createRoute(this, routeConfiguration, responseWriter, config.transportConfig));
+		(router as any)[validatedOptions.method](PARAMETER_API_SCHEMA_ENDPOINT, createRoute(this, routeConfiguration, options));
 
 		return this;
 

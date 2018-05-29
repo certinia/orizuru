@@ -65,8 +65,22 @@ export interface IServerOptions {
 }
 
 export interface ITransport {
+
+	/**
+	 * Publishes a message.
+	 */
 	publish: (options: ITransportPublishOptions) => Promise<any>;
+
+	/**
+	 * Subscribes to a message queue.
+	 */
 	subscribe: (options: ITransportSubscribeOptions) => Promise<any>;
+
+	/**
+	 * Closes the transport gracefully.
+	 */
+	close: () => Promise<any>;
+
 }
 
 export interface ITransportPublishOptions {
@@ -87,18 +101,21 @@ export interface ITransportConfig {
 
 export interface IHandlerOptions {
 	schema: Type;
-	handler: any;
+	handler: (message: IOrizuruMessage) => Promise<any>;
 	config: {
 		eventName?: string
 	};
 }
 
 export interface IPublisherOptions {
-	context: any;
-	message: any;
+	message: IOrizuruMessage;
 	schema: Type;
-	handler: any;
-	config: {
+	config?: {
 		eventName?: string
 	};
+}
+
+export interface IOrizuruMessage {
+	message: any;
+	context?: any;
 }

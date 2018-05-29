@@ -119,7 +119,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/transport/transport.ts#L37">index/transport/transport.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/transport/transport.ts#L38">index/transport/transport.ts:38</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -128,7 +128,9 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><p>const transport = new Transport();</p>
+									<dd><pre><code class="lang-typescript">
+<span class="hljs-keyword">const</span> transport = <span class="hljs-keyword">new</span> Transport();
+</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -145,7 +147,7 @@
 					<div class="tsd-signature tsd-kind-icon">compiled<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Type</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/transport/transport.ts#L37">index/transport/transport.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/transport/transport.ts#L38">index/transport/transport.ts:38</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -156,13 +158,13 @@
 					<a name="decode" class="tsd-anchor"></a>
 					<h3>decode</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">decode<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Type</span>, content<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+						<li class="tsd-signature tsd-kind-icon">decode<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Type</span>, content<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/iorizurumessage.html" class="tsd-signature-type">IOrizuruMessage</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/transport/transport.ts#L58">index/transport/transport.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/transport/transport.ts#L62">index/transport/transport.ts:62</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -179,15 +181,7 @@
 									<h5>content: <span class="tsd-signature-type">Buffer</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter">
-									<h5>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Type</span></h5>
-								</li>
-								<li class="tsd-parameter">
-									<h5>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Type</span></h5>
-								</li>
-							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/iorizurumessage.html" class="tsd-signature-type">IOrizuruMessage</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -195,13 +189,13 @@
 					<a name="encode" class="tsd-anchor"></a>
 					<h3>encode</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">encode<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Type</span>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
+						<li class="tsd-signature tsd-kind-icon">encode<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Type</span>, __namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index/transport/transport.ts#L78">index/transport/transport.ts:78</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/40e3965/src/index/transport/transport.ts#L82">index/transport/transport.ts:82</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -215,11 +209,14 @@
 									<h5>schema: <span class="tsd-signature-type">Type</span></h5>
 								</li>
 								<li>
-									<h5>message: <span class="tsd-signature-type">any</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> context: <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									<h5>__namedParameters: <span class="tsd-signature-type">object</span></h5>
 									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
+										</li>
+										<li class="tsd-parameter">
+											<h5>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
+										</li>
 									</ul>
 								</li>
 							</ul>
@@ -281,17 +278,41 @@
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface">
+					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="../interfaces/ihandleroptions.html" class="tsd-kind-icon">IHandler<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="../interfaces/iorizuruoptions.html" class="tsd-kind-icon">IOrizuru<wbr>Options</a>
+						<a href="../interfaces/iorizurumessage.html" class="tsd-kind-icon">IOrizuru<wbr>Message</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="../interfaces/iorizururequest.html" class="tsd-kind-icon">IOrizuru<wbr>Request</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="../interfaces/iorizururesponse.html" class="tsd-kind-icon">IOrizuru<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/ipublisheroptions.html" class="tsd-kind-icon">IPublisher<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/irouteoptions.html" class="tsd-kind-icon">IRoute<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/iserveroptions.html" class="tsd-kind-icon">IServer<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/itransport.html" class="tsd-kind-icon">ITransport</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/itransportconfig.html" class="tsd-kind-icon">ITransport<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/itransportpublishoptions.html" class="tsd-kind-icon">ITransport<wbr>Publish<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="../interfaces/itransportsubscribeoptions.html" class="tsd-kind-icon">ITransport<wbr>Subscribe<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ivalidatedrouteoptions.html" class="tsd-kind-icon">IValidated<wbr>Route<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="../globals.html#delete" class="tsd-kind-icon">DELETE</a>

@@ -60,7 +60,7 @@ describe('index/validator/route.js', () => {
 
 			// When
 			// Then
-			expect(routeValidator.validate(config)).to.eql(config);
+			expect(routeValidator.validate(config as any)).to.eql(config);
 
 		});
 
@@ -77,7 +77,7 @@ describe('index/validator/route.js', () => {
 
 			// When
 			// Then
-			expect(routeValidator.validate(config)).to.eql(config);
+			expect(routeValidator.validate(config as any)).to.eql(config);
 
 		});
 
@@ -94,7 +94,7 @@ describe('index/validator/route.js', () => {
 
 			// When
 			// Then
-			expect(routeValidator.validate(config)).to.eql(config);
+			expect(routeValidator.validate(config as any)).to.eql(config);
 
 		});
 
@@ -112,7 +112,7 @@ describe('index/validator/route.js', () => {
 
 			// When
 			// Then
-			expect(routeValidator.validate(config)).to.eql(config);
+			expect(routeValidator.validate(config as any)).to.eql(config);
 
 		});
 
@@ -123,7 +123,7 @@ describe('index/validator/route.js', () => {
 				// Given
 				// When
 				// Then
-				expect(() => routeValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
+				expect(() => routeValidator.validate(undefined as any)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 
@@ -132,7 +132,7 @@ describe('index/validator/route.js', () => {
 				// Given
 				// When
 				// Then
-				expect(() => routeValidator.validate(2)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
+				expect(() => routeValidator.validate(2 as any)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
 
 			});
 
@@ -145,7 +145,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: endpoint is not a string\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: endpoint is not a string\.$/);
 
 			});
 
@@ -158,7 +158,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: method is not a string\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: method is not a string\.$/);
 
 			});
 
@@ -171,7 +171,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: method must be one of the following options: delete,get,head,options,patch,post,put,trace\. Got invalid\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: method must be one of the following options: delete,get,head,options,patch,post,put,trace\. Got invalid\.$/);
 
 			});
 
@@ -184,7 +184,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: middleware is not an array\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: middleware is not an array\.$/);
 
 			});
 
@@ -197,7 +197,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: middleware\[0\] is not a function\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: middleware\[0\] is not a function\.$/);
 
 			});
 
@@ -208,7 +208,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
 
 			});
 
@@ -221,7 +221,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
 
 			});
 
@@ -234,7 +234,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
 
 			});
 
@@ -249,7 +249,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
 
 			});
 
@@ -262,7 +262,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
 
 			});
 
@@ -276,7 +276,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: responseWriter is not a function\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: responseWriter is not a function\.$/);
 
 			});
 
@@ -291,7 +291,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: pathMapper is not a function\.$/);
+				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: pathMapper is not a function\.$/);
 
 			});
 
@@ -309,7 +309,7 @@ describe('index/validator/route.js', () => {
 				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 			};
 
-			const validatedConfig = routeValidator.validate(config);
+			const validatedConfig = routeValidator.validate(config as any);
 
 			const server = {
 				error: sandbox.stub()
@@ -323,7 +323,7 @@ describe('index/validator/route.js', () => {
 			};
 
 			// When
-			validatedConfig.responseWriter(server)('error', request, response);
+			validatedConfig.responseWriter(server as any)('error' as any, request as any, response as any);
 
 			// Then
 			expect(response.status).to.have.been.calledOnce;
@@ -340,7 +340,7 @@ describe('index/validator/route.js', () => {
 				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 			};
 
-			const validatedConfig = routeValidator.validate(config);
+			const validatedConfig = routeValidator.validate(config as any);
 
 			const server = {
 				error: sandbox.stub()
@@ -354,7 +354,7 @@ describe('index/validator/route.js', () => {
 			};
 
 			// When
-			validatedConfig.responseWriter(server)(undefined, request, response);
+			validatedConfig.responseWriter(server as any)(undefined, request as any, response as any);
 
 			// Then
 			expect(response.status).to.have.been.calledOnce;

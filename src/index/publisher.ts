@@ -105,13 +105,12 @@ export default class Publisher extends EventEmitter {
 		const schema = options.schema;
 		const message = options.message;
 		const eventName = options.schema.name;
-		const context = options.context;
 		const transportImplConfig = _.cloneDeep(this.transportConfig) || {};
 
 		let buffer;
 
 		try {
-			buffer = this.transport.encode(schema, message, context);
+			buffer = this.transport.encode(schema, message);
 		} catch (err) {
 
 			const errors = new Array<string>();

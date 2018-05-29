@@ -24,15 +24,17 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { Type } from 'avsc/types';
 import * as  HTTP_STATUS_CODE from 'http-status-codes';
-import { IOrizuruRequest, IOrizuruResponse, Server } from '../..';
+import { IOrizuruRequest, IOrizuruResponse, ITransportConfig, Server } from '../..';
+import { IRouteOptions } from '../server';
 
 /**
  * @private
  */
-export function create(server: Server, routeConfiguration: any, responseWriter: (server: Server) => (error: Error | undefined, request: IOrizuruRequest, response: IOrizuruResponse) => void, transportConfig?: any) {
+export function create(server: Server, routeConfiguration: { [s: string]: Type }, { responseWriter, transportConfig }: IRouteOptions) {
 
-	return (request: IOrizuruRequest, response: IOrizuruResponse) => {
+	return async (request: IOrizuruRequest, response: IOrizuruResponse) => {
 
 		const schemaName = request.params.schemaName;
 		const schema = routeConfiguration[schemaName];

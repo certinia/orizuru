@@ -32,6 +32,7 @@ import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 import { EventEmitter } from 'events';
+import { IPublisherOptions, IServerOptions } from '../../src';
 import Publisher from '../../src/index/publisher';
 import Transport from '../../src/index/transport/transport';
 import PublisherValidator from '../../src/index/validator/publisher';
@@ -57,7 +58,7 @@ describe('index/publisher.js', () => {
 
 			// When
 			// Then
-			expect(() => new Publisher({})).to.throw(/^Missing required object parameter: transport\.$/g);
+			expect(() => new Publisher({} as IServerOptions)).to.throw(/^Missing required object parameter: transport\.$/g);
 
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
@@ -76,7 +77,7 @@ describe('index/publisher.js', () => {
 			};
 
 			// When
-			const publisher = new Publisher(config);
+			const publisher = new Publisher(config as any);
 
 			// Then
 			expect(publisher).to.be.an.instanceof(EventEmitter);
@@ -101,17 +102,19 @@ describe('index/publisher.js', () => {
 				}
 			};
 
-			const publisher = new Publisher(config);
+			const publisher = new Publisher(config as any);
 
 			const message = {
-				context: {
-					user: {
-						username: 'test@test.com'
-					}
-				},
 				message: {
-					first: 'First',
-					last: 'Last'
+					context: {
+						user: {
+							username: 'test@test.com'
+						}
+					},
+					message: {
+						first: 'First',
+						last: 'Last'
+					}
 				},
 				schema: avsc.Type.forSchema({
 					fields: [
@@ -132,8 +135,7 @@ describe('index/publisher.js', () => {
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
-					expect(Transport.prototype.encode).to.have.been.calledWith(
-						message.schema, message.message, message.context);
+					expect(Transport.prototype.encode).to.have.been.calledWith(message.schema, message.message);
 					expect(publisher.info).to.have.been.calledOnce;
 					expect(publisher.info).to.have.been.calledWith('Published com.example.FullName event.');
 					expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
@@ -157,11 +159,11 @@ describe('index/publisher.js', () => {
 					}
 				};
 
-				const publisher = new Publisher(config);
+				const publisher = new Publisher(config as any);
 
 				// When
 				// Then
-				expect(() => publisher.publish(undefined)).to.throw(/^Missing required object parameter\.$/);
+				expect(() => publisher.publish({} as IPublisherOptions)).to.throw(/^Missing required object parameter\.$/);
 				expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
 
 			});
@@ -170,6 +172,7 @@ describe('index/publisher.js', () => {
 
 				// Given
 				sandbox.stub(PublisherValidator.prototype, 'validate');
+				sandbox.stub(Transport.prototype, 'encode').throws(new Error('encoding error'));
 
 				const config = {
 					transport: {
@@ -179,7 +182,9 @@ describe('index/publisher.js', () => {
 				};
 
 				const publishMessage = {
-					message: 'test',
+					message: {
+						message: 'test'
+					},
 					schema: avsc.Type.forSchema({
 						fields: [
 							{ name: 'first', type: 'string' },
@@ -191,13 +196,13 @@ describe('index/publisher.js', () => {
 					})
 				};
 
-				const publisher = new Publisher(config);
+				const publisher = new Publisher(config as any);
 
 				sandbox.spy(publisher, 'error');
 
 				// When
 				// Then
-				expect(() => publisher.publish(publishMessage)).to.throw(/^Error encoding message for schema \(com.example.FullName\):\ninvalid value \(test\) for path \(\) it should be of type \(record\)$/);
+				expect(() => publisher.publish(publishMessage)).to.throw('Error encoding message for schema (com.example.FullName):\ninvalid value (undefined) for path (first) it should be of type (string)\ninvalid value (undefined) for path (last) it should be of type (string)');
 				expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
 				expect(publisher.error).to.have.been.calledOnce;
 
@@ -220,8 +225,10 @@ describe('index/publisher.js', () => {
 
 				const publishMessage = {
 					message: {
-						first: 'Test',
-						last: 'Tester'
+						message: {
+							first: 'Test',
+							last: 'Tester'
+						}
 					},
 					schema: avsc.Type.forSchema({
 						fields: [
@@ -234,7 +241,7 @@ describe('index/publisher.js', () => {
 					})
 				};
 
-				const publisher = new Publisher(config);
+				const publisher = new Publisher(config as any);
 
 				sandbox.spy(publisher, 'error');
 

@@ -57,8 +57,12 @@
 				"--timeout",
 				"999999",
 				"--colors",
-				"--recursive",
-				"${workspaceRoot}/test"
+				"--require",
+				"ts-node/register",
+				"--watch-extensions",
+				"ts",
+				"${workspaceRoot}/test/**/*.test.ts",
+				"${workspaceRoot}/test/**/**/*.test.ts"
 			],
 			"internalConsoleOptions": "openOnSessionStart"
 		}

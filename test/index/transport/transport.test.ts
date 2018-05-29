@@ -126,7 +126,7 @@ describe('index/transport/transport.js', () => {
 
 			// When
 			// Then
-			expect(transport.encode(messageSchemaV1, messageV1, context)).to.eql(compiledTransportSchema.toBuffer(transportContentsV1));
+			expect(transport.encode(messageSchemaV1, { message: messageV1, context })).to.eql(compiledTransportSchema.toBuffer(transportContentsV1));
 
 		});
 

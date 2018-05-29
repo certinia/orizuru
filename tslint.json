@@ -22,7 +22,8 @@
 			}
 		],
 		"max-line-length": false,
-		"no-unused-expression": false
+		"no-unused-expression": false,
+		"no-any": false
 	},
 	"rulesDirectory": []
 }

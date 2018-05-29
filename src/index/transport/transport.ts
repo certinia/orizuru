@@ -27,6 +27,7 @@
 import { Type } from 'avsc';
 import { readJsonSync } from 'fs-extra';
 import { resolve } from 'path';
+import { IOrizuruMessage } from '../..';
 
 /**
  * Class used to encode and decode messages using the transport schema.
@@ -40,7 +41,10 @@ export default class Transport {
 	 * Creates a new 'Transport' which can then be used to encode and decode messages.
 	 *
 	 * @example
+	 * ``` typescript
+	 *
 	 * const transport = new Transport();
+	 * ```
 	 */
 	constructor() {
 
@@ -55,7 +59,7 @@ export default class Transport {
 	/**
 	 * Decode a message using the transport schema.
 	 */
-	public decode(schema: Type, content: Buffer) {
+	public decode(schema: Type, content: Buffer): IOrizuruMessage {
 
 		const decompiledTransportObject: any = this.compiledSchema.fromBuffer(content);
 
@@ -75,9 +79,9 @@ export default class Transport {
 	/**
 	 * Encode a message using the transport schema.
 	 */
-	public encode(schema: Type, message: any, context = {}) {
+	public encode(schema: Type, { context, message }: IOrizuruMessage) {
 
-		const compiledContextSchema = Type.forValue(context);
+		const compiledContextSchema = Type.forValue(context || {});
 		const transport = {
 			contextBuffer: compiledContextSchema.toBuffer(context),
 			contextSchema: JSON.stringify(compiledContextSchema),
