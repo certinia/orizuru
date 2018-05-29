@@ -171,7 +171,7 @@ describe('index/validator/route.js', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: method must be one of the following options: checkout,copy,delete,get,head,lock,merge,mkactivity,mkcol,move,m-search,notify,options,patch,post,purge,put,report,search,subscribe,trace,unlock,unsubscribe\. Got invalid\.$/);
+				expect(() => routeValidator.validate(config)).to.throw(/^Invalid parameter: method must be one of the following options: delete,get,head,options,patch,post,put,trace\. Got invalid\.$/);
 
 			});
 

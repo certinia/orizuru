@@ -24,26 +24,13 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { Type } from 'avsc/types';
 import { EventEmitter } from 'events';
 import _ from 'lodash';
+import { IHandlerOptions, IServerOptions, ITransport, ITransportConfig, ITransportSubscribeOptions } from '..';
 import messageHandler from './handler/messageHandler';
 import HandlerValidator from './validator/handler';
 import ServerValidator from './validator/server';
-
-export interface IHandlerOptions {
-	transportConfig: any;
-	transport: {
-		subscribe: any
-	};
-}
-
-export interface IHandleOptions {
-	schema: any;
-	handler: any;
-	config: {
-		eventName?: string
-	};
-}
 
 /**
  * The Handler for consuming messages in a worker dyno created by {@link Server}.
@@ -61,14 +48,14 @@ export default class Handler extends EventEmitter {
 	 */
 	public static readonly INFO: string = 'info_event';
 
-	private readonly tranportConfig: any;
-	private readonly tranportImpl: any;
+	private readonly tranportConfig: ITransportConfig;
+	private readonly tranportImpl: (options: ITransportSubscribeOptions) => Promise<any>;
 	private readonly validator: HandlerValidator;
 
 	/**
 	 * Constructs a new 'Handler'.
 	 */
-	constructor(options: IHandlerOptions) {
+	constructor(options: IServerOptions) {
 
 		super();
 
@@ -105,7 +92,7 @@ export default class Handler extends EventEmitter {
 	 * }});
 	 * ```
 	 */
-	public handle(options: IHandleOptions) {
+	public handle(options: IHandlerOptions) {
 
 		try {
 			this.validator.validate(options);

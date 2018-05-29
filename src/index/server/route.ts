@@ -25,14 +25,14 @@
  */
 
 import * as  HTTP_STATUS_CODE from 'http-status-codes';
-import { IOrizuruRequest, Server } from '../..';
+import { IOrizuruRequest, IOrizuruResponse, Server } from '../..';
 
 /**
  * @private
  */
-export function create(server: Server, routeConfiguration: any, responseWriter: any, transportConfig?: any) {
+export function create(server: Server, routeConfiguration: any, responseWriter: (server: Server) => (error: Error | undefined, request: IOrizuruRequest, response: IOrizuruResponse) => void, transportConfig?: any) {
 
-	return (request: IOrizuruRequest, response: any) => {
+	return (request: IOrizuruRequest, response: IOrizuruResponse) => {
 
 		const schemaName = request.params.schemaName;
 		const schema = routeConfiguration[schemaName];
@@ -46,7 +46,8 @@ export function create(server: Server, routeConfiguration: any, responseWriter: 
 		if (!schema) {
 			const errorMsg = `No schema for '${schemaName}' found.`;
 			server.error(errorMsg);
-			return response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(errorMsg);
+			response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(errorMsg);
+			return;
 		}
 
 		return Promise.resolve(message)

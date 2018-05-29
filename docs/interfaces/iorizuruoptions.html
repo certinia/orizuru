@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IHandleOptions | @financialforcedev/orizuru</title>
+	<title>IOrizuruOptions | @financialforcedev/orizuru</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="ihandleoptions.html">IHandleOptions</a>
+					<a href="iorizuruoptions.html">IOrizuruOptions</a>
 				</li>
 			</ul>
-			<h1>Interface IHandleOptions</h1>
+			<h1>Interface IOrizuruOptions</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IHandleOptions</span>
+						<span class="target">IOrizuruOptions</span>
 					</li>
 				</ul>
 			</section>
@@ -78,54 +78,46 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
+						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ihandleoptions.html#config" class="tsd-kind-icon">config</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ihandleoptions.html#handler" class="tsd-kind-icon">handler</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ihandleoptions.html#schema" class="tsd-kind-icon">schema</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="iorizuruoptions.html#transport" class="tsd-kind-icon">transport</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="iorizuruoptions.html#transportconfig" class="tsd-kind-icon">transport<wbr>Config</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="config" class="tsd-anchor"></a>
-					<h3>config</h3>
-					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="transport" class="tsd-anchor"></a>
+					<h3>transport</h3>
+					<div class="tsd-signature tsd-kind-icon">transport<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/e8c1550/src/index/handler.ts#L43">index/handler.ts:43</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index.ts#L63">index.ts:63</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> event<wbr>Name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<h5>publish<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>subscribe<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
 							</li>
 						</ul>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="handler" class="tsd-anchor"></a>
-					<h3>handler</h3>
-					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="transportconfig" class="tsd-anchor"></a>
+					<h3>transport<wbr>Config</h3>
+					<div class="tsd-signature tsd-kind-icon">transport<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/e8c1550/src/index/handler.ts#L42">index/handler.ts:42</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="schema" class="tsd-anchor"></a>
-					<h3>schema</h3>
-					<div class="tsd-signature tsd-kind-icon">schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/e8c1550/src/index/handler.ts#L41">index/handler.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/85a4c55/src/index.ts#L62">index.ts:62</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -141,24 +133,99 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-class">
+						<a href="../classes/handler.html" class="tsd-kind-icon">Handler</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-private">
+						<a href="../classes/handlervalidator.html" class="tsd-kind-icon">Handler<wbr>Validator</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="../classes/publisher.html" class="tsd-kind-icon">Publisher</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-private">
+						<a href="../classes/publishervalidator.html" class="tsd-kind-icon">Publisher<wbr>Validator</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-private">
+						<a href="../classes/routevalidator.html" class="tsd-kind-icon">Route<wbr>Validator</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="../classes/server.html" class="tsd-kind-icon">Server</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-private">
+						<a href="../classes/servervalidator.html" class="tsd-kind-icon">Server<wbr>Validator</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-private">
+						<a href="../classes/transport.html" class="tsd-kind-icon">Transport</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="ihandleroptions.html" class="tsd-kind-icon">IHandler<wbr>Options</a>
+					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="ihandleoptions.html" class="tsd-kind-icon">IHandle<wbr>Options</a>
+					<li class="current tsd-kind-interface tsd-is-external">
+						<a href="iorizuruoptions.html" class="tsd-kind-icon">IOrizuru<wbr>Options</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ihandleoptions.html#config" class="tsd-kind-icon">config</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="iorizuruoptions.html#transport" class="tsd-kind-icon">transport</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ihandleoptions.html#handler" class="tsd-kind-icon">handler</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ihandleoptions.html#schema" class="tsd-kind-icon">schema</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="iorizuruoptions.html#transportconfig" class="tsd-kind-icon">transport<wbr>Config</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="iorizururequest.html" class="tsd-kind-icon">IOrizuru<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="iorizururesponse.html" class="tsd-kind-icon">IOrizuru<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="../globals.html#delete" class="tsd-kind-icon">DELETE</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="../globals.html#get" class="tsd-kind-icon">GET</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="../globals.html#head" class="tsd-kind-icon">HEAD</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="../globals.html#options" class="tsd-kind-icon">OPTIONS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="../globals.html#parameter_api_schema_endpoint" class="tsd-kind-icon">PARAMETER_<wbr>API_<wbr>SCHEMA_<wbr>ENDPOINT</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="../globals.html#patch" class="tsd-kind-icon">PATCH</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="../globals.html#post" class="tsd-kind-icon">POST</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="../globals.html#put" class="tsd-kind-icon">PUT</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="../globals.html#router" class="tsd-kind-icon">Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="../globals.html#trace" class="tsd-kind-icon">TRACE</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
+						<a href="../globals.html#compileschema" class="tsd-kind-icon">compile<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="../globals.html#create" class="tsd-kind-icon">create</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="../globals.html#messagehandler" class="tsd-kind-icon">message<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
+						<a href="../globals.html#parseschema" class="tsd-kind-icon">parse<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="../globals.html#validate" class="tsd-kind-icon">validate</a>
+					</li>
 				</ul>
 			</nav>
 		</div>

@@ -29,6 +29,7 @@ import * as schema from './shared/schema';
 
 /**
  * Validates handlers.
+ * @private
  */
 export default class HandlerValidator {
 

@@ -33,7 +33,8 @@
  * @see Publisher
  */
 
-import { Request } from 'express';
+import { Type } from 'avsc/types';
+import { Request, Response } from 'express';
 
 /**
  * Handler
@@ -52,4 +53,52 @@ export { default as Server } from './index/server';
 
 export interface IOrizuruRequest extends Request {
 	orizuru: any;
+}
+
+export interface IOrizuruResponse extends Response {
+	orizuru: any;
+}
+
+export interface IServerOptions {
+	transportConfig: ITransportConfig;
+	transport: ITransport;
+}
+
+export interface ITransport {
+	publish: (options: ITransportPublishOptions) => Promise<any>;
+	subscribe: (options: ITransportSubscribeOptions) => Promise<any>;
+}
+
+export interface ITransportPublishOptions {
+	buffer: Buffer;
+	config: any;
+	eventName: string | undefined;
+}
+
+export interface ITransportSubscribeOptions {
+	config: any;
+	eventName: string;
+	handler: any;
+}
+
+export interface ITransportConfig {
+	config?: any;
+}
+
+export interface IHandlerOptions {
+	schema: Type;
+	handler: any;
+	config: {
+		eventName?: string
+	};
+}
+
+export interface IPublisherOptions {
+	context: any;
+	message: any;
+	schema: Type;
+	handler: any;
+	config: {
+		eventName?: string
+	};
 }

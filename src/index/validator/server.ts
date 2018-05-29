@@ -25,44 +25,48 @@
  */
 
 import _ from 'lodash';
+import { IServerOptions } from '../..';
 
+/**
+ * @private
+ */
 export default class ServerValidator {
 
-	constructor(config: any) {
+	constructor(options: IServerOptions) {
 
-		if (!config) {
+		if (!options) {
 			throw new Error('Missing required object parameter.');
 		}
 
-		if (!_.isPlainObject(config)) {
-			throw new Error(`Invalid parameter: ${config} is not an object.`);
+		if (!_.isPlainObject(options)) {
+			throw new Error(`Invalid parameter: ${options} is not an object.`);
 		}
 
-		if (!config.transport) {
+		if (!options.transport) {
 			throw new Error('Missing required object parameter: transport.');
 		}
 
-		if (!_.isPlainObject(config.transport)) {
+		if (!_.isPlainObject(options.transport)) {
 			throw new Error('Invalid parameter: transport is not an object.');
 		}
 
-		if (!config.transport.publish) {
+		if (!options.transport.publish) {
 			throw new Error('Missing required function parameter: transport[publish].');
 		}
 
-		if (!_.isFunction(config.transport.publish)) {
+		if (!_.isFunction(options.transport.publish)) {
 			throw new Error('Invalid parameter: transport[publish] is not a function.');
 		}
 
-		if (!config.transport.subscribe) {
+		if (!options.transport.subscribe) {
 			throw new Error('Missing required function parameter: transport[subscribe].');
 		}
 
-		if (!_.isFunction(config.transport.subscribe)) {
+		if (!_.isFunction(options.transport.subscribe)) {
 			throw new Error('Invalid parameter: transport[subscribe] is not a function.');
 		}
 
-		return config;
+		return options;
 
 	}
 

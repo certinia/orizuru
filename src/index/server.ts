@@ -27,7 +27,7 @@
 import { EventEmitter } from 'events';
 import express from 'express';
 import _ from 'lodash';
-import { Publisher } from '..';
+import { IServerOptions, Publisher } from '..';
 import { create as createRoute } from './server/route';
 import * as ROUTE_METHOD from './server/routeMethod';
 import RouteValidator from './validator/route';
@@ -67,7 +67,7 @@ export default class Server extends EventEmitter {
 	 * @example
 	 * const server = new Server();
 	 */
-	constructor(config: any) {
+	constructor(options: IServerOptions) {
 
 		super();
 
@@ -75,14 +75,14 @@ export default class Server extends EventEmitter {
 
 		try {
 
-			// Validate the config
-			new ServerValidator(config);
+			// Validate the server options
+			new ServerValidator(options);
 
 			// Add the server
 			this.server = express();
 
 			// Add the publisher
-			this.publisher = new Publisher(config);
+			this.publisher = new Publisher(options);
 
 			// Define the router configuration for the server
 			this.routerConfiguration = {};

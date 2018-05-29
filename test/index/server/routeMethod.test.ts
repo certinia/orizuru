@@ -36,29 +36,14 @@ describe('index/server/routeMethod.js', () => {
 		// When
 		// Then
 		expect(routeMethod).to.contain.all.keys([
-			'CHECKOUT',
-			'COPY',
 			'DELETE',
 			'GET',
 			'HEAD',
-			'LOCK',
-			'MERGE',
-			'MKACTIVITY',
-			'MKCOL',
-			'MOVE',
-			'M_SEARCH',
-			'NOTIFY',
 			'OPTIONS',
 			'PATCH',
 			'POST',
-			'PURGE',
 			'PUT',
-			'REPORT',
-			'SEARCH',
-			'SUBSCRIBE',
-			'TRACE',
-			'UNLOCK',
-			'UNSUBSCRIBE'
+			'TRACE'
 		]);
 
 	});

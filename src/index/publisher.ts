@@ -26,6 +26,7 @@
 
 import { EventEmitter } from 'events';
 import _ from 'lodash';
+import { IPublisherOptions, IServerOptions, ITransportConfig, ITransportPublishOptions } from '..';
 import Transport from './transport/transport';
 import PublisherValidator from './validator/publisher';
 import ServerValidator from './validator/server';
@@ -47,18 +48,14 @@ export default class Publisher extends EventEmitter {
 	public static readonly INFO: string = 'info_event';
 
 	private readonly transport: Transport;
-	private readonly transportConfig: any;
-	private readonly transportImpl: (config: any) => Promise<any>;
+	private readonly transportConfig: ITransportConfig;
+	private readonly transportImpl: (options: ITransportPublishOptions) => Promise<any>;
 	private readonly validator: PublisherValidator;
 
 	/**
 	 * Constructs a new 'Publisher'.
-	 *
-	 * @param {Object} config - { transport [, transportConfig] }
-	 * @param {transport} config.transport - the transport object
-	 * @param {Object} config.transportConfig - config for the transport object
 	 */
-	constructor(config: any) {
+	constructor(options: IServerOptions) {
 
 		super();
 
@@ -67,12 +64,12 @@ export default class Publisher extends EventEmitter {
 		try {
 
 			// Validate the config
-			new ServerValidator(config);
+			new ServerValidator(options);
 
 			// Define the transport
 			this.transport = new Transport();
-			this.transportConfig = config.transportConfig;
-			this.transportImpl = config.transport.publish;
+			this.transportConfig = options.transportConfig;
+			this.transportImpl = options.transport.publish;
 
 			// Define the publisher validator
 			this.validator = new PublisherValidator();
@@ -94,21 +91,21 @@ export default class Publisher extends EventEmitter {
 	 * // publishes a message
 	 * publisher.publish({ schema, message, context });
 	 */
-	public publish(config: any) {
+	public publish(options: IPublisherOptions) {
 
 		// Validate the arguments.
 		try {
-			this.validator.validate(config);
+			this.validator.validate(options);
 		} catch (err) {
 			this.error(err);
 			throw err;
 		}
 
 		// Generate transport buffer.
-		const schema = config.schema;
-		const message = config.message;
-		const eventName = config.schema.name;
-		const context = config.context;
+		const schema = options.schema;
+		const message = options.message;
+		const eventName = options.schema.name;
+		const context = options.context;
 		const transportImplConfig = _.cloneDeep(this.transportConfig) || {};
 
 		let buffer;
@@ -121,7 +118,7 @@ export default class Publisher extends EventEmitter {
 
 			errors.push(`Error encoding message for schema (${eventName}):`);
 
-			schema.isValid(config.message, {
+			schema.isValid(options.message, {
 				errorHook: (path: any, value: any, type: any) => {
 					errors.push(`invalid value (${value}) for path (${path.join()}) it should be of type (${type.typeName})`);
 				}
@@ -132,7 +129,7 @@ export default class Publisher extends EventEmitter {
 
 		}
 
-		transportImplConfig.config = config.config || {};
+		transportImplConfig.config = options.config || {};
 		transportImplConfig.config.rawMessage = message;
 
 		// publish buffer on transport
