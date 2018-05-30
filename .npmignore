@@ -2,7 +2,7 @@
 .vscode
 
 coverage
-docs
+doc
 src
 test
 

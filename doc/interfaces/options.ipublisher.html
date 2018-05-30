@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IHandler | @financialforcedev/orizuru</title>
+	<title>IPublisher | @financialforcedev/orizuru</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -59,10 +59,10 @@
 					<a href="../modules/options.html">Options</a>
 				</li>
 				<li>
-					<a href="options.ihandler.html">IHandler</a>
+					<a href="options.ipublisher.html">IPublisher</a>
 				</li>
 			</ul>
-			<h1>Interface IHandler</h1>
+			<h1>Interface IPublisher</h1>
 		</div>
 	</div>
 </header>
@@ -73,7 +73,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IHandler</span>
+						<span class="target">IPublisher</span>
 					</li>
 				</ul>
 			</section>
@@ -84,9 +84,9 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.ihandler.html#config" class="tsd-kind-icon">config</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.ihandler.html#handler" class="tsd-kind-icon">handler</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.ihandler.html#schema" class="tsd-kind-icon">schema</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.ipublisher.html#config" class="tsd-kind-icon">config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.ipublisher.html#message" class="tsd-kind-icon">message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.ipublisher.html#schema" class="tsd-kind-icon">schema</a></li>
 							</ul>
 						</section>
 					</div>
@@ -96,52 +96,23 @@
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="config" class="tsd-anchor"></a>
-					<h3>config</h3>
-					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> config</h3>
+					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/2b7e542/src/index.ts#L106">index.ts:106</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a730999/src/index.ts#L98">index.ts:98</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> event<wbr>Name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
-							</li>
-						</ul>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="handler" class="tsd-anchor"></a>
-					<h3>handler</h3>
-					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<a name="message" class="tsd-anchor"></a>
+					<h3>message</h3>
+					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <a href="iorizurumessage.html" class="tsd-signature-type">IOrizuruMessage</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/2b7e542/src/index.ts#L105">index.ts:105</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a730999/src/index.ts#L96">index.ts:96</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><a href="iorizurumessage.html" class="tsd-signature-type">IOrizuruMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>message: <a href="iorizurumessage.html" class="tsd-signature-type">IOrizuruMessage</a></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="schema" class="tsd-anchor"></a>
@@ -149,7 +120,7 @@
 					<div class="tsd-signature tsd-kind-icon">schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Type</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/2b7e542/src/index.ts#L104">index.ts:104</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a730999/src/index.ts#L97">index.ts:97</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -177,27 +148,27 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+						<a href="options.ihandler.html" class="tsd-kind-icon">IHandler</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-is-external">
-						<a href="options.ihandler.html" class="tsd-kind-icon">IHandler</a>
+						<a href="options.ipublisher.html" class="tsd-kind-icon">IPublisher</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.ihandler.html#config" class="tsd-kind-icon">config</a>
+								<a href="options.ipublisher.html#config" class="tsd-kind-icon">config</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.ihandler.html#handler" class="tsd-kind-icon">handler</a>
+								<a href="options.ipublisher.html#message" class="tsd-kind-icon">message</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.ihandler.html#schema" class="tsd-kind-icon">schema</a>
+								<a href="options.ipublisher.html#schema" class="tsd-kind-icon">schema</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
-						<a href="options.ipublisher.html" class="tsd-kind-icon">IPublisher</a>
-					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
 						<a href="options.iserver.html" class="tsd-kind-icon">IServer</a>
 					</li>

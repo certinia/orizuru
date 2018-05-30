@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Transport | @financialforcedev/orizuru</title>
+	<title>ServerValidator | @financialforcedev/orizuru</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="transport.html">Transport</a>
+					<a href="servervalidator.html">ServerValidator</a>
 				</li>
 			</ul>
-			<h1>Class Transport</h1>
+			<h1>Class ServerValidator</h1>
 		</div>
 	</div>
 </header>
@@ -68,16 +68,13 @@
 		<div class="col-8 col-content">
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Class used to encode and decode messages using the transport schema.</p>
-					</div>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">Transport</span>
+						<span class="target">ServerValidator</span>
 					</li>
 				</ul>
 			</section>
@@ -88,20 +85,7 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="transport.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="transport.html#compiledschema" class="tsd-kind-icon">compiled<wbr>Schema</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Methods</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="transport.html#decode" class="tsd-kind-icon">decode</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="transport.html#encode" class="tsd-kind-icon">encode</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="servervalidator.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 					</div>
@@ -113,114 +97,22 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Transport<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="transport.html" class="tsd-signature-type">Transport</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Server<wbr>Validator<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/options.iserver.html" class="tsd-signature-type">IServer</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="servervalidator.html" class="tsd-signature-type">ServerValidator</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/2b7e542/src/index/transport/transport.ts#L38">index/transport/transport.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a730999/src/index/validator/server.ts#L33">index/validator/server.ts:33</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Creates a new &#39;Transport&#39; which can then be used to encode and decode messages.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>example</dt>
-									<dd><pre><code class="lang-typescript">
-<span class="hljs-keyword">const</span> transport = <span class="hljs-keyword">new</span> Transport();
-</code></pre>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-returns-title">Returns <a href="transport.html" class="tsd-signature-type">Transport</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="compiledschema" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> compiled<wbr>Schema</h3>
-					<div class="tsd-signature tsd-kind-icon">compiled<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Type</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/2b7e542/src/index/transport/transport.ts#L38">index/transport/transport.ts:38</a></li>
-						</ul>
-					</aside>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="decode" class="tsd-anchor"></a>
-					<h3>decode</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">decode<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Type</span>, content<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/iorizurumessage.html" class="tsd-signature-type">IOrizuruMessage</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/2b7e542/src/index/transport/transport.ts#L62">index/transport/transport.ts:62</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Decode a message using the transport schema.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>schema: <span class="tsd-signature-type">Type</span></h5>
-								</li>
-								<li>
-									<h5>content: <span class="tsd-signature-type">Buffer</span></h5>
+									<h5>options: <a href="../interfaces/options.iserver.html" class="tsd-signature-type">IServer</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/iorizurumessage.html" class="tsd-signature-type">IOrizuruMessage</a></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="encode" class="tsd-anchor"></a>
-					<h3>encode</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">encode<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Type</span>, __namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/2b7e542/src/index/transport/transport.ts#L82">index/transport/transport.ts:82</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Encode a message using the transport schema.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>schema: <span class="tsd-signature-type">Type</span></h5>
-								</li>
-								<li>
-									<h5>__namedParameters: <span class="tsd-signature-type">object</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter">
-											<h5>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Buffer</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="servervalidator.html" class="tsd-signature-type">ServerValidator</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -254,30 +146,21 @@
 					<li class=" tsd-kind-class">
 						<a href="server.html" class="tsd-kind-icon">Server</a>
 					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="servervalidator.html" class="tsd-kind-icon">Server<wbr>Validator</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-is-private">
-						<a href="transport.html" class="tsd-kind-icon">Transport</a>
+						<a href="servervalidator.html" class="tsd-kind-icon">Server<wbr>Validator</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="transport.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="transport.html#compiledschema" class="tsd-kind-icon">compiled<wbr>Schema</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="transport.html#decode" class="tsd-kind-icon">decode</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="transport.html#encode" class="tsd-kind-icon">encode</a>
+								<a href="servervalidator.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-class tsd-is-private">
+						<a href="transport.html" class="tsd-kind-icon">Transport</a>
+					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="../interfaces/iorizurumessage.html" class="tsd-kind-icon">IOrizuru<wbr>Message</a>
 					</li>
