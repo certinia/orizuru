@@ -25,14 +25,14 @@
  */
 
 import _ from 'lodash';
-import { IServerOptions } from '../..';
+import { Options } from '../..';
 
 /**
  * @private
  */
 export default class ServerValidator {
 
-	constructor(options: IServerOptions) {
+	constructor(options: Options.IServer) {
 
 		if (!options) {
 			throw new Error('Missing required object parameter.');

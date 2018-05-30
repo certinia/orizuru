@@ -35,7 +35,6 @@ import Transport from '../../../src/index/transport/transport';
 chai.use(sinonChai);
 
 const expect = chai.expect;
-const sandbox = sinon.createSandbox();
 
 describe('index/handler/messageHandler', () => {
 
@@ -45,12 +44,12 @@ describe('index/handler/messageHandler', () => {
 	beforeEach(() => {
 
 		server = {
-			error: sandbox.stub(),
-			info: sandbox.stub()
+			error: sinon.stub(),
+			info: sinon.stub()
 		};
 
 		config = {
-			handler: sandbox.stub(),
+			handler: sinon.stub(),
 			schema: avsc.Type.forSchema({
 				fields: [
 					{ name: 'first', type: 'string' },
@@ -65,13 +64,13 @@ describe('index/handler/messageHandler', () => {
 	});
 
 	afterEach(() => {
-		sandbox.restore();
+		sinon.restore();
 	});
 
 	it('should handle a message where the base handler resolves', async () => {
 
 		// Given
-		sandbox.stub(Transport.prototype, 'decode').returns('test');
+		sinon.stub(Transport.prototype, 'decode').returns('test');
 
 		config.handler.resolves();
 
@@ -90,7 +89,7 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler returns', async () => {
 
 		// Given
-		sandbox.stub(Transport.prototype, 'decode').returns('test');
+		sinon.stub(Transport.prototype, 'decode').returns('test');
 
 		config.handler.returns(null);
 
@@ -109,7 +108,7 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler rejects', async () => {
 
 		// Given
-		sandbox.stub(Transport.prototype, 'decode').returns('test');
+		sinon.stub(Transport.prototype, 'decode').returns('test');
 
 		const expectedError = new Error('Error');
 
@@ -131,7 +130,7 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler throws', async () => {
 
 		// Given
-		sandbox.stub(Transport.prototype, 'decode').returns('test');
+		sinon.stub(Transport.prototype, 'decode').returns('test');
 
 		const expectedError = new Error('Error');
 
@@ -154,7 +153,7 @@ describe('index/handler/messageHandler', () => {
 		// Given
 		const expectedError = new Error('Failed to decode message.');
 
-		sandbox.stub(Transport.prototype, 'decode').throws(expectedError);
+		sinon.stub(Transport.prototype, 'decode').throws(expectedError);
 
 		// When
 		messageHandler(server, config)(new Buffer('test'));

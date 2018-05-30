@@ -26,13 +26,12 @@
 
 import { Type } from 'avsc/types';
 import * as  HTTP_STATUS_CODE from 'http-status-codes';
-import { IOrizuruRequest, IOrizuruResponse, Server } from '../..';
-import { IRouteOptions } from '../server';
+import { IOrizuruRequest, IOrizuruResponse, Options, Server } from '../..';
 
 /**
  * @private
  */
-export function create(server: Server, routeConfiguration: { [s: string]: Type }, { responseWriter, transportConfig }: IRouteOptions) {
+export function create(server: Server, routeConfiguration: { [s: string]: Type }, { responseWriter, transportConfig }: Options.Route.IValidated) {
 
 	return async (request: IOrizuruRequest, response: IOrizuruResponse) => {
 

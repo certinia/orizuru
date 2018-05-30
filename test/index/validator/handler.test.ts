@@ -25,14 +25,10 @@
  */
 
 import avsc from 'avsc';
-import chai from 'chai';
+import { expect } from 'chai';
 import _ from 'lodash';
-import sinon from 'sinon';
-import sinonChai from 'sinon-chai';
 
 import HandlerValidator from '../../../src/index/validator/handler';
-
-const expect = chai.expect;
 
 describe('index/validator/handler.js', () => {
 

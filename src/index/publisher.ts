@@ -26,7 +26,7 @@
 
 import { EventEmitter } from 'events';
 import _ from 'lodash';
-import { IPublisherOptions, IServerOptions, ITransportConfig, ITransportPublishOptions } from '..';
+import { Options } from '..';
 import Transport from './transport/transport';
 import PublisherValidator from './validator/publisher';
 import ServerValidator from './validator/server';
@@ -48,14 +48,14 @@ export default class Publisher extends EventEmitter {
 	public static readonly INFO: string = 'info_event';
 
 	private readonly transport: Transport;
-	private readonly transportConfig: ITransportConfig;
-	private readonly transportImpl: (options: ITransportPublishOptions) => Promise<any>;
+	private readonly transportConfig: Options.Transport.IConfig;
+	private readonly transportImpl: (options: Options.Transport.IPublish) => Promise<any>;
 	private readonly validator: PublisherValidator;
 
 	/**
 	 * Constructs a new 'Publisher'.
 	 */
-	constructor(options: IServerOptions) {
+	constructor(options: Options.IServer) {
 
 		super();
 
@@ -91,7 +91,7 @@ export default class Publisher extends EventEmitter {
 	 * // publishes a message
 	 * publisher.publish({ schema, message, context });
 	 */
-	public publish(options: IPublisherOptions) {
+	public publish(options: Options.IPublisher) {
 
 		// Validate the arguments.
 		try {
@@ -104,7 +104,7 @@ export default class Publisher extends EventEmitter {
 		// Generate transport buffer.
 		const schema = options.schema;
 		const message = options.message;
-		const eventName = options.schema.name;
+		const eventName = options.schema.name as string;
 		const transportImplConfig = _.cloneDeep(this.transportConfig) || {};
 
 		let buffer;

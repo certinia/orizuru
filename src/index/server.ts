@@ -28,7 +28,7 @@ import { Type } from 'avsc/types';
 import { EventEmitter } from 'events';
 import express from 'express';
 import _ from 'lodash';
-import { IOrizuruRequest, IOrizuruResponse, IServerOptions, ITransportConfig, Publisher } from '..';
+import { Options, Publisher } from '..';
 import { create as createRoute } from './server/route';
 import * as ROUTE_METHOD from './server/routeMethod';
 import RouteValidator from './validator/route';
@@ -36,20 +36,6 @@ import ServerValidator from './validator/server';
 
 const Router = express.Router;
 const PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
-
-export interface IRouteOptions {
-	method: string;
-	endpoint: string;
-	middleware: any;
-	pathMapper: (schemaNamespace: string) => string;
-	responseWriter: (server: Server) => (error: Error | undefined, request: IOrizuruRequest, response: IOrizuruResponse) => void;
-	schema: any;
-	transportConfig?: ITransportConfig;
-}
-
-export interface IValidatedRouteOptions extends IRouteOptions {
-	schema: Type;
-}
 
 /**
  * The Server for creating routes in a web dyno based on Avro schemas.
@@ -82,7 +68,7 @@ export default class Server extends EventEmitter {
 	 * @example
 	 * const server = new Server();
 	 */
-	constructor(options: IServerOptions) {
+	constructor(options: Options.IServer) {
 
 		super();
 
@@ -118,7 +104,7 @@ export default class Server extends EventEmitter {
 	/**
 	 * Adds a 'route' to the server.
 	 */
-	public addRoute(options: IRouteOptions) {
+	public addRoute(options: Options.Route.IRaw) {
 
 		// Validate the route options.
 		const validatedOptions = this.validator.validate(options);

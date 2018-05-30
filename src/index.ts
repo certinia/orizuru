@@ -36,6 +36,8 @@
 import { Type } from 'avsc/types';
 import { Request, Response } from 'express';
 
+import { default as Server } from './index/server';
+
 /**
  * Handler
  */
@@ -59,22 +61,17 @@ export interface IOrizuruResponse extends Response {
 	orizuru: any;
 }
 
-export interface IServerOptions {
-	transportConfig: ITransportConfig;
-	transport: ITransport;
-}
-
 export interface ITransport {
 
 	/**
 	 * Publishes a message.
 	 */
-	publish: (options: ITransportPublishOptions) => Promise<any>;
+	publish: (options: Options.Transport.IPublish) => Promise<any>;
 
 	/**
 	 * Subscribes to a message queue.
 	 */
-	subscribe: (options: ITransportSubscribeOptions) => Promise<any>;
+	subscribe: (options: Options.Transport.ISubscribe) => Promise<any>;
 
 	/**
 	 * Closes the transport gracefully.
@@ -83,39 +80,70 @@ export interface ITransport {
 
 }
 
-export interface ITransportPublishOptions {
-	buffer: Buffer;
-	config: any;
-	eventName: string | undefined;
-}
-
-export interface ITransportSubscribeOptions {
-	config: any;
-	eventName: string;
-	handler: any;
-}
-
-export interface ITransportConfig {
-	config?: any;
-}
-
-export interface IHandlerOptions {
-	schema: Type;
-	handler: (message: IOrizuruMessage) => Promise<any>;
-	config: {
-		eventName?: string
-	};
-}
-
-export interface IPublisherOptions {
-	message: IOrizuruMessage;
-	schema: Type;
-	config?: {
-		eventName?: string
-	};
-}
-
 export interface IOrizuruMessage {
 	message: any;
 	context?: any;
+}
+
+export declare namespace Options {
+
+	export interface IServer {
+		transportConfig: Options.Transport.IConfig;
+		transport: ITransport;
+	}
+
+	export interface IPublisher {
+		message: IOrizuruMessage;
+		schema: Type;
+		config?: {
+			eventName?: string
+		};
+	}
+
+	export interface IHandler {
+		schema: Type;
+		handler: (message: IOrizuruMessage) => Promise<any>;
+		config: {
+			eventName?: string
+		};
+	}
+
+	export namespace Route {
+
+		export interface IRaw {
+			method: string;
+			endpoint: string;
+			middleware: any;
+			pathMapper: (schemaNamespace: string) => string;
+			responseWriter: (server: Server) => (error: Error | undefined, request: IOrizuruRequest, response: IOrizuruResponse) => void;
+			schema: any;
+			transportConfig?: Options.Transport.IConfig;
+		}
+
+		export interface IValidated extends IRaw {
+			schema: Type;
+		}
+
+	}
+
+	export namespace Transport {
+
+		export interface IConfig {
+			config?: any;
+		}
+
+		export interface IPublish {
+			buffer: Buffer;
+			config: any;
+			eventName: string;
+		}
+
+		export interface ISubscribe {
+			config: any;
+			eventName: string;
+			handler: any;
+		}
+
+	}
+
 }

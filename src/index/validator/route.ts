@@ -26,8 +26,8 @@
 
 import * as HTTP_STATUS_CODE from 'http-status-codes';
 import _ from 'lodash';
-import { IRouteOptions, IValidatedRouteOptions } from '../server';
-import * as ROUTE_METHOD from '../server/routeMethod';
+import { Options } from '../..';
+import * as RouteMethod from '../server/routeMethod';
 import * as schema from './shared/schema';
 
 /**
@@ -36,7 +36,7 @@ import * as schema from './shared/schema';
  */
 export default class RouteValidator {
 
-	public validate(config: IRouteOptions): IValidatedRouteOptions {
+	public validate(config: Options.Route.IRaw): Options.Route.IValidated {
 
 		if (!config) {
 			throw new Error('Missing required object parameter.');
@@ -55,15 +55,15 @@ export default class RouteValidator {
 		}
 
 		if (!config.method) {
-			config.method = ROUTE_METHOD.POST;
+			config.method = RouteMethod.POST;
 		}
 
 		if (!_.isString(config.method)) {
 			throw new Error('Invalid parameter: method is not a string.');
 		}
 
-		if (!_.find(_.values(ROUTE_METHOD), (value) => value === config.method)) {
-			throw new Error(`Invalid parameter: method must be one of the following options: ${_.values(ROUTE_METHOD)}. Got ${config.method}.`);
+		if (!_.find(_.values(RouteMethod), (value) => value === config.method)) {
+			throw new Error(`Invalid parameter: method must be one of the following options: ${_.values(RouteMethod)}. Got ${config.method}.`);
 		}
 
 		if (!config.middleware) {

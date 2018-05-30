@@ -26,7 +26,7 @@
 
 import { EventEmitter } from 'events';
 import _ from 'lodash';
-import { IHandlerOptions, IServerOptions, ITransportConfig, ITransportSubscribeOptions } from '..';
+import { Options } from '..';
 import messageHandler from './handler/messageHandler';
 import HandlerValidator from './validator/handler';
 import ServerValidator from './validator/server';
@@ -47,14 +47,14 @@ export default class Handler extends EventEmitter {
 	 */
 	public static readonly INFO: string = 'info_event';
 
-	private readonly tranportConfig: ITransportConfig;
-	private readonly tranportImpl: (options: ITransportSubscribeOptions) => Promise<any>;
+	private readonly tranportConfig: Options.Transport.IConfig;
+	private readonly tranportImpl: (options: Options.Transport.ISubscribe) => Promise<any>;
 	private readonly validator: HandlerValidator;
 
 	/**
 	 * Constructs a new 'Handler'.
 	 */
-	constructor(options: IServerOptions) {
+	constructor(options: Options.IServer) {
 
 		super();
 
@@ -91,7 +91,7 @@ export default class Handler extends EventEmitter {
 	 * }});
 	 * ```
 	 */
-	public handle(options: IHandlerOptions) {
+	public handle(options: Options.IHandler) {
 
 		try {
 			this.validator.validate(options);

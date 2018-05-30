@@ -25,13 +25,13 @@
  */
 
 import _ from 'lodash';
-import { Handler, IHandlerOptions } from '../../index';
+import { Handler, Options } from '../../index';
 import Transport from '../transport/transport';
 
 /**
  * @private
  */
-export default function messageHandler(server: Handler, { config, handler, schema }: IHandlerOptions) {
+export default function messageHandler(server: Handler, { config, handler, schema }: Options.IHandler) {
 
 	const eventName = _.get(config, 'eventName') || _.get(schema, 'name');
 	const transport = new Transport();

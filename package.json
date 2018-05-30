@@ -6,10 +6,10 @@
 	"types": "dist/index.d.ts",
 	"scripts": {
 		"build": "tsc",
-		"doc": "typedoc --out docs src/**/* --mode file",
+		"doc": "typedoc --ignoreCompilerErrors --out docs src/**/* --mode file",
 		"init-project": "cp run.properties local.run.properties && cp test.properties local.test.properties",
 		"prepare": "npm run build && cp src/index/transport/transport.avsc dist/index/transport",
-		"pretest": "tslint 'src/**/*.ts' 'test/**/*.ts'",
+		"pretest": "tslint -p tsconfig.json 'src/**/*.ts' 'test/**/*.ts'",
 		"test": "nyc mocha --require ts-node/register --watch-extensions ts test/**/*.test.ts test/**/**/*.test.ts"
 	},
 	"repository": {
@@ -38,12 +38,11 @@
 		"lodash": "4.17.10"
 	},
 	"devDependencies": {
-		"@financialforcedev/eslint-config": "4.0.0",
 		"@financialforcedev/orizuru-transport-rabbitmq": "3.2.1",
 		"@types/chai": "4.1.3",
 		"@types/chai-as-promised": "7.1.0",
 		"@types/mocha": "5.2.0",
-		"@types/sinon": "4.3.3",
+		"@types/sinon": "5.0.1",
 		"@types/sinon-chai": "2.7.32",
 		"chai": "4.1.2",
 		"chai-as-promised": "7.1.1",

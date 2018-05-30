@@ -47,7 +47,7 @@ describe('index/validator/server.js', () => {
 
 			// When
 			// Then
-			expect(new ServerValidator(config)).to.eql(config);
+			expect(new ServerValidator(config as any)).to.eql(config);
 
 		});
 
@@ -58,7 +58,7 @@ describe('index/validator/server.js', () => {
 				// Given
 				// When
 				// Then
-				expect(() => new ServerValidator(undefined)).to.throw(/^Missing required object parameter\.$/);
+				expect(() => new ServerValidator(undefined as any)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 
@@ -67,7 +67,7 @@ describe('index/validator/server.js', () => {
 				// Given
 				// When
 				// Then
-				expect(() => new ServerValidator(2)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
+				expect(() => new ServerValidator(2 as any)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
 
 			});
 
@@ -76,7 +76,7 @@ describe('index/validator/server.js', () => {
 				// Given
 				// When
 				// Then
-				expect(() => new ServerValidator({})).to.throw(/^Missing required object parameter: transport\.$/);
+				expect(() => new ServerValidator({} as any)).to.throw(/^Missing required object parameter: transport\.$/);
 
 			});
 
@@ -88,7 +88,7 @@ describe('index/validator/server.js', () => {
 				};
 				// When
 				// Then
-				expect(() => new ServerValidator(config)).to.throw(/^Invalid parameter: transport is not an object\.$/);
+				expect(() => new ServerValidator(config as any)).to.throw(/^Invalid parameter: transport is not an object\.$/);
 
 			});
 
@@ -101,7 +101,7 @@ describe('index/validator/server.js', () => {
 
 				// When
 				// Then
-				expect(() => new ServerValidator(config)).to.throw(/^Missing required function parameter: transport\[publish\]\.$/);
+				expect(() => new ServerValidator(config as any)).to.throw(/^Missing required function parameter: transport\[publish\]\.$/);
 
 			});
 
@@ -116,7 +116,7 @@ describe('index/validator/server.js', () => {
 
 				// When
 				// Then
-				expect(() => new ServerValidator(config)).to.throw(/^Invalid parameter: transport\[publish\] is not a function\.$/);
+				expect(() => new ServerValidator(config as any)).to.throw(/^Invalid parameter: transport\[publish\] is not a function\.$/);
 
 			});
 
@@ -131,7 +131,7 @@ describe('index/validator/server.js', () => {
 
 				// When
 				// Then
-				expect(() => new ServerValidator(config)).to.throw(/^Missing required function parameter: transport\[subscribe\]\.$/);
+				expect(() => new ServerValidator(config as any)).to.throw(/^Missing required function parameter: transport\[subscribe\]\.$/);
 
 			});
 
@@ -147,7 +147,7 @@ describe('index/validator/server.js', () => {
 
 				// When
 				// Then
-				expect(() => new ServerValidator(config)).to.throw(/^Invalid parameter: transport\[subscribe\] is not a function\.$/);
+				expect(() => new ServerValidator(config as any)).to.throw(/^Invalid parameter: transport\[subscribe\] is not a function\.$/);
 
 			});
 

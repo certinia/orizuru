@@ -39,7 +39,6 @@ chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 const expect = chai.expect;
-const sandbox = sinon.createSandbox();
 
 describe('index/handler', () => {
 
@@ -60,7 +59,7 @@ describe('index/handler', () => {
 	});
 
 	afterEach(() => {
-		sandbox.restore();
+		sinon.restore();
 	});
 
 	describe('constructor', () => {
@@ -79,7 +78,7 @@ describe('index/handler', () => {
 		it('should emit an error event if the configuration is invalid', () => {
 
 			// Given
-			sandbox.spy(EventEmitter.prototype, 'emit');
+			sinon.spy(EventEmitter.prototype, 'emit');
 
 			// When
 			// Then
@@ -98,14 +97,14 @@ describe('index/handler', () => {
 		it('should install the handler for a schema', () => {
 
 			// Given
-			mocks.config.transport.subscribe = sandbox.stub().resolves();
-			sandbox.stub(HandlerValidator.prototype, 'validate');
-			sandbox.spy(EventEmitter.prototype, 'emit');
+			mocks.config.transport.subscribe = sinon.stub().resolves();
+			sinon.stub(HandlerValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
 
 			const handler = new Handler(mocks.config);
 
 			const config = {
-				handler: sandbox.stub(),
+				handler: sinon.stub(),
 				message: {
 					first: 'First',
 					last: 'Last'
@@ -139,7 +138,7 @@ describe('index/handler', () => {
 			it('if no config is provided', () => {
 
 				// Given
-				sandbox.stub(HandlerValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
+				sinon.stub(HandlerValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
 				const handler = new Handler(mocks.config);
 

@@ -23,7 +23,12 @@
 		],
 		"max-line-length": false,
 		"no-unused-expression": false,
-		"no-any": false
+		"no-unused-variable": true,
+		"no-any": false,
+		"no-namespace": [
+			true,
+			"allow-declarations"
+		]
 	},
 	"rulesDirectory": []
 }
