@@ -130,7 +130,7 @@ describe('index/publisher.js', () => {
 
 			// When
 			// Then
-			return expect(publisher.publish(message))
+			return expect(publisher.publish(message as any))
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
@@ -204,7 +204,7 @@ describe('index/publisher.js', () => {
 
 				// When
 				// Then
-				return expect(publisher.publish(publishMessage))
+				return expect(publisher.publish(publishMessage as any))
 					.to.eventually.be.rejectedWith('Error encoding message for schema (com.example.FullName):\ninvalid value (undefined) for path (first) it should be of type (string)\ninvalid value (undefined) for path (last) it should be of type (string)')
 					.then(() => {
 						expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
@@ -253,7 +253,7 @@ describe('index/publisher.js', () => {
 
 				// When
 				// Then
-				return expect(publisher.publish(publishMessage))
+				return expect(publisher.publish(publishMessage as any))
 					.to.eventually.be.rejectedWith('Failed to publish message.')
 					.then(() => {
 						expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
