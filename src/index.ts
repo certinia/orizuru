@@ -64,14 +64,19 @@ export interface IOrizuruResponse extends Response {
 export interface ITransport {
 
 	/**
+	 * Connects to the transport layer.
+	 */
+	connect: (options: Options.Transport.IConnect) => Promise<boolean>;
+
+	/**
 	 * Publishes a message.
 	 */
-	publish: (options: Options.Transport.IPublish) => Promise<any>;
+	publish: (buffer: Buffer, options: Options.Transport.IPublish) => Promise<boolean>;
 
 	/**
 	 * Subscribes to a message queue.
 	 */
-	subscribe: (options: Options.Transport.ISubscribe) => Promise<any>;
+	subscribe: (handler: (content: Buffer) => Promise<void>, options: Options.Transport.ISubscribe) => Promise<void>;
 
 	/**
 	 * Closes the transport gracefully.
@@ -88,24 +93,20 @@ export interface IOrizuruMessage {
 export declare namespace Options {
 
 	export interface IServer {
-		transportConfig: Options.Transport.IConfig;
+		transportConfig: Options.Transport.IConnect;
 		transport: ITransport;
 	}
 
 	export interface IPublisher {
 		message: IOrizuruMessage;
 		schema: Type;
-		config?: {
-			eventName?: string
-		};
+		publishOptions: Options.Transport.IPublish;
 	}
 
 	export interface IHandler {
 		schema: Type;
 		handler: (message: IOrizuruMessage) => Promise<any>;
-		config: {
-			eventName?: string
-		};
+		subscribeOptions: Options.Transport.ISubscribe;
 	}
 
 	export namespace Route {
@@ -117,7 +118,7 @@ export declare namespace Options {
 			pathMapper: (schemaNamespace: string) => string;
 			responseWriter: (server: Server) => (error: Error | undefined, request: IOrizuruRequest, response: IOrizuruResponse) => void;
 			schema: any;
-			transportConfig?: Options.Transport.IConfig;
+			publishOptions?: Options.Transport.IPublish;
 		}
 
 		export interface IValidated extends IRaw {
@@ -128,20 +129,18 @@ export declare namespace Options {
 
 	export namespace Transport {
 
-		export interface IConfig {
-			config?: any;
+		export interface IConnect {
+			url: string;
 		}
 
 		export interface IPublish {
-			buffer: Buffer;
-			config: any;
-			eventName: string;
+			eventName?: string;
+			message?: any;
+			schema?: Type;
 		}
 
 		export interface ISubscribe {
-			config: any;
 			eventName: string;
-			handler: any;
 		}
 
 	}

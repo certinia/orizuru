@@ -1,7 +1,8 @@
-dist
-node_modules
 .nyc_output
 coverage
-*.sfdx
+dist
+node_modules
+
 local.*.properties
+
 *.tgz

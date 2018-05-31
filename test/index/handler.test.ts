@@ -26,12 +26,13 @@
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 import { EventEmitter } from 'events';
+import _ from 'lodash';
+
 import { Handler } from '../../src';
 import HandlerValidator from '../../src/index/validator/handler';
 
@@ -50,6 +51,7 @@ describe('index/handler', () => {
 
 		mocks.config = {
 			transport: {
+				connect: _.noop,
 				publish: _.noop,
 				subscribe: _.noop
 			},
@@ -144,8 +146,10 @@ describe('index/handler', () => {
 
 				// When
 				// Then
-				expect(() => handler.handle({} as any)).to.throw(/^Missing required object parameter\.$/);
-				expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
+				return expect(handler.handle({} as any)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/)
+					.then(() => {
+						expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
+					});
 
 			});
 

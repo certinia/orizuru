@@ -25,8 +25,7 @@
  */
 
 import { EventEmitter } from 'events';
-import _ from 'lodash';
-import { Options } from '..';
+import { ITransport, Options } from '..';
 import Transport from './transport/transport';
 import PublisherValidator from './validator/publisher';
 import ServerValidator from './validator/server';
@@ -48,8 +47,8 @@ export default class Publisher extends EventEmitter {
 	public static readonly INFO: string = 'info_event';
 
 	private readonly transport: Transport;
-	private readonly transportConfig: Options.Transport.IConfig;
-	private readonly transportImpl: (options: Options.Transport.IPublish) => Promise<any>;
+	private readonly transportConfig: Options.Transport.IConnect;
+	private readonly transportImpl: ITransport;
 	private readonly validator: PublisherValidator;
 
 	/**
@@ -69,7 +68,7 @@ export default class Publisher extends EventEmitter {
 			// Define the transport
 			this.transport = new Transport();
 			this.transportConfig = options.transportConfig;
-			this.transportImpl = options.transport.publish;
+			this.transportImpl = options.transport;
 
 			// Define the publisher validator
 			this.validator = new PublisherValidator();
@@ -91,7 +90,7 @@ export default class Publisher extends EventEmitter {
 	 * // publishes a message
 	 * publisher.publish({ schema, message, context });
 	 */
-	public publish(options: Options.IPublisher) {
+	public async publish(options: Options.IPublisher) {
 
 		// Validate the arguments.
 		try {
@@ -105,7 +104,10 @@ export default class Publisher extends EventEmitter {
 		const schema = options.schema;
 		const message = options.message;
 		const eventName = options.schema.name as string;
-		const transportImplConfig = _.cloneDeep(this.transportConfig) || {};
+
+		const publishOptions = options.publishOptions || {};
+		publishOptions.message = options.message;
+		publishOptions.schema = options.schema;
 
 		let buffer;
 
@@ -128,11 +130,10 @@ export default class Publisher extends EventEmitter {
 
 		}
 
-		transportImplConfig.config = options.config || {};
-		transportImplConfig.config.rawMessage = message;
+		await this.transportImpl.connect(this.transportConfig);
 
 		// publish buffer on transport
-		return this.transportImpl({ eventName, buffer, config: transportImplConfig })
+		return this.transportImpl.publish(buffer, publishOptions)
 			.then((result) => {
 				this.info(`Published ${schema.name} event.`);
 				return result;

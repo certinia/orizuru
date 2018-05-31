@@ -32,7 +32,6 @@ import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 import { EventEmitter } from 'events';
-import { IPublisherOptions, IServerOptions } from '../../src';
 import Publisher from '../../src/index/publisher';
 import Transport from '../../src/index/transport/transport';
 import PublisherValidator from '../../src/index/validator/publisher';
@@ -57,7 +56,7 @@ describe('index/publisher.js', () => {
 
 			// When
 			// Then
-			expect(() => new Publisher({} as IServerOptions)).to.throw(/^Missing required object parameter: transport\.$/g);
+			expect(() => new Publisher({} as any)).to.throw(/^Missing required object parameter: transport\.$/g);
 
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
@@ -96,6 +95,7 @@ describe('index/publisher.js', () => {
 
 			const config = {
 				transport: {
+					connect: sinon.stub().resolves(),
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
 				}
@@ -162,8 +162,10 @@ describe('index/publisher.js', () => {
 
 				// When
 				// Then
-				expect(() => publisher.publish({} as IPublisherOptions)).to.throw(/^Missing required object parameter\.$/);
-				expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+				return expect(publisher.publish({} as any)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/)
+					.then(() => {
+						expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+					});
 
 			});
 
@@ -175,6 +177,7 @@ describe('index/publisher.js', () => {
 
 				const config = {
 					transport: {
+						connect: sinon.stub().resolves(),
 						publish: sinon.stub().resolves(),
 						subscribe: sinon.stub().resolves()
 					}
@@ -201,9 +204,12 @@ describe('index/publisher.js', () => {
 
 				// When
 				// Then
-				expect(() => publisher.publish(publishMessage)).to.throw('Error encoding message for schema (com.example.FullName):\ninvalid value (undefined) for path (first) it should be of type (string)\ninvalid value (undefined) for path (last) it should be of type (string)');
-				expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
-				expect(publisher.error).to.have.been.calledOnce;
+				return expect(publisher.publish(publishMessage))
+					.to.eventually.be.rejectedWith('Error encoding message for schema (com.example.FullName):\ninvalid value (undefined) for path (first) it should be of type (string)\ninvalid value (undefined) for path (last) it should be of type (string)')
+					.then(() => {
+						expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+						expect(publisher.error).to.have.been.calledOnce;
+					});
 
 			});
 
@@ -217,6 +223,7 @@ describe('index/publisher.js', () => {
 
 				const config = {
 					transport: {
+						connect: sinon.stub().resolves(),
 						publish: sinon.stub().rejects(expectedError),
 						subscribe: sinon.stub().resolves()
 					}

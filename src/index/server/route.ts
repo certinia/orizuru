@@ -31,16 +31,16 @@ import { IOrizuruRequest, IOrizuruResponse, Options, Server } from '../..';
 /**
  * @private
  */
-export function create(server: Server, routeConfiguration: { [s: string]: Type }, { responseWriter, transportConfig }: Options.Route.IValidated) {
+export function create(server: Server, routeConfiguration: { [s: string]: Type }, { responseWriter, publishOptions }: Options.Route.IValidated) {
 
 	return async (request: IOrizuruRequest, response: IOrizuruResponse) => {
 
 		const schemaName = request.params.schemaName;
 		const schema = routeConfiguration[schemaName];
 		const message = {
-			config: transportConfig || {},
 			context: request.orizuru,
 			message: request.body,
+			options: publishOptions || {},
 			schema
 		};
 

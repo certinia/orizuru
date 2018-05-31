@@ -31,9 +31,9 @@ import Transport from '../transport/transport';
 /**
  * @private
  */
-export default function messageHandler(server: Handler, { config, handler, schema }: Options.IHandler) {
+export default function messageHandler(server: Handler, options: Options.IHandler) {
 
-	const eventName = _.get(config, 'eventName') || _.get(schema, 'name');
+	const eventName = _.get(options.subscribeOptions, 'eventName') || _.get(options.schema, 'name');
 	const transport = new Transport();
 
 	return async (content: Buffer) => {
@@ -41,8 +41,8 @@ export default function messageHandler(server: Handler, { config, handler, schem
 		server.info(`Handler received ${eventName} event.`);
 
 		try {
-			const decodedContent = transport.decode(schema, content);
-			await handler(decodedContent);
+			const decodedContent = transport.decode(options.schema, content);
+			await options.handler(decodedContent);
 		} catch (err) {
 			server.error(err);
 		}

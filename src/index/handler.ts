@@ -26,7 +26,7 @@
 
 import { EventEmitter } from 'events';
 import _ from 'lodash';
-import { Options } from '..';
+import { ITransport, Options } from '..';
 import messageHandler from './handler/messageHandler';
 import HandlerValidator from './validator/handler';
 import ServerValidator from './validator/server';
@@ -47,8 +47,8 @@ export default class Handler extends EventEmitter {
 	 */
 	public static readonly INFO: string = 'info_event';
 
-	private readonly tranportConfig: Options.Transport.IConfig;
-	private readonly tranportImpl: (options: Options.Transport.ISubscribe) => Promise<any>;
+	private readonly transportConfig: Options.Transport.IConnect;
+	private readonly transport: ITransport;
 	private readonly validator: HandlerValidator;
 
 	/**
@@ -66,8 +66,8 @@ export default class Handler extends EventEmitter {
 			new ServerValidator(options);
 
 			// Define the transport
-			this.tranportConfig = options.transportConfig;
-			this.tranportImpl = options.transport.subscribe;
+			this.transportConfig = options.transportConfig;
+			this.transport = options.transport;
 
 			// Define the handler validator
 			this.validator = new HandlerValidator();
@@ -91,7 +91,7 @@ export default class Handler extends EventEmitter {
 	 * }});
 	 * ```
 	 */
-	public handle(options: Options.IHandler) {
+	public async handle(options: Options.IHandler) {
 
 		try {
 			this.validator.validate(options);
@@ -100,19 +100,15 @@ export default class Handler extends EventEmitter {
 			throw err;
 		}
 
-		const eventName = _.get(options, 'config.eventName') || _.get(options, 'schema.name');
+		const eventName = _.get(options, 'subscribeOptions.eventName') || _.get(options, 'schema.name');
 		const handler = messageHandler(this, options);
-		const transportImplConfig = _.cloneDeep(this.tranportConfig);
-
-		transportImplConfig.config = options.config || {};
+		const subscribeOptions = options.subscribeOptions;
 
 		this.info(`Installing handler for ${eventName} events.`);
 
-		return this.tranportImpl({
-			config: transportImplConfig,
-			eventName,
-			handler
-		});
+		await this.transport.connect(this.transportConfig);
+
+		return this.transport.subscribe(handler, subscribeOptions);
 
 	}
 
