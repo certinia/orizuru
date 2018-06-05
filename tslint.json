@@ -21,6 +21,7 @@
 				"singleline": "never"
 			}
 		],
+		"interface-name": false,
 		"max-line-length": false,
 		"no-unused-expression": false,
 		"no-unused-variable": true,
