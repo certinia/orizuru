@@ -53,12 +53,20 @@ export { default as Publisher } from './index/publisher';
  */
 export { default as Server } from './index/server';
 
-export interface IOrizuruRequest extends Request {
-	orizuru: any;
-}
+declare global {
 
-export interface IOrizuruResponse extends Response {
-	orizuru: any;
+	namespace Express {
+
+		interface Request {
+			orizuru?: any;
+		}
+
+		interface Response {
+			orizuru?: any;
+		}
+
+	}
+
 }
 
 export interface ITransport {
@@ -116,7 +124,7 @@ export declare namespace Options {
 			endpoint: string;
 			middleware: any;
 			pathMapper: (schemaNamespace: string) => string;
-			responseWriter: (server: Server) => (error: Error | undefined, request: IOrizuruRequest, response: IOrizuruResponse) => void;
+			responseWriter: (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
 			schema: any;
 			publishOptions?: Options.Transport.IPublish;
 		}

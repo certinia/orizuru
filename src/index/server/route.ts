@@ -25,15 +25,17 @@
  */
 
 import { Type } from 'avsc/types';
+import { Request, Response } from 'express';
 import * as  HTTP_STATUS_CODE from 'http-status-codes';
-import { IOrizuruRequest, IOrizuruResponse, Options, Server } from '../..';
+
+import { Options, Server } from '../..';
 
 /**
  * @private
  */
 export function create(server: Server, routeConfiguration: { [s: string]: Type }, { responseWriter, publishOptions }: Options.Route.IValidated) {
 
-	return async (request: IOrizuruRequest, response: IOrizuruResponse) => {
+	return async (request: Request, response: Response) => {
 
 		const schemaName = request.params.schemaName;
 		const schema = routeConfiguration[schemaName];
