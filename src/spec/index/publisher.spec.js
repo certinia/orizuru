@@ -2,22 +2,22 @@
  * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification, 
+ * Redistribution and use in source and binary forms, with or without modification,
  *   are permitted provided that the following conditions are met:
  *
- * - Redistributions of source code must retain the above copyright notice, 
+ * - Redistributions of source code must retain the above copyright notice,
  *      this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, 
- *      this list of conditions and the following disclaimer in the documentation 
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
  *      and/or other materials provided with the distribution.
- * - Neither the name of the FinancialForce.com, inc nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software without 
+ * - Neither the name of the FinancialForce.com, inc nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
- *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
- *  THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+ *  THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
@@ -40,9 +40,7 @@ const
 
 	expect = chai.expect,
 
-	Publisher = require('../../lib/index/publisher'),
-
-	sandbox = sinon.sandbox.create();
+	Publisher = require('../../lib/index/publisher');
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -50,7 +48,7 @@ chai.use(sinonChai);
 describe('index/publisher.js', () => {
 
 	afterEach(() => {
-		sandbox.restore();
+		sinon.restore();
 	});
 
 	describe('constructor', () => {
@@ -58,7 +56,7 @@ describe('index/publisher.js', () => {
 		it('should emit an error event if the configuration is invalid', () => {
 
 			// Given
-			sandbox.spy(EventEmitter.prototype, 'emit');
+			sinon.spy(EventEmitter.prototype, 'emit');
 
 			// When
 			// Then
@@ -96,15 +94,15 @@ describe('index/publisher.js', () => {
 		it('should publish a message', () => {
 
 			// Given
-			sandbox.stub(PublisherValidator.prototype, 'validate');
-			sandbox.spy(EventEmitter.prototype, 'emit');
-			sandbox.spy(Transport.prototype, 'encode');
+			sinon.stub(PublisherValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
+			sinon.spy(Transport.prototype, 'encode');
 
 			const
 				config = {
 					transport: {
-						publish: sandbox.stub().resolves(),
-						subscribe: sandbox.stub().resolves()
+						publish: sinon.stub().resolves(),
+						subscribe: sinon.stub().resolves()
 					}
 				},
 				publisher = new Publisher(config),
@@ -129,7 +127,7 @@ describe('index/publisher.js', () => {
 					}
 				};
 
-			sandbox.spy(publisher, 'info');
+			sinon.spy(publisher, 'info');
 
 			// When
 			// Then
@@ -153,13 +151,13 @@ describe('index/publisher.js', () => {
 			it('if no config is provided', () => {
 
 				// Given
-				sandbox.stub(PublisherValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
+				sinon.stub(PublisherValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
 				const
 					config = {
 						transport: {
-							publish: sandbox.stub().resolves(),
-							subscribe: sandbox.stub().resolves()
+							publish: sinon.stub().resolves(),
+							subscribe: sinon.stub().resolves()
 						}
 					},
 					publisher = new Publisher(config);
@@ -174,13 +172,13 @@ describe('index/publisher.js', () => {
 			it('if the transport cannot be encoded', () => {
 
 				// Given
-				sandbox.stub(PublisherValidator.prototype, 'validate');
+				sinon.stub(PublisherValidator.prototype, 'validate');
 
 				const
 					config = {
 						transport: {
-							publish: sandbox.stub().resolves(),
-							subscribe: sandbox.stub().resolves()
+							publish: sinon.stub().resolves(),
+							subscribe: sinon.stub().resolves()
 						}
 					},
 					publishMessage = {
@@ -197,7 +195,7 @@ describe('index/publisher.js', () => {
 					},
 					publisher = new Publisher(config);
 
-				sandbox.spy(publisher, 'error');
+				sinon.spy(publisher, 'error');
 
 				// When
 				// Then
@@ -210,15 +208,15 @@ describe('index/publisher.js', () => {
 			it('if the publishing the message fails', () => {
 
 				// Given
-				sandbox.stub(PublisherValidator.prototype, 'validate');
-				sandbox.spy(EventEmitter.prototype, 'emit');
+				sinon.stub(PublisherValidator.prototype, 'validate');
+				sinon.spy(EventEmitter.prototype, 'emit');
 
 				const
 					expectedError = new Error('Failed to publish message.'),
 					config = {
 						transport: {
-							publish: sandbox.stub().rejects(expectedError),
-							subscribe: sandbox.stub().resolves()
+							publish: sinon.stub().rejects(expectedError),
+							subscribe: sinon.stub().resolves()
 						}
 					},
 					publishMessage = {
@@ -238,7 +236,7 @@ describe('index/publisher.js', () => {
 					},
 					publisher = new Publisher(config);
 
-				sandbox.spy(publisher, 'error');
+				sinon.spy(publisher, 'error');
 
 				// When
 				// Then

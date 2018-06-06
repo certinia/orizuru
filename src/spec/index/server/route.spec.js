@@ -2,22 +2,22 @@
  * Copyright (c) 2017-2018, FinancialForce.com, inc
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification, 
+ * Redistribution and use in source and binary forms, with or without modification,
  *   are permitted provided that the following conditions are met:
  *
- * - Redistributions of source code must retain the above copyright notice, 
+ * - Redistributions of source code must retain the above copyright notice,
  *      this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, 
- *      this list of conditions and the following disclaimer in the documentation 
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
  *      and/or other materials provided with the distribution.
- * - Neither the name of the FinancialForce.com, inc nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software without 
+ * - Neither the name of the FinancialForce.com, inc nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
- *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
- *  THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+ *  THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
@@ -36,9 +36,7 @@ const
 
 	expect = chai.expect,
 
-	route = require('../../../lib/index/server/route'),
-
-	sandbox = sinon.sandbox.create();
+	route = require('../../../lib/index/server/route');
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -46,7 +44,7 @@ chai.use(sinonChai);
 describe('index/server/route.js', () => {
 
 	afterEach(() => {
-		sandbox.restore();
+		sinon.restore();
 	});
 
 	describe('create', () => {
@@ -55,9 +53,9 @@ describe('index/server/route.js', () => {
 
 			// Given
 			const
-				server = sandbox.stub(),
-				routeConfiguration = sandbox.stub(),
-				responseWriter = sandbox.stub(),
+				server = sinon.stub(),
+				routeConfiguration = sinon.stub(),
+				responseWriter = sinon.stub(),
 
 				// When
 				routeFunction = route.create(server, routeConfiguration, responseWriter);
@@ -73,7 +71,7 @@ describe('index/server/route.js', () => {
 			const
 				server = {
 					publisher: {
-						publish: sandbox.stub().resolves()
+						publish: sinon.stub().resolves()
 					}
 				},
 				routeConfiguration = {
@@ -87,7 +85,7 @@ describe('index/server/route.js', () => {
 						]
 					})
 				},
-				responseWriter = sandbox.stub().returns(sandbox.stub()),
+				responseWriter = sinon.stub().returns(sinon.stub()),
 
 				routeFunction = route.create(server, routeConfiguration, responseWriter),
 
@@ -104,8 +102,8 @@ describe('index/server/route.js', () => {
 				},
 
 				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
+					status: sinon.stub().returnsThis(),
+					send: sinon.stub().returnsThis()
 				};
 
 			// When
@@ -128,10 +126,10 @@ describe('index/server/route.js', () => {
 			// Given
 			const
 				server = {
-					error: sandbox.stub()
+					error: sinon.stub()
 				},
-				routeConfiguration = sandbox.stub(),
-				responseWriter = sandbox.stub(),
+				routeConfiguration = sinon.stub(),
+				responseWriter = sinon.stub(),
 
 				routeFunction = route.create(server, routeConfiguration, responseWriter),
 
@@ -141,8 +139,8 @@ describe('index/server/route.js', () => {
 					}
 				},
 				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
+					status: sinon.stub().returnsThis(),
+					send: sinon.stub().returnsThis()
 				};
 
 			// When
@@ -161,7 +159,7 @@ describe('index/server/route.js', () => {
 				expectedError = new Error('Failed to publish message'),
 				server = {
 					publisher: {
-						publish: sandbox.stub().rejects(expectedError)
+						publish: sinon.stub().rejects(expectedError)
 					}
 				},
 				routeConfiguration = {
@@ -175,8 +173,8 @@ describe('index/server/route.js', () => {
 						]
 					})
 				},
-				responseFunction = sandbox.stub(),
-				responseWriter = sandbox.stub().returns(responseFunction),
+				responseFunction = sinon.stub(),
+				responseWriter = sinon.stub().returns(responseFunction),
 
 				routeFunction = route.create(server, routeConfiguration, responseWriter),
 
@@ -187,8 +185,8 @@ describe('index/server/route.js', () => {
 				},
 
 				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
+					status: sinon.stub().returnsThis(),
+					send: sinon.stub().returnsThis()
 				};
 
 			// When
@@ -210,7 +208,7 @@ describe('index/server/route.js', () => {
 				expectedError = new Error('Failed to publish message'),
 				server = {
 					publisher: {
-						publish: sandbox.stub().throws(expectedError)
+						publish: sinon.stub().throws(expectedError)
 					}
 				},
 				routeConfiguration = {
@@ -224,8 +222,8 @@ describe('index/server/route.js', () => {
 						]
 					})
 				},
-				responseFunction = sandbox.stub(),
-				responseWriter = sandbox.stub().returns(responseFunction),
+				responseFunction = sinon.stub(),
+				responseWriter = sinon.stub().returns(responseFunction),
 
 				routeFunction = route.create(server, routeConfiguration, responseWriter),
 
@@ -236,8 +234,8 @@ describe('index/server/route.js', () => {
 				},
 
 				response = {
-					status: sandbox.stub().returnsThis(),
-					send: sandbox.stub().returnsThis()
+					status: sinon.stub().returnsThis(),
+					send: sinon.stub().returnsThis()
 				};
 
 			// When
