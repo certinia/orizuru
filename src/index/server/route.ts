@@ -39,8 +39,10 @@ export function create(server: Server, routeConfiguration: { [s: string]: Type }
 		const schemaName = request.params.schemaName;
 		const schema = routeConfiguration[schemaName];
 		const message = {
-			context: request.orizuru,
-			message: request.body,
+			message: {
+				context: request.orizuru,
+				message: request.body
+			},
 			options: publishOptions || {},
 			schema
 		};

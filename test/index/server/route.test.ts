@@ -109,8 +109,10 @@ describe('index/server/route.js', () => {
 				.then(() => {
 					expect(responseWriter).to.have.been.calledOnce;
 					expect(server.getPublisher().publish).to.have.been.calledWith({
-						context: request.orizuru,
-						message: request.body,
+						message: {
+							context: request.orizuru,
+							message: request.body
+						},
 						options: {},
 						schema: routeConfiguration.test
 					});

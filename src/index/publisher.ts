@@ -86,9 +86,6 @@ export default class Publisher extends EventEmitter {
 	 * @example
 	 * // publishes a message
 	 * publisher.publish({ schema, message });
-	 * @example
-	 * // publishes a message
-	 * publisher.publish({ schema, message, context });
 	 */
 	public async publish(options: Options.IPublisher) {
 
