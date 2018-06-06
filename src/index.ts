@@ -60,11 +60,7 @@ declare global {
 	namespace Express {
 
 		interface Request {
-			orizuru?: any;
-		}
-
-		interface Response {
-			orizuru?: any;
+			orizuru?: Orizuru.Context;
 		}
 
 	}
@@ -77,6 +73,8 @@ declare global {
 		interface IPublisher { }
 
 		interface IHandler { }
+
+		interface Context { }
 
 		// These open interfaces may be extended in an application-specific manner via declaration merging.
 		namespace Transport {
@@ -131,13 +129,13 @@ export declare namespace Options {
 	export interface IPublisher extends Orizuru.IPublisher {
 		message: IOrizuruMessage;
 		schema: Type;
-		publishOptions: Options.Transport.IPublish;
+		publishOptions?: Options.Transport.IPublish;
 	}
 
 	export interface IHandler extends Orizuru.IHandler {
 		schema: Type;
 		handler: (message: IOrizuruMessage) => Promise<any>;
-		subscribeOptions: Options.Transport.ISubscribe;
+		subscribeOptions?: Options.Transport.ISubscribe;
 	}
 
 	export namespace Route {
@@ -171,7 +169,7 @@ export declare namespace Options {
 		}
 
 		export interface ISubscribe extends Orizuru.Transport.ISubscribe {
-			eventName: string;
+			eventName?: string;
 		}
 
 	}
