@@ -125,6 +125,8 @@ export default class Publisher extends EventEmitter {
 				}
 			});
 
+			errors.push(err.message);
+
 			this.error(errors.join('\n'));
 			throw new Error(errors.join('\n'));
 
