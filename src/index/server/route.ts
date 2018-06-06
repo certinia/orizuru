@@ -25,10 +25,9 @@
  */
 
 import { Type } from 'avsc/types';
-import { Request, Response } from 'express';
 import * as  HTTP_STATUS_CODE from 'http-status-codes';
 
-import { Options, Server } from '../..';
+import { Options, Request, Response, Server } from '../..';
 
 /**
  * @private
