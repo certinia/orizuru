@@ -71,6 +71,14 @@ declare global {
 
 	namespace Orizuru {
 
+		// These open interfaces may be extended in an application-specific manner via declaration merging.
+		interface IServer { }
+
+		interface IPublisher { }
+
+		interface IHandler { }
+
+		// These open interfaces may be extended in an application-specific manner via declaration merging.
 		namespace Transport {
 
 			interface IConnect { }
@@ -115,18 +123,18 @@ export interface IOrizuruMessage {
 
 export declare namespace Options {
 
-	export interface IServer {
+	export interface IServer extends Orizuru.IServer {
 		transportConfig: Options.Transport.IConnect;
 		transport: ITransport;
 	}
 
-	export interface IPublisher {
+	export interface IPublisher extends Orizuru.IPublisher {
 		message: IOrizuruMessage;
 		schema: Type;
 		publishOptions: Options.Transport.IPublish;
 	}
 
-	export interface IHandler {
+	export interface IHandler extends Orizuru.IHandler {
 		schema: Type;
 		handler: (message: IOrizuruMessage) => Promise<any>;
 		subscribeOptions: Options.Transport.ISubscribe;
