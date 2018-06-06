@@ -113,7 +113,7 @@ describe('index/server/route.js', () => {
 							context: request.orizuru,
 							message: request.body
 						},
-						options: {},
+						publishOptions: {},
 						schema: routeConfiguration.test
 					});
 				});

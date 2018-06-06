@@ -43,7 +43,7 @@ export function create(server: Server, routeConfiguration: { [s: string]: Type }
 				context: request.orizuru,
 				message: request.body
 			},
-			options: publishOptions || {},
+			publishOptions: publishOptions || {},
 			schema
 		};
 
