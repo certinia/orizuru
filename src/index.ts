@@ -69,6 +69,19 @@ declare global {
 
 	}
 
+	namespace Orizuru {
+
+		namespace Transport {
+
+			interface IConnect { }
+
+			interface IPublish { }
+
+			interface ISubscribe { }
+		}
+
+	}
+
 }
 
 export interface ITransport {
@@ -139,17 +152,17 @@ export declare namespace Options {
 
 	export namespace Transport {
 
-		export interface IConnect {
+		export interface IConnect extends Orizuru.Transport.IConnect {
 			url: string;
 		}
 
-		export interface IPublish {
+		export interface IPublish extends Orizuru.Transport.IPublish {
 			eventName?: string;
 			message?: any;
 			schema?: Type;
 		}
 
-		export interface ISubscribe {
+		export interface ISubscribe extends Orizuru.Transport.ISubscribe {
 			eventName: string;
 		}
 
