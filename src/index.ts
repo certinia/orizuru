@@ -53,6 +53,8 @@ export { default as Publisher } from './index/publisher';
  */
 export { default as Server } from './index/server';
 
+export { json, urlencoded } from 'express';
+
 declare global {
 
 	namespace Express {

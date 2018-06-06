@@ -34,7 +34,14 @@ import * as ROUTE_METHOD from './server/routeMethod';
 import RouteValidator from './validator/route';
 import ServerValidator from './validator/server';
 
+/**
+ * @private
+ */
 const Router = express.Router;
+
+/**
+ * @private
+ */
 const PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
 
 /**
