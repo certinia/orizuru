@@ -169,7 +169,7 @@ export declare namespace Options {
 		}
 
 		export interface ISubscribe extends Orizuru.Transport.ISubscribe {
-			eventName?: string;
+			eventName: string;
 		}
 
 	}
