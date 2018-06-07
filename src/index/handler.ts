@@ -102,7 +102,9 @@ export default class Handler extends EventEmitter {
 
 		const eventName = _.get(options, 'subscribeOptions.eventName') || _.get(options, 'schema.name');
 		const handler = messageHandler(this, options);
-		const subscribeOptions = options.subscribeOptions || {};
+		const subscribeOptions = options.subscribeOptions || {
+			eventName
+		};
 
 		this.info(`Installing handler for ${eventName} events.`);
 
