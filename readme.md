@@ -43,33 +43,37 @@ via your chosen transport layer implementation. POST bodies are automatically va
 of your events always receives valid input if it is invoked.
 
 ```typescript
-const
-	{ Server } = require('@financialforcedev/orizuru'),
-	...
-	serverInstance = new Server({ transport, transportConfig }),
 
-	schema: {
-		namespace: 'foo',
-		name: 'bar',
-		type: 'record',
-		fields: [
-			{ name: 'age', type: 'string' },
-			{ name: 'dob', type: 'string' }
-		]
+import { Server } from '@financialforcedev/orizuru';
+import { createTransport } from '@financialforcedev/orizuru-transport-rabbitmq';
+
+const schema = {
+	name: 'ageAndDob',
+	type: 'record',
+	fields: [
+		{ name: 'age', type: 'string' },
+		{ name: 'dob', type: 'string' }
+	]
+};
+
+const server = new Server({
+	transport: createTransport(),
+	transportConfig: {
+		url: 'amqp://localhost'
 	}
+});
 
-	middlewares = [],
+server.addRoute({
+	endpoint: '/api/path/',
+	schema
+})
 
-	endpoint = '/api/path/';
-
-serverInstance.addRoute({ schema, endpoint, middlewares });
-
-let expressServer = serverInstance.getServer();
+let expressServer = server.getServer();
 
 expressServer.listen(8080);
 ```
 
-As you can see from the above example, the ```getServer()``` method returns an express server, where you can add your own routes, etc, before listening to a port. This example would create a POST API for ```/api/path/ageAndDob```. The post body you send would be validated against the schema, requiring ```age``` and ```dob``` string fields in its JSON. If the validation succeeds, an event name passed to the transport layer will be the fully qualified name of the Avro schema type ```foo.bar```, along with an Avro serialised buffer of the POST body.
+In the above example, the ```getServer()``` method returns an express server, where you can add your own routes, etc, before listening to a port. This example would create a POST API for ```/api/path/ageAndDob```. The post body you send would be validated against the schema, requiring ```age``` and ```dob``` string fields in its JSON. If the validation succeeds, an event name passed to the transport layer will be the fully qualified name of the Avro schema type ```ageAndDob```, along with an Avro serialised buffer of the POST body.
 
 Additionally, if there is an object on the express request called ```orizuru```, e.g. ```request.orizuru```, this will also be serialized and added to the buffer as ```context```. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.
 

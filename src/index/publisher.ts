@@ -24,7 +24,9 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { Type } from 'avsc/types';
 import { EventEmitter } from 'events';
+
 import { ITransport, Options } from '..';
 import Transport from './transport/transport';
 import PublisherValidator from './validator/publisher';
@@ -98,13 +100,13 @@ export default class Publisher extends EventEmitter {
 		}
 
 		// Generate transport buffer.
-		const schema = options.schema;
+		const schema = options.schema as Type;
 		const message = options.message;
-		const eventName = options.schema.name as string;
+		const eventName = schema.name as string;
 
 		const publishOptions = options.publishOptions || {};
 		publishOptions.message = options.message;
-		publishOptions.schema = options.schema;
+		publishOptions.schema = schema;
 
 		let buffer;
 

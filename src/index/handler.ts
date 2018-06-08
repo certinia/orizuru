@@ -26,6 +26,7 @@
 
 import { EventEmitter } from 'events';
 import _ from 'lodash';
+
 import { ITransport, Options } from '..';
 import messageHandler from './handler/messageHandler';
 import HandlerValidator from './validator/handler';

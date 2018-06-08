@@ -24,8 +24,10 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { Type } from 'avsc/types';
 import * as HTTP_STATUS_CODE from 'http-status-codes';
 import _ from 'lodash';
+
 import { Options } from '../..';
 import * as RouteMethod from '../server/routeMethod';
 import SchemaValidator from './shared/schema';
@@ -93,7 +95,7 @@ export default class RouteValidator {
 					response.status(HTTP_STATUS_CODE.OK).send('Ok.');
 				}
 			},
-			schema: options.schema
+			schema: options.schema as Type
 		};
 
 		validatedOptions.endpoint = options.endpoint || validatedOptions.endpoint;

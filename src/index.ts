@@ -128,12 +128,12 @@ export declare namespace Options {
 
 	export interface IPublisher extends Orizuru.IPublisher {
 		message: IOrizuruMessage;
-		schema: Type;
+		schema: string | object | Type;
 		publishOptions?: Options.Transport.IPublish;
 	}
 
 	export interface IHandler extends Orizuru.IHandler {
-		schema: Type;
+		schema: string | object | Type;
 		handler: (message: IOrizuruMessage) => Promise<any>;
 		subscribeOptions?: Options.Transport.ISubscribe;
 	}
@@ -147,7 +147,7 @@ export declare namespace Options {
 			pathMapper?: (schemaNamespace: string) => string;
 			publishOptions?: Options.Transport.IPublish;
 			responseWriter?: (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
-			schema: any;
+			schema: string | object | Type;
 		}
 
 		export interface IValidated {
