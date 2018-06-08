@@ -127,81 +127,76 @@ expressServer.listen(<span class="hljs-number">8080</span>);
 				<p>Additionally, if there is an object on the express request called <code>orizuru</code>, e.g. <code>request.orizuru</code>, this will also be serialized and added to the buffer as <code>context</code>. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.</p>
 				<h3 id="publisher">Publisher</h3>
 				<p>The Orizuru Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.</p>
-				<pre><code class="lang-typescript"><span class="hljs-keyword">const</span>
-    { Publisher } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@financialforcedev/orizuru'</span>),
-    ...
-    publisherInstance = <span class="hljs-keyword">new</span> Publisher({ transport, transportConfig }),
+				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { Publisher, IOrizuruMessage } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
+<span class="hljs-keyword">import</span> { createTransport } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
 
-    schema = {
-        <span class="hljs-keyword">namespace</span>: <span class="hljs-string">'foo'</span>,
-        name: <span class="hljs-string">'bar'</span>,
-        <span class="hljs-keyword">type</span>: <span class="hljs-string">'record'</span>,
-        fields: [
-            { name: <span class="hljs-string">'age'</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">'string'</span> },
-            { name: <span class="hljs-string">'dob'</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">'string'</span> }
-        ]
+<span class="hljs-keyword">const</span> schema = {
+    <span class="hljs-keyword">namespace</span>: <span class="hljs-string">'foo'</span>,
+    name: <span class="hljs-string">'bar'</span>,
+    <span class="hljs-keyword">type</span>: <span class="hljs-string">'record'</span>,
+    fields: [
+        { name: <span class="hljs-string">'age'</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">'string'</span> },
+        { name: <span class="hljs-string">'dob'</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">'string'</span> }
+    ]
+};
+
+<span class="hljs-keyword">const</span> message: IOrizuruMessage = {
+    context: {
+        anything: <span class="hljs-string">'something untyped'</span>
     },
-
-    message = {
+    message: {
         age: <span class="hljs-string">'fifty'</span>,
         dob: <span class="hljs-string">'07/01/1991'</span>
-    },
+    }
+};
 
-    context = {
-        anything: <span class="hljs-string">'something untyped'</span>
-    };
+<span class="hljs-keyword">const</span> publisher = <span class="hljs-keyword">new</span> Publisher({
+    transport: createTransport(),
+    transportConfig: {
+        url: <span class="hljs-string">'amqp://localhost'</span>
+    }
+});
 
-<span class="hljs-keyword">return</span> publisherInstance.publish({ schema, message, context }); <span class="hljs-comment">//promise</span>
+publisher.publish({ schema, message });
 </code></pre>
-				<p>This example publishes an event named &#39;foo.bar&#39; with the <code>message</code> described. The <code>message</code> is validated against the <code>schema</code>. The <code>context</code> object is unvalidated and can contain anything.</p>
+				<p>This example publishes an event named &#39;foo.bar&#39; with the <code>message</code> described. The <code>message</code> part is validated against the <code>schema</code>. The <code>context</code> object is unvalidated and can contain anything.</p>
 				<h3 id="handler">Handler</h3>
-				<p>The handler handles messages published by the <code>Server</code> or <code>Publisher</code>. It requires a schema name and a callback.</p>
+				<p>The handler handles messages published by the <code>Server</code> or <code>Publisher</code>. It requires a schema name and a handler.</p>
 				<p><strong>NOTE:</strong> The supplied callback to this handler should <strong>always</strong> handle errors.
 				This means it should never <code>throw</code> an exception, and any <code>promise</code> it returns should always have a <code>catch</code> block. Any errors thrown / rejecting promises returned will be <strong>swallowed</strong>.</p>
-				<pre><code class="lang-javascript"><span class="hljs-keyword">const</span>
-    { Handler } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@financialforcedev/orizuru'</span>),
-    ...
-    handlerInstance = <span class="hljs-keyword">new</span> Handler({ transport, transportConfig }),
+				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { Handler, IOrizuruMessage } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
+<span class="hljs-keyword">import</span> { createTransport } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
 
-    schema1 = {
-        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'foo'</span>,
-        <span class="hljs-attr">name</span>: <span class="hljs-string">'bar'</span>,
-        <span class="hljs-attr">type</span>: <span class="hljs-string">'record'</span>,
-        <span class="hljs-attr">fields</span>: [
-            { <span class="hljs-attr">name</span>: <span class="hljs-string">'age'</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">'string'</span> },
-            { <span class="hljs-attr">name</span>: <span class="hljs-string">'dob'</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">'string'</span> }
-        ]
-    },
-    schema2 = {
-        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'foo'</span>,
-        <span class="hljs-attr">name</span>: <span class="hljs-string">'test'</span>,
-        <span class="hljs-attr">type</span>: <span class="hljs-string">'record'</span>,
-        <span class="hljs-attr">fields</span>: [
-            { <span class="hljs-attr">name</span>: <span class="hljs-string">'age'</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">'string'</span> },
-            { <span class="hljs-attr">name</span>: <span class="hljs-string">'dob'</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">'string'</span> }
-        ]
-    },
+<span class="hljs-keyword">const</span> schema = {
+    <span class="hljs-keyword">namespace</span>: <span class="hljs-string">'foo'</span>,
+    name: <span class="hljs-string">'bar'</span>,
+    <span class="hljs-keyword">type</span>: <span class="hljs-string">'record'</span>,
+    fields: [
+        { name: <span class="hljs-string">'age'</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">'string'</span> },
+        { name: <span class="hljs-string">'dob'</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">'string'</span> }
+    ]
+};
 
-    callback1 = <span class="hljs-function">(<span class="hljs-params">{ message, context }</span>) =&gt;</span> {
-        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'handling messages from the server API'</span>);
-        <span class="hljs-built_in">console</span>.log(message);
-        <span class="hljs-built_in">console</span>.log(context);
-    },
+<span class="hljs-keyword">const</span> handler = <span class="hljs-keyword">async</span> ({ message, context }: IOrizuruMessage) =&gt; {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'handling messages from the server API'</span>);
+    <span class="hljs-built_in">console</span>.log(message);
+    <span class="hljs-built_in">console</span>.log(context);
+}
 
-    callback2 = <span class="hljs-function">(<span class="hljs-params">{ message, context }</span>) =&gt;</span> {
-        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'handling messages from the publisher event'</span>);
-        <span class="hljs-built_in">console</span>.log(message);
-        <span class="hljs-built_in">console</span>.log(context);
-    };
+<span class="hljs-keyword">const</span> handlerInstance = <span class="hljs-keyword">new</span> Handler({
+    transport: createTransport(),
+    transportConfig: {
+        url: <span class="hljs-string">'amqp://localhost'</span>
+    }
+})
 
-<span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.all([
-    handlerInstance.handle({ <span class="hljs-attr">schema</span>: schema1, <span class="hljs-attr">callback</span>: callback1 }),
-    handlerInstance.handle({ <span class="hljs-attr">schema</span>: schema2, <span class="hljs-attr">callback</span>: callback2 })
-]); <span class="hljs-comment">// 'handle' returns a promise</span>
+<span class="hljs-built_in">Promise</span>.all([
+    handlerInstance.handle({ schema, handler })
+]);
 </code></pre>
 				<p>The handler can handle multiple events, with callbacks for each wired in. The input to the callback <code>{ message, context }</code> is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middlewares or supplied to the publish function.</p>
 				<h2 id="api-docs">API Docs</h2>
-				<p>Click to view <a href="http://htmlpreview.github.io/?https://github.com/financialforcedev/orizuru/blob/master/doc/index.html">JSDoc API documentation</a>.</p>
+				<p>Click to view <a href="http://htmlpreview.github.io/?https://github.com/financialforcedev/orizuru/blob/master/doc/index.html">TSDoc API documentation</a>.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

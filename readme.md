@@ -82,83 +82,78 @@ Additionally, if there is an object on the express request called ```orizuru```,
 The Orizuru Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.
 
 ```typescript
-const
-	{ Publisher } = require('@financialforcedev/orizuru'),
-	...
-	publisherInstance = new Publisher({ transport, transportConfig }),
+import { Publisher, IOrizuruMessage } from '@financialforcedev/orizuru';
+import { createTransport } from '@financialforcedev/orizuru-transport-rabbitmq';
 
-	schema = {
-		namespace: 'foo',
-		name: 'bar',
-		type: 'record',
-		fields: [
-			{ name: 'age', type: 'string' },
-			{ name: 'dob', type: 'string' }
-		]
+const schema = {
+	namespace: 'foo',
+	name: 'bar',
+	type: 'record',
+	fields: [
+		{ name: 'age', type: 'string' },
+		{ name: 'dob', type: 'string' }
+	]
+};
+
+const message: IOrizuruMessage = {
+	context: {
+		anything: 'something untyped'
 	},
-
-	message = {
+	message: {
 		age: 'fifty',
 		dob: '07/01/1991'
-	},
+	}
+};
 
-	context = {
-		anything: 'something untyped'
-	};
+const publisher = new Publisher({
+	transport: createTransport(),
+	transportConfig: {
+		url: 'amqp://localhost'
+	}
+});
 
-return publisherInstance.publish({ schema, message, context }); //promise
+publisher.publish({ schema, message });
 ```
 
-This example publishes an event named 'foo.bar' with the ```message``` described. The ```message``` is validated against the ```schema```. The ```context``` object is unvalidated and can contain anything.
+This example publishes an event named 'foo.bar' with the ```message``` described. The ```message``` part is validated against the ```schema```. The ```context``` object is unvalidated and can contain anything.
 
 ### Handler
 
-The handler handles messages published by the ```Server``` or ```Publisher```. It requires a schema name and a callback.
+The handler handles messages published by the ```Server``` or ```Publisher```. It requires a schema name and a handler.
 
 **NOTE:** The supplied callback to this handler should **always** handle errors.
 This means it should never ```throw``` an exception, and any ```promise``` it returns should always have a ```catch``` block. Any errors thrown / rejecting promises returned will be **swallowed**.
 
-```javascript
-const
-	{ Handler } = require('@financialforcedev/orizuru'),
-	...
-	handlerInstance = new Handler({ transport, transportConfig }),
+```typescript
+import { Handler, IOrizuruMessage } from '@financialforcedev/orizuru';
+import { createTransport } from '@financialforcedev/orizuru-transport-rabbitmq';
 
-	schema1 = {
-		namespace: 'foo',
-		name: 'bar',
-		type: 'record',
-		fields: [
-			{ name: 'age', type: 'string' },
-			{ name: 'dob', type: 'string' }
-		]
-	},
-	schema2 = {
-		namespace: 'foo',
-		name: 'test',
-		type: 'record',
-		fields: [
-			{ name: 'age', type: 'string' },
-			{ name: 'dob', type: 'string' }
-		]
-	},
+const schema = {
+	namespace: 'foo',
+	name: 'bar',
+	type: 'record',
+	fields: [
+		{ name: 'age', type: 'string' },
+		{ name: 'dob', type: 'string' }
+	]
+};
 
-	callback1 = ({ message, context }) => {
-		console.log('handling messages from the server API');
-		console.log(message);
-		console.log(context);
-	},
-	
-	callback2 = ({ message, context }) => {
-		console.log('handling messages from the publisher event');
-		console.log(message);
-		console.log(context);
-	};
+const handler = async ({ message, context }: IOrizuruMessage) => {
+	console.log('handling messages from the server API');
+	console.log(message);
+	console.log(context);
+}
 
-return Promise.all([
-	handlerInstance.handle({ schema: schema1, callback: callback1 }),
-	handlerInstance.handle({ schema: schema2, callback: callback2 })
-]); // 'handle' returns a promise
+const handlerInstance = new Handler({
+	transport: createTransport(),
+	transportConfig: {
+		url: 'amqp://localhost'
+	}
+})
+
+Promise.all([
+	handlerInstance.handle({ schema, handler })
+]);
 ```
 
 The handler can handle multiple events, with callbacks for each wired in. The input to the callback ```{ message, context }``` is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middlewares or supplied to the publish function.
@@ -166,4 +161,4 @@ The handler can handle multiple events, with callbacks for each wired in. The in
 
 ## API Docs
 
-Click to view [JSDoc API documentation](http://htmlpreview.github.io/?https://github.com/financialforcedev/orizuru/blob/master/doc/index.html).
+Click to view [TSDoc API documentation](http://htmlpreview.github.io/?https://github.com/financialforcedev/orizuru/blob/master/doc/index.html).
