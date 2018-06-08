@@ -75,37 +75,37 @@
 				<h2 id="usage">Usage</h2>
 				<h3 id="configuration">Configuration</h3>
 				<p>All Orizuru classes require reference to a transport layer. The transport layer governs how messages are published and
-				subscribed to. We inject this as a class constructor configuration parameter.</p>
-				<pre><code class="lang-javascript">
-<span class="hljs-keyword">const</span>
-    { Server } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@financialforcedev/orizuru'</span>),
-    transport = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>),
+				subscribed. We inject this as a class constructor configuration parameter.</p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { Server } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
+<span class="hljs-keyword">import</span> { createTransport } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
 
-    transportConfig = {
-        <span class="hljs-attr">cloudamqpUrl</span>: <span class="hljs-string">'amqp://localhost'</span>
-    },
+<span class="hljs-keyword">const</span> server = <span class="hljs-keyword">new</span> Server({
+    transport: createTransport(),
+    transportConfig: {
+        url: <span class="hljs-string">'amqp://localhost'</span>
+    }
+});
 
-serverInstance = <span class="hljs-keyword">new</span> Server({ transport, transportConfig });
 </code></pre>
 				<p>The example above shows how to use our RabbitMQ transport layer with a <code>Server</code>. The same method is used with our other classes.
 					The <code>transportConfig</code> is passed through to the transport layer via its function APIs, in the case of the RabbitMQ transport, we require
-				the <code>cloudamqpUrl</code> field.</p>
+				the <code>url</code> field.</p>
 				<h3 id="server">Server</h3>
 				<p>A Orizuru Server allows you combine Avro schemas with API POST endpoints to create webhooks that validate API post body content and publish events
 					via your chosen transport layer implementation. POST bodies are automatically validated against the Avro schema they are paired with, so the consumer
 				of your events always receives valid input if it is invoked.</p>
-				<pre><code class="lang-javascript"><span class="hljs-keyword">const</span>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">const</span>
     { Server } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@financialforcedev/orizuru'</span>),
     ...
     serverInstance = <span class="hljs-keyword">new</span> Server({ transport, transportConfig }),
 
-    <span class="hljs-attr">schema</span>: {
-        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'foo'</span>,
-        <span class="hljs-attr">name</span>: <span class="hljs-string">'bar'</span>,
-        <span class="hljs-attr">type</span>: <span class="hljs-string">'record'</span>,
-        <span class="hljs-attr">fields</span>: [
-            { <span class="hljs-attr">name</span>: <span class="hljs-string">'age'</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">'string'</span> },
-            { <span class="hljs-attr">name</span>: <span class="hljs-string">'dob'</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">'string'</span> }
+    schema: {
+        <span class="hljs-keyword">namespace</span>: <span class="hljs-string">'foo'</span>,
+        name: <span class="hljs-string">'bar'</span>,
+        <span class="hljs-keyword">type</span>: <span class="hljs-string">'record'</span>,
+        fields: [
+            { name: <span class="hljs-string">'age'</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">'string'</span> },
+            { name: <span class="hljs-string">'dob'</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">'string'</span> }
         ]
     }
 
@@ -249,6 +249,9 @@ expressServer.listen(<span class="hljs-number">8080</span>);
 					<li class=" tsd-kind-class tsd-is-private">
 						<a href="classes/routevalidator.html" class="tsd-kind-icon">Route<wbr>Validator</a>
 					</li>
+					<li class=" tsd-kind-class tsd-is-private">
+						<a href="classes/schemavalidator.html" class="tsd-kind-icon">Schema<wbr>Validator</a>
+					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/server.html" class="tsd-kind-icon">Server</a>
 					</li>
@@ -305,9 +308,6 @@ expressServer.listen(<span class="hljs-number">8080</span>);
 					</li>
 					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
 						<a href="globals.html#parseschema" class="tsd-kind-icon">parse<wbr>Schema</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#validate" class="tsd-kind-icon">validate</a>
 					</li>
 				</ul>
 			</nav>

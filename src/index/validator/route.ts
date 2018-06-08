@@ -28,7 +28,7 @@ import * as HTTP_STATUS_CODE from 'http-status-codes';
 import _ from 'lodash';
 import { Options } from '../..';
 import * as RouteMethod from '../server/routeMethod';
-import * as schema from './shared/schema';
+import SchemaValidator from './shared/schema';
 
 /**
  * Validates routes.
@@ -36,77 +36,73 @@ import * as schema from './shared/schema';
  */
 export default class RouteValidator {
 
-	public validate(config: Options.Route.IRaw): Options.Route.IValidated {
+	public validate(options: Options.Route.IRaw): Options.Route.IValidated {
 
-		if (!config) {
+		if (!options) {
 			throw new Error('Missing required object parameter.');
 		}
 
-		if (!_.isPlainObject(config)) {
-			throw new Error(`Invalid parameter: ${config} is not an object.`);
+		if (!_.isPlainObject(options)) {
+			throw new Error(`Invalid parameter: ${options} is not an object.`);
 		}
 
-		if (!config.endpoint) {
-			config.endpoint = '/';
-		}
-
-		if (!_.isString(config.endpoint)) {
+		if (options.endpoint && !_.isString(options.endpoint)) {
 			throw new Error('Invalid parameter: endpoint is not a string.');
 		}
 
-		if (!config.method) {
-			config.method = RouteMethod.POST;
-		}
-
-		if (!_.isString(config.method)) {
+		if (options.method && !_.isString(options.method)) {
 			throw new Error('Invalid parameter: method is not a string.');
 		}
 
-		if (!_.find(_.values(RouteMethod), (value) => value === config.method)) {
-			throw new Error(`Invalid parameter: method must be one of the following options: ${_.values(RouteMethod)}. Got ${config.method}.`);
+		if (options.method && !_.find(_.values(RouteMethod), (value) => value === options.method)) {
+			throw new Error(`Invalid parameter: method must be one of the following options: ${_.values(RouteMethod)}. Got ${options.method}.`);
 		}
 
-		if (!config.middleware) {
-			config.middleware = [];
-		}
-
-		if (!_.isArray(config.middleware)) {
+		if (options.middleware && !_.isArray(options.middleware)) {
 			throw new Error('Invalid parameter: middleware is not an array.');
 		}
 
-		_.each(config.middleware, (middleware, index) => {
+		_.each(options.middleware, (middleware, index) => {
 			if (!_.isFunction(middleware)) {
 				throw new Error(`Invalid parameter: middleware[${index}] is not a function.`);
 			}
 		});
 
-		if (!config.responseWriter) {
-			config.responseWriter = (server) => (error, request, response) => {
+		if (options.responseWriter && !_.isFunction(options.responseWriter)) {
+			throw new Error('Invalid parameter: responseWriter is not a function.');
+		}
+
+		if (options.pathMapper && !_.isFunction(options.pathMapper)) {
+			throw new Error('Invalid parameter: pathMapper is not a function.');
+		}
+
+		// Validate the schema
+		new SchemaValidator().validate(options);
+
+		const validatedOptions: Options.Route.IValidated = {
+			endpoint: '/',
+			method: RouteMethod.POST,
+			middleware: [],
+			pathMapper: (namespace: string) => namespace.replace(/\./g, '/'),
+			publishOptions: options.publishOptions,
+			responseWriter: (server) => (error, request, response) => {
 				if (error) {
 					server.error(error);
 					response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(error);
 				} else {
 					response.status(HTTP_STATUS_CODE.OK).send('Ok.');
 				}
-			};
-		}
+			},
+			schema: options.schema
+		};
 
-		if (!_.isFunction(config.responseWriter)) {
-			throw new Error('Invalid parameter: responseWriter is not a function.');
-		}
+		validatedOptions.endpoint = options.endpoint || validatedOptions.endpoint;
+		validatedOptions.method = options.method || validatedOptions.method;
+		validatedOptions.middleware = options.middleware || validatedOptions.middleware;
+		validatedOptions.pathMapper = options.pathMapper || validatedOptions.pathMapper;
+		validatedOptions.responseWriter = options.responseWriter || validatedOptions.responseWriter;
 
-		if (!config.pathMapper) {
-			config.pathMapper = (namespace: string) => namespace.replace(/\./g, '/');
-		}
-
-		if (!_.isFunction(config.pathMapper)) {
-			throw new Error('Invalid parameter: pathMapper is not a function.');
-		}
-
-		// Validate the schema
-		schema.validate(config);
-
-		return config;
+		return validatedOptions;
 	}
 
 }

@@ -17,24 +17,24 @@ npm install @financialforcedev/orizuru
 ### Configuration
 
 All Orizuru classes require reference to a transport layer. The transport layer governs how messages are published and 
-subscribed to. We inject this as a class constructor configuration parameter.
+subscribed. We inject this as a class constructor configuration parameter.
 
-```javascript
+```typescript
+import { Server } from '@financialforcedev/orizuru';
+import { createTransport } from '@financialforcedev/orizuru-transport-rabbitmq';
 
-const
-	{ Server } = require('@financialforcedev/orizuru'),
-	transport = require('@financialforcedev/orizuru-transport-rabbitmq'),
+const server = new Server({
+	transport: createTransport(),
+	transportConfig: {
+		url: 'amqp://localhost'
+	}
+});
 
-	transportConfig = {
-		cloudamqpUrl: 'amqp://localhost'
-	},
-
-serverInstance = new Server({ transport, transportConfig });
 ```
 
 The example above shows how to use our RabbitMQ transport layer with a ```Server```. The same method is used with our other classes.
 The ```transportConfig``` is passed through to the transport layer via its function APIs, in the case of the RabbitMQ transport, we require
-the ```cloudamqpUrl``` field.
+the ```url``` field.
 
 ### Server
 
@@ -42,7 +42,7 @@ A Orizuru Server allows you combine Avro schemas with API POST endpoints to crea
 via your chosen transport layer implementation. POST bodies are automatically validated against the Avro schema they are paired with, so the consumer
 of your events always receives valid input if it is invoked.
 
-```javascript
+```typescript
 const
 	{ Server } = require('@financialforcedev/orizuru'),
 	...

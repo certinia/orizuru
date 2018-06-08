@@ -24,19 +24,20 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import avsc from 'avsc';
 import chai from 'chai';
 import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
+import { Options } from '../../../src';
 import RouteValidator from '../../../src/index/validator/route';
+import SchemaValidator from '../../../src/index/validator/shared/schema';
 
 chai.use(sinonChai);
 
 const expect = chai.expect;
 
-describe('index/validator/route.js', () => {
+describe('index/validator/route.ts', () => {
 
 	let routeValidator: RouteValidator;
 
@@ -48,70 +49,27 @@ describe('index/validator/route.js', () => {
 		sinon.restore();
 	});
 
-	describe('constructor', () => {
+	describe('validate', () => {
 
-		it('should return the schema if it is valid (string format)', () => {
+		it('should return the schema if it is valid', () => {
 
 			// Given
-			const config = {
+			sinon.stub(SchemaValidator.prototype, 'validate');
+
+			const input: Options.Route.IRaw = {
 				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 			};
 
 			// When
+			const validated = routeValidator.validate(input);
+
 			// Then
-			expect(routeValidator.validate(config as any)).to.eql(config);
-
-		});
-
-		it('should return the schema if it is valid (JSON format)', () => {
-
-			// Given
-			const config = {
-				schema: {
-					fields: [],
-					name: 'com.example.FullName',
-					type: 'record'
-				}
-			};
-
-			// When
-			// Then
-			expect(routeValidator.validate(config as any)).to.eql(config);
-
-		});
-
-		it('should return the schema if it is valid (Compiled format)', () => {
-
-			// Given
-			const config = {
-				schema: avsc.Type.forSchema({
-					fields: [],
-					name: 'com.example.FullName',
-					type: 'record'
-				})
-			};
-
-			// When
-			// Then
-			expect(routeValidator.validate(config as any)).to.eql(config);
-
-		});
-
-		it('should return the schema if pathMapper is a function', () => {
-
-			// Given
-			const config = {
-				pathMapper: _.noop,
-				schema: avsc.Type.forSchema({
-					fields: [],
-					name: 'com.example.FullName',
-					type: 'record'
-				})
-			};
-
-			// When
-			// Then
-			expect(routeValidator.validate(config as any)).to.eql(config);
+			expect(validated.endpoint).to.eql('/');
+			expect(validated.method).to.eql('post');
+			expect(validated.middleware).to.eql([]);
+			expect(validated.pathMapper).to.be.a('function');
+			expect(validated.responseWriter).to.be.a('function');
+			expect(validated.schema).to.eql('{"name":"com.example.FullName","type":"record","fields":[]}');
 
 		});
 
@@ -200,71 +158,6 @@ describe('index/validator/route.js', () => {
 
 			});
 
-			it('if no schema is provided', () => {
-
-				// Given
-				const config = {};
-
-				// When
-				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
-
-			});
-
-			it('if the avro schema is invalid', () => {
-
-				// Given
-				const config = {
-					schema: 2
-				};
-
-				// When
-				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
-
-			});
-
-			it('if the avro schema JSON is invalid', () => {
-
-				// Given
-				const config = {
-					schema: '{"type":record","fields":[]}'
-				};
-
-				// When
-				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
-
-			});
-
-			it('if the avro schema is invalid', () => {
-
-				// Given
-				const config = {
-					schema: {
-						name: 'com.example.FullName'
-					}
-				};
-
-				// When
-				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
-
-			});
-
-			it('if the avro schema does not have a name property', () => {
-
-				// Given
-				const config = {
-					schema: '{"type":"record","fields":[]}'
-				};
-
-				// When
-				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
-
-			});
-
 			it('if the responseWriter is not a function', () => {
 
 				// Given
@@ -291,6 +184,19 @@ describe('index/validator/route.js', () => {
 				// When
 				// Then
 				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: pathMapper is not a function\.$/);
+
+			});
+
+			it('if the schema is invalid', () => {
+
+				// Given
+				sinon.stub(SchemaValidator.prototype, 'validate').throws(new Error('invalid schema'));
+
+				const config = {};
+
+				// When
+				// Then
+				expect(() => routeValidator.validate(config as any)).to.throw(/^invalid schema$/);
 
 			});
 

@@ -25,7 +25,7 @@
  */
 
 import _ from 'lodash';
-import * as schema from './shared/schema';
+import SchemaValidator from './shared/schema';
 
 /**
  * Validates handlers.
@@ -52,7 +52,7 @@ export default class HandlerValidator {
 		}
 
 		// Validate the schema
-		schema.validate(config);
+		new SchemaValidator().validate(config);
 
 		return config;
 

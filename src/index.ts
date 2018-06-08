@@ -34,7 +34,7 @@
  */
 
 import { Type } from 'avsc/types';
-import { Request, Response } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 
 import { default as Server } from './index/server';
 
@@ -141,16 +141,22 @@ export declare namespace Options {
 	export namespace Route {
 
 		export interface IRaw {
-			method: string;
-			endpoint: string;
-			middleware: any;
-			pathMapper: (schemaNamespace: string) => string;
-			responseWriter: (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
-			schema: any;
+			endpoint?: string;
+			method?: string;
+			middleware?: RequestHandler[];
+			pathMapper?: (schemaNamespace: string) => string;
 			publishOptions?: Options.Transport.IPublish;
+			responseWriter?: (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
+			schema: any;
 		}
 
-		export interface IValidated extends IRaw {
+		export interface IValidated {
+			endpoint: string;
+			method: string;
+			middleware: RequestHandler[];
+			pathMapper: (schemaNamespace: string) => string;
+			publishOptions?: Options.Transport.IPublish;
+			responseWriter: (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
 			schema: Type;
 		}
 

@@ -159,7 +159,7 @@ export default class Server extends EventEmitter {
 		this.info(`Adding route: ${fullSchemaName}.`);
 
 		// Add the router method.
-		(router as any)[validatedOptions.method](PARAMETER_API_SCHEMA_ENDPOINT, createRoute(this, routeConfiguration, options));
+		(router as any)[validatedOptions.method](PARAMETER_API_SCHEMA_ENDPOINT, createRoute(this, routeConfiguration, validatedOptions));
 
 		return this;
 

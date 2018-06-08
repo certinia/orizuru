@@ -37,7 +37,7 @@ chai.use(sinonChai);
 
 const expect = chai.expect;
 
-describe('index/server/route.js', () => {
+describe('index/server/route.ts', () => {
 
 	afterEach(() => {
 		sinon.restore();

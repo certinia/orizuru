@@ -59,27 +59,31 @@ function compileSchema(uncompiledSchema: any) {
  * Validates the Apache Avro schema.
  * @private
  */
-export function validate(config: any) {
+export default class SchemaValidator {
 
-	if (!config.schema) {
-		throw new Error('Missing required avro-schema parameter: schema.');
+	public validate(config: any) {
+
+		if (!config.schema) {
+			throw new Error('Missing required avro-schema parameter: schema.');
+		}
+
+		if (_.isString(config.schema)) {
+			const parsedSchema = parseSchema(config.schema);
+			config.schema = compileSchema(parsedSchema);
+		} else if (_.isPlainObject(config.schema)) {
+			config.schema = compileSchema(config.schema);
+		} else if (_.hasIn(config.schema, 'toJSON') && _.hasIn(config.schema, 'toBuffer')) {
+			// Already have a compiled schema
+		} else {
+			throw new Error(`Invalid Avro Schema. Unexpected value type: ${typeof config.schema}.`);
+		}
+
+		if (!config.schema.name) {
+			throw new Error('Missing required string parameter: schema[name].');
+		}
+
+		return config;
+
 	}
-
-	if (_.isString(config.schema)) {
-		const parsedSchema = parseSchema(config.schema);
-		config.schema = compileSchema(parsedSchema);
-	} else if (_.isPlainObject(config.schema)) {
-		config.schema = compileSchema(config.schema);
-	} else if (_.hasIn(config.schema, 'toJSON') && _.hasIn(config.schema, 'toBuffer')) {
-		// Already have a compiled schema
-	} else {
-		throw new Error(`Invalid Avro Schema. Unexpected value type: ${typeof config.schema}.`);
-	}
-
-	if (!config.schema.name) {
-		throw new Error('Missing required string parameter: schema[name].');
-	}
-
-	return config;
 
 }

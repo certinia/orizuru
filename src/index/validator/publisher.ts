@@ -25,7 +25,7 @@
  */
 
 import _ from 'lodash';
-import * as schema from './shared/schema';
+import SchemaValidator from './shared/schema';
 
 /**
  * Validate the publisher configuration.
@@ -44,7 +44,7 @@ export default class PublisherValidator {
 		}
 
 		// Validate the schema
-		schema.validate(config);
+		new SchemaValidator().validate(config);
 
 		return config;
 

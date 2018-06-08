@@ -31,7 +31,7 @@ import ServerValidator from '../../../src/index/validator/server';
 
 const expect = chai.expect;
 
-describe('index/validator/server.js', () => {
+describe('index/validator/server.ts', () => {
 
 	describe('constructor', () => {
 

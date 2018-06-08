@@ -37,7 +37,7 @@ chai.use(sinonChai);
 
 const expect = chai.expect;
 
-describe('index/server.js', () => {
+describe('index/server.ts', () => {
 
 	const schema1 = avsc.Type.forSchema({
 		fields: [

@@ -24,17 +24,29 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import avsc from 'avsc';
-import { expect } from 'chai';
+import chai from 'chai';
+import sinon, { SinonStub } from 'sinon';
+import sinonChai from 'sinon-chai';
+
+import SchemaValidator from '../../../src/index/validator/shared/schema';
 
 import PublisherValidator from '../../../src/index/validator/publisher';
 
-describe('index/validator/publisher.js', () => {
+chai.use(sinonChai);
+
+const expect = chai.expect;
+
+describe('index/validator/publisher.ts', () => {
 
 	let publisherValidator: PublisherValidator;
 
 	beforeEach(() => {
+		sinon.stub(SchemaValidator.prototype, 'validate');
 		publisherValidator = new PublisherValidator();
+	});
+
+	afterEach(() => {
+		sinon.restore();
 	});
 
 	describe('constructor', () => {
@@ -49,40 +61,7 @@ describe('index/validator/publisher.js', () => {
 			// When
 			// Then
 			expect(publisherValidator.validate(config)).to.eql(config);
-
-		});
-
-		it('should return the schema if it is valid (JSON format)', () => {
-
-			// Given
-			const config = {
-				schema: {
-					fields: [],
-					name: 'com.example.FullName',
-					type: 'record'
-				}
-			};
-
-			// When
-			// Then
-			expect(publisherValidator.validate(config)).to.eql(config);
-
-		});
-
-		it('should return the schema if it is valid (Compiled format)', () => {
-
-			// Given
-			const config = {
-				schema: avsc.Type.forSchema({
-					fields: [],
-					name: 'com.example.FullName',
-					type: 'record'
-				})
-			};
-
-			// When
-			// Then
-			expect(publisherValidator.validate(config)).to.eql(config);
+			expect(SchemaValidator.prototype.validate).to.have.been.calledOnce;
 
 		});
 
@@ -94,6 +73,7 @@ describe('index/validator/publisher.js', () => {
 				// When
 				// Then
 				expect(() => publisherValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
+				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
 
 			});
 
@@ -103,71 +83,24 @@ describe('index/validator/publisher.js', () => {
 				// When
 				// Then
 				expect(() => publisherValidator.validate(2)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
+				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
 
 			});
 
-			it('if no schema is provided', () => {
+			it('if the schema is invalid', () => {
 
 				// Given
-				const config = {};
+				(SchemaValidator.prototype.validate as SinonStub).throws(new Error('invalid schema'));
 
-				// When
-				// Then
-				expect(() => publisherValidator.validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
-
-			});
-
-			it('if the avro schema is invalid', () => {
-
-				// Given
 				const config = {
 					schema: 2
 				};
 
 				// When
 				// Then
-				expect(() => publisherValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
+				expect(() => publisherValidator.validate(config)).to.throw(/^invalid schema$/);
 
-			});
-
-			it('if the avro schema JSON is invalid', () => {
-
-				// Given
-				const config = {
-					schema: '{"type":record","fields":[]}'
-				};
-
-				// When
-				// Then
-				expect(() => publisherValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
-
-			});
-
-			it('if the avro schema is invalid', () => {
-
-				// Given
-				const config = {
-					schema: {
-						name: 'com.example.FullName'
-					}
-				};
-
-				// When
-				// Then
-				expect(() => publisherValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
-
-			});
-
-			it('if the avro schema does not have a name property', () => {
-
-				// Given
-				const config = {
-					schema: '{"type":"record","fields":[]}'
-				};
-
-				// When
-				// Then
-				expect(() => publisherValidator.validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
+				expect(SchemaValidator.prototype.validate).to.have.been.calledOnce;
 
 			});
 

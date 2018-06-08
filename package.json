@@ -10,7 +10,7 @@
 		"init-project": "cp run.properties local.run.properties && cp test.properties local.test.properties",
 		"prepare": "npm run build",
 		"pretest": "tslint -p tsconfig.json",
-		"test": "nyc mocha --require ts-node/register --watch-extensions ts test/**/*.test.ts test/**/**/*.test.ts"
+		"test": "nyc mocha --require ts-node/register --watch-extensions ts test/**/*.test.ts test/**/**/*.test.ts test/**/**/**/*.test.ts"
 	},
 	"repository": {
 		"type": "git",
