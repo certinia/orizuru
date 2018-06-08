@@ -24,7 +24,9 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { Type } from 'avsc/types';
 import _ from 'lodash';
+
 import { Handler, Options } from '../../index';
 import Transport from '../transport/transport';
 
@@ -41,7 +43,7 @@ export default function messageHandler(server: Handler, options: Options.IHandle
 		server.info(`Handler received ${eventName} event.`);
 
 		try {
-			const decodedContent = transport.decode(options.schema, content);
+			const decodedContent = transport.decode(options.schema as Type, content);
 			await options.handler(decodedContent);
 		} catch (err) {
 			server.error(err);

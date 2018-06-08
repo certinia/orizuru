@@ -81,7 +81,7 @@ Additionally, if there is an object on the express request called ```orizuru```,
 
 The Orizuru Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.
 
-```javascript
+```typescript
 const
 	{ Publisher } = require('@financialforcedev/orizuru'),
 	...

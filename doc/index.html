@@ -127,28 +127,28 @@ expressServer.listen(<span class="hljs-number">8080</span>);
 				<p>Additionally, if there is an object on the express request called <code>orizuru</code>, e.g. <code>request.orizuru</code>, this will also be serialized and added to the buffer as <code>context</code>. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.</p>
 				<h3 id="publisher">Publisher</h3>
 				<p>The Orizuru Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.</p>
-				<pre><code class="lang-javascript"><span class="hljs-keyword">const</span>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">const</span>
     { Publisher } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@financialforcedev/orizuru'</span>),
     ...
     publisherInstance = <span class="hljs-keyword">new</span> Publisher({ transport, transportConfig }),
 
     schema = {
-        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'foo'</span>,
-        <span class="hljs-attr">name</span>: <span class="hljs-string">'bar'</span>,
-        <span class="hljs-attr">type</span>: <span class="hljs-string">'record'</span>,
-        <span class="hljs-attr">fields</span>: [
-            { <span class="hljs-attr">name</span>: <span class="hljs-string">'age'</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">'string'</span> },
-            { <span class="hljs-attr">name</span>: <span class="hljs-string">'dob'</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">'string'</span> }
+        <span class="hljs-keyword">namespace</span>: <span class="hljs-string">'foo'</span>,
+        name: <span class="hljs-string">'bar'</span>,
+        <span class="hljs-keyword">type</span>: <span class="hljs-string">'record'</span>,
+        fields: [
+            { name: <span class="hljs-string">'age'</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">'string'</span> },
+            { name: <span class="hljs-string">'dob'</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">'string'</span> }
         ]
     },
 
     message = {
-        <span class="hljs-attr">age</span>: <span class="hljs-string">'fifty'</span>,
-        <span class="hljs-attr">dob</span>: <span class="hljs-string">'07/01/1991'</span>
+        age: <span class="hljs-string">'fifty'</span>,
+        dob: <span class="hljs-string">'07/01/1991'</span>
     },
 
     context = {
-        <span class="hljs-attr">anything</span>: <span class="hljs-string">'something untyped'</span>
+        anything: <span class="hljs-string">'something untyped'</span>
     };
 
 <span class="hljs-keyword">return</span> publisherInstance.publish({ schema, message, context }); <span class="hljs-comment">//promise</span>
