@@ -28,6 +28,7 @@ import { Type } from 'avsc/types';
 import { EventEmitter } from 'events';
 import express from 'express';
 import _ from 'lodash';
+
 import { Options, Publisher } from '..';
 import { create as createRoute } from './server/route';
 import * as ROUTE_METHOD from './server/routeMethod';

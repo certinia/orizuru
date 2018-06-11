@@ -39,12 +39,6 @@ export default class Transport {
 
 	/**
 	 * Creates a new 'Transport' which can then be used to encode and decode messages.
-	 *
-	 * @example
-	 * ``` typescript
-	 *
-	 * const transport = new Transport();
-	 * ```
 	 */
 	constructor() {
 
