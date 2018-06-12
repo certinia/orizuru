@@ -33,7 +33,7 @@ import * as RouteMethod from '../server/routeMethod';
 import SchemaValidator from './shared/schema';
 
 /**
- * Validates routes.
+ * Validates the {@link Route} configuration.
  * @private
  */
 export default class RouteValidator {

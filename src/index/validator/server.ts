@@ -28,6 +28,7 @@ import _ from 'lodash';
 import { Options } from '../..';
 
 /**
+ * Validates the {@link Server} configuration.
  * @private
  */
 export default class ServerValidator {

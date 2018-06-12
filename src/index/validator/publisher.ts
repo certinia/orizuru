@@ -28,7 +28,7 @@ import _ from 'lodash';
 import SchemaValidator from './shared/schema';
 
 /**
- * Validate the publisher configuration.
+ * Validates the {@link Publisher} configuration.
  * @private
  */
 export default class PublisherValidator {

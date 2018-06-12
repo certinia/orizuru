@@ -28,7 +28,7 @@ import _ from 'lodash';
 import SchemaValidator from './shared/schema';
 
 /**
- * Validates handlers.
+ * Validates the {@link Handler} configuration.
  * @private
  */
 export default class HandlerValidator {
