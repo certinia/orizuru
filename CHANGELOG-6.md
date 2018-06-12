@@ -1,5 +1,12 @@
 # @financialforcedev/orizuru
 
+## 6.1.1
+
+### OTHER CHANGES
+
+- Fix security advisories.
+- Relax versioning.
+
 ## 6.1.0
 
 ### NEW FEATURES
