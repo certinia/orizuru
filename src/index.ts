@@ -76,6 +76,8 @@ declare global {
 
 		interface Context { }
 
+		interface IHandlerResponse { }
+
 		// These open interfaces may be extended in an application-specific manner via declaration merging.
 		namespace Transport {
 
@@ -105,7 +107,7 @@ export interface ITransport {
 	/**
 	 * Subscribes to a message queue.
 	 */
-	subscribe: (handler: (content: Buffer) => Promise<void>, options: Options.Transport.ISubscribe) => Promise<void>;
+	subscribe: (handler: (content: Buffer) => Promise<void | Orizuru.IHandlerResponse>, options: Options.Transport.ISubscribe) => Promise<void>;
 
 	/**
 	 * Closes the transport gracefully.
