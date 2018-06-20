@@ -44,7 +44,7 @@ export default function messageHandler(server: Handler, options: Options.IHandle
 
 		try {
 			const decodedContent = transport.decode(options.schema as Type, content);
-			await options.handler(decodedContent);
+			return await options.handler(decodedContent);
 		} catch (err) {
 			server.error(err);
 		}
