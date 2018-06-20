@@ -107,7 +107,7 @@ export interface ITransport {
 	/**
 	 * Subscribes to a message queue.
 	 */
-	subscribe: (handler: (content: Buffer) => Promise<void | Orizuru.IHandlerResponse>, options: Options.Transport.ISubscribe) => Promise<void>;
+	subscribe: (handler: (content: Buffer) => Promise<void>, options: Options.Transport.ISubscribe) => Promise<void>;
 
 	/**
 	 * Closes the transport gracefully.
@@ -136,7 +136,7 @@ export declare namespace Options {
 
 	export interface IHandler extends Orizuru.IHandler {
 		schema: string | object | Type;
-		handler: (message: IOrizuruMessage) => Promise<any>;
+		handler: (message: IOrizuruMessage) => Promise<void | Orizuru.IHandlerResponse>;
 		subscribeOptions?: Options.Transport.ISubscribe;
 	}
 
