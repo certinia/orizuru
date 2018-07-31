@@ -121,6 +121,10 @@ export interface IOrizuruMessage {
 	context?: any;
 }
 
+export type HandlerFunction = (message: IOrizuruMessage) => Promise<void | Orizuru.IHandlerResponse>;
+
+export type ResponseWriterFunction = (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
+
 export declare namespace Options {
 
 	export interface IServer extends Orizuru.IServer {
@@ -136,7 +140,7 @@ export declare namespace Options {
 
 	export interface IHandler extends Orizuru.IHandler {
 		schema: string | object | Type;
-		handler: (message: IOrizuruMessage) => Promise<void | Orizuru.IHandlerResponse>;
+		handler: HandlerFunction;
 		subscribeOptions?: Options.Transport.ISubscribe;
 	}
 
@@ -148,7 +152,7 @@ export declare namespace Options {
 			middleware?: RequestHandler[];
 			pathMapper?: (schemaNamespace: string) => string;
 			publishOptions?: Options.Transport.IPublish;
-			responseWriter?: (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
+			responseWriter?: ResponseWriterFunction;
 			schema: string | object | Type;
 		}
 
@@ -158,7 +162,7 @@ export declare namespace Options {
 			middleware: RequestHandler[];
 			pathMapper: (schemaNamespace: string) => string;
 			publishOptions?: Options.Transport.IPublish;
-			responseWriter: (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
+			responseWriter: ResponseWriterFunction;
 			schema: Type;
 		}
 
