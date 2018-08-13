@@ -42,7 +42,7 @@ function parseSchema(schema: string) {
 }
 
 /**
- * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc srcrary}.
+ * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc library}.
  * @private
  */
 function compileSchema(uncompiledSchema: any) {
