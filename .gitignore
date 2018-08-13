@@ -5,6 +5,4 @@ node_modules
 
 local.*.properties
 
-package-lock.json
-
 *.tgz
