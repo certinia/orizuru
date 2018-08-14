@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "es2017",
+		"target": "es5",
 		"module": "commonjs",
 		"declaration": true,
 		"outDir": "./dist",
@@ -10,7 +10,11 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"moduleResolution": "node",
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"lib": [
+			"es2015",
+			"dom"
+		]
 	},
 	"include": [
 		"src"
