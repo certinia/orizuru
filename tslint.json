@@ -25,7 +25,6 @@
 		"max-line-length": false,
 		"no-empty-interface": false,
 		"no-unused-expression": false,
-		"no-unused-variable": true,
 		"no-any": false,
 		"no-namespace": [
 			true,
