@@ -24,19 +24,31 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import avsc from 'avsc';
 import chai from 'chai';
+import sinon, { SinonStub } from 'sinon';
+import sinonChai from 'sinon-chai';
 
-import { SchemaValidator } from '../../../../src/index/validator/shared/schema';
+import _ from 'lodash';
+
+import { SchemaValidator } from '../../../src/index/validator/shared/schema';
+
+import { HandlerFunctionValidator } from '../../../src/index/validator/handlerFunction';
+
+chai.use(sinonChai);
 
 const expect = chai.expect;
 
-describe('index/validator/shared/schema.ts', () => {
+describe('index/validator/handlerFunction.ts', () => {
 
-	let schemaValidator: SchemaValidator;
+	let handlerFunctionValidator: HandlerFunctionValidator;
 
 	beforeEach(() => {
-		schemaValidator = new SchemaValidator();
+		handlerFunctionValidator = new HandlerFunctionValidator();
+		sinon.stub(SchemaValidator.prototype, 'validate');
+	});
+
+	afterEach(() => {
+		sinon.restore();
 	});
 
 	describe('constructor', () => {
@@ -45,119 +57,75 @@ describe('index/validator/shared/schema.ts', () => {
 
 			// Given
 			const config = {
+				handler: _.noop,
 				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 			};
 
 			// When
-			const validatedConfig = schemaValidator.validate(config);
-
 			// Then
-			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
-
-		});
-
-		it('should return the schema if it is valid (JSON format)', () => {
-
-			// Given
-			const config = {
-				schema: {
-					fields: [],
-					name: 'com.example.FullName',
-					type: 'record'
-				}
-			};
-
-			// When
-			const validatedConfig = schemaValidator.validate(config);
-
-			// Then
-			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
-
-		});
-
-		it('should return the schema if it is valid (Compiled format)', () => {
-
-			// Given
-			const config = {
-				schema: avsc.Type.forSchema({
-					fields: [],
-					name: 'com.example.FullName',
-					type: 'record'
-				})
-			};
-
-			// When
-			const validatedConfig = schemaValidator.validate(config);
-
-			// Then
-			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
+			expect(handlerFunctionValidator.validate(config)).to.eql(config);
+			expect(SchemaValidator.prototype.validate).to.have.been.calledOnce;
 
 		});
 
 		describe('should throw an error', () => {
 
-			it('if no schema is provided', () => {
+			it('if no config is provided', () => {
 
 				// Given
-				const config = {};
-
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
+				expect(() => handlerFunctionValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
+				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
 
 			});
 
-			it('if the avro schema is invalid', () => {
+			it('if config is not an object', () => {
+
+				// Given
+				// When
+				// Then
+				expect(() => handlerFunctionValidator.validate(2)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
+				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
+
+			});
+
+			it('if no handler is provided', () => {
+
+				// Given
+				// When
+				// Then
+				expect(() => handlerFunctionValidator.validate({})).to.throw(/^Missing required function parameter: handler\.$/);
+				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
+
+			});
+
+			it('if the handler is not a function', () => {
 
 				// Given
 				const config = {
-					schema: 2
+					handler: 2
+				};
+				// When
+				// Then
+				expect(() => handlerFunctionValidator.validate(config)).to.throw(/^Invalid parameter: handler is not a function\.$/);
+				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
+
+			});
+
+			it('if the schema is invalid', () => {
+
+				// Given
+				(SchemaValidator.prototype.validate as SinonStub).throws(new Error('invalid schema'));
+
+				const config = {
+					handler: _.noop
 				};
 
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
-
-			});
-
-			it('if the avro schema JSON is invalid', () => {
-
-				// Given
-				const config = {
-					schema: '{"type":record","fields":[]}'
-				};
-
-				// When
-				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
-
-			});
-
-			it('if the avro schema is invalid', () => {
-
-				// Given
-				const config = {
-					schema: {
-						name: 'com.example.FullName'
-					}
-				};
-
-				// When
-				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
-
-			});
-
-			it('if the avro schema does not have a name property', () => {
-
-				// Given
-				const config = {
-					schema: '{"type":"record","fields":[]}'
-				};
-
-				// When
-				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
+				expect(() => handlerFunctionValidator.validate(config)).to.throw(/^invalid schema$/);
+				expect(SchemaValidator.prototype.validate).to.have.been.calledOnce;
 
 			});
 

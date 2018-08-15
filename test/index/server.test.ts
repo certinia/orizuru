@@ -24,14 +24,17 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import avsc from 'avsc';
 import chai from 'chai';
-import { EventEmitter } from 'events';
-import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+
+import avsc from 'avsc';
+import { EventEmitter } from 'events';
+import _ from 'lodash';
+
+import { RouteValidator } from '../../src/index/validator/route';
+
 import { Server } from '../../src';
-import RouteValidator from '../../src/index/validator/route';
 
 chai.use(sinonChai);
 

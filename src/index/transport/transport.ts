@@ -33,7 +33,7 @@ import { IOrizuruMessage } from '../..';
  * Class used to encode and decode messages using the transport schema.
  * @private
  */
-export default class Transport {
+export class Transport {
 
 	private readonly compiledSchema: Type;
 

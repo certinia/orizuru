@@ -29,8 +29,9 @@ import chai from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
-import messageHandler from '../../../src/index/handler/messageHandler';
-import Transport from '../../../src/index/transport/transport';
+import { Transport } from '../../../src/index/transport/transport';
+
+import { messageHandler } from '../../../src/index/handler/messageHandler';
 
 chai.use(sinonChai);
 

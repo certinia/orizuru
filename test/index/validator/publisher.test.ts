@@ -25,43 +25,29 @@
  */
 
 import chai from 'chai';
-import sinon, { SinonStub } from 'sinon';
-import sinonChai from 'sinon-chai';
+import _ from 'lodash';
 
-import SchemaValidator from '../../../src/index/validator/shared/schema';
-
-import PublisherValidator from '../../../src/index/validator/publisher';
-
-chai.use(sinonChai);
+import { PublisherValidator } from '../../../src/index/validator/publisher';
 
 const expect = chai.expect;
 
 describe('index/validator/publisher.ts', () => {
 
-	let publisherValidator: PublisherValidator;
-
-	beforeEach(() => {
-		sinon.stub(SchemaValidator.prototype, 'validate');
-		publisherValidator = new PublisherValidator();
-	});
-
-	afterEach(() => {
-		sinon.restore();
-	});
-
 	describe('constructor', () => {
 
-		it('should return the schema if it is valid (string format)', () => {
+		it('should return the schema if it is valid', () => {
 
 			// Given
 			const config = {
-				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
+				transport: {
+					publish: _.noop,
+					subscribe: _.noop
+				}
 			};
 
 			// When
 			// Then
-			expect(publisherValidator.validate(config)).to.eql(config);
-			expect(SchemaValidator.prototype.validate).to.have.been.calledOnce;
+			expect(new PublisherValidator(config as any)).to.eql(config);
 
 		});
 
@@ -72,8 +58,7 @@ describe('index/validator/publisher.ts', () => {
 				// Given
 				// When
 				// Then
-				expect(() => publisherValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
-				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
+				expect(() => new PublisherValidator(undefined as any)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 
@@ -82,25 +67,87 @@ describe('index/validator/publisher.ts', () => {
 				// Given
 				// When
 				// Then
-				expect(() => publisherValidator.validate(2)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
-				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
+				expect(() => new PublisherValidator(2 as any)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
 
 			});
 
-			it('if the schema is invalid', () => {
+			it('if no transport is provided', () => {
 
 				// Given
-				(SchemaValidator.prototype.validate as SinonStub).throws(new Error('invalid schema'));
+				// When
+				// Then
+				expect(() => new PublisherValidator({} as any)).to.throw(/^Missing required object parameter: transport\.$/);
 
+			});
+
+			it('if the transport is not an object', () => {
+
+				// Given
 				const config = {
-					schema: 2
+					transport: 2
+				};
+				// When
+				// Then
+				expect(() => new PublisherValidator(config as any)).to.throw(/^Invalid parameter: transport is not an object\.$/);
+
+			});
+
+			it('if no transport publish function is provided', () => {
+
+				// Given
+				const config = {
+					transport: {}
 				};
 
 				// When
 				// Then
-				expect(() => publisherValidator.validate(config)).to.throw(/^invalid schema$/);
+				expect(() => new PublisherValidator(config as any)).to.throw(/^Missing required function parameter: transport\[publish\]\.$/);
 
-				expect(SchemaValidator.prototype.validate).to.have.been.calledOnce;
+			});
+
+			it('if the transport publish is not a function', () => {
+
+				// Given
+				const config = {
+					transport: {
+						publish: 2
+					}
+				};
+
+				// When
+				// Then
+				expect(() => new PublisherValidator(config as any)).to.throw(/^Invalid parameter: transport\[publish\] is not a function\.$/);
+
+			});
+
+			it('if no transport subscribe function is provided', () => {
+
+				// Given
+				const config = {
+					transport: {
+						publish: _.noop
+					}
+				};
+
+				// When
+				// Then
+				expect(() => new PublisherValidator(config as any)).to.throw(/^Missing required function parameter: transport\[subscribe\]\.$/);
+
+			});
+
+			it('if the transport subscribe is not a function', () => {
+
+				// Given
+				const config = {
+					transport: {
+						publish: _.noop,
+						subscribe: 2
+					}
+				};
+
+				// When
+				// Then
+				expect(() => new PublisherValidator(config as any)).to.throw(/^Invalid parameter: transport\[subscribe\] is not a function\.$/);
 
 			});
 

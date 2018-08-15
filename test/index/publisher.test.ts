@@ -32,9 +32,11 @@ import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 import { EventEmitter } from 'events';
-import Publisher from '../../src/index/publisher';
-import Transport from '../../src/index/transport/transport';
-import PublisherValidator from '../../src/index/validator/publisher';
+
+import { Transport } from '../../src/index/transport/transport';
+import { PublishFunctionValidator } from '../../src/index/validator/publishFunction';
+
+import { Publisher } from '../../src/index/publisher';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -89,7 +91,7 @@ describe('index/publisher.ts', () => {
 		it('should publish a message', () => {
 
 			// Given
-			sinon.stub(PublisherValidator.prototype, 'validate');
+			sinon.stub(PublishFunctionValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
 			sinon.spy(Transport.prototype, 'encode');
 
@@ -133,7 +135,7 @@ describe('index/publisher.ts', () => {
 			return expect(publisher.publish(message as any))
 				.to.eventually.be.fulfilled
 				.then(() => {
-					expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+					expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
 					expect(Transport.prototype.encode).to.have.been.calledWith(message.schema, message.message);
 					expect(publisher.info).to.have.been.calledOnce;
 					expect(publisher.info).to.have.been.calledWith('Published com.example.FullName event.');
@@ -149,7 +151,7 @@ describe('index/publisher.ts', () => {
 			it('if no config is provided', () => {
 
 				// Given
-				sinon.stub(PublisherValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
+				sinon.stub(PublishFunctionValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
 				const config = {
 					transport: {
@@ -164,7 +166,7 @@ describe('index/publisher.ts', () => {
 				// Then
 				return expect(publisher.publish({} as any)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/)
 					.then(() => {
-						expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+						expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
 					});
 
 			});
@@ -172,7 +174,7 @@ describe('index/publisher.ts', () => {
 			it('if the transport cannot be encoded', () => {
 
 				// Given
-				sinon.stub(PublisherValidator.prototype, 'validate');
+				sinon.stub(PublishFunctionValidator.prototype, 'validate');
 				sinon.stub(Transport.prototype, 'encode').throws(new Error('encoding error'));
 
 				const config = {
@@ -207,7 +209,7 @@ describe('index/publisher.ts', () => {
 				return expect(publisher.publish(publishMessage as any))
 					.to.eventually.be.rejectedWith('Error encoding message for schema (com.example.FullName):\ninvalid value (undefined) for path (first) it should be of type (string)\ninvalid value (undefined) for path (last) it should be of type (string)')
 					.then(() => {
-						expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+						expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
 						expect(publisher.error).to.have.been.calledOnce;
 					});
 
@@ -216,7 +218,7 @@ describe('index/publisher.ts', () => {
 			it('if the publishing the message fails', () => {
 
 				// Given
-				sinon.stub(PublisherValidator.prototype, 'validate');
+				sinon.stub(PublishFunctionValidator.prototype, 'validate');
 				sinon.spy(EventEmitter.prototype, 'emit');
 
 				const expectedError = new Error('Failed to publish message.');
@@ -256,7 +258,7 @@ describe('index/publisher.ts', () => {
 				return expect(publisher.publish(publishMessage as any))
 					.to.eventually.be.rejectedWith('Failed to publish message.')
 					.then(() => {
-						expect(PublisherValidator.prototype.validate).to.have.been.calledOnce;
+						expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
 						expect(publisher.error).to.have.been.calledOnce;
 						expect(publisher.error).to.have.been.calledWith('Error publishing message on transport.');
 						expect(EventEmitter.prototype.emit).to.have.been.calledTwice;

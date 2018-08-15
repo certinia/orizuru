@@ -28,15 +28,15 @@ import { EventEmitter } from 'events';
 import _ from 'lodash';
 
 import { ITransport, Options } from '..';
-import messageHandler from './handler/messageHandler';
-import HandlerValidator from './validator/handler';
-import ServerValidator from './validator/server';
+import { messageHandler } from './handler/messageHandler';
+import { HandlerValidator } from './validator/handler';
+import { HandlerFunctionValidator } from './validator/handlerFunction';
 
 /**
  * The Handler for consuming messages in a worker dyno created by {@link Server}.
  * @extends EventEmitter
  */
-export default class Handler extends EventEmitter {
+export class Handler extends EventEmitter {
 
 	/**
 	 * The error event name.
@@ -50,12 +50,12 @@ export default class Handler extends EventEmitter {
 
 	private readonly transportConfig: Options.Transport.IConnect;
 	private readonly transport: ITransport;
-	private readonly validator: HandlerValidator;
+	private readonly validator: HandlerFunctionValidator;
 
 	/**
 	 * Constructs a new 'Handler'.
 	 */
-	constructor(options: Options.IServer) {
+	constructor(options: Options.IHandler) {
 
 		super();
 
@@ -64,14 +64,14 @@ export default class Handler extends EventEmitter {
 		try {
 
 			// Validate the config
-			new ServerValidator(options);
+			new HandlerValidator(options);
 
 			// Define the transport
 			this.transportConfig = options.transportConfig;
 			this.transport = options.transport;
 
-			// Define the handler validator
-			this.validator = new HandlerValidator();
+			// Define the handler function validator
+			this.validator = new HandlerFunctionValidator();
 
 		} catch (err) {
 			this.error(err);
@@ -92,7 +92,7 @@ export default class Handler extends EventEmitter {
 	 * }});
 	 * ```
 	 */
-	public async handle(options: Options.IHandler) {
+	public async handle(options: Options.IHandlerFunction) {
 
 		try {
 			this.validator.validate(options);

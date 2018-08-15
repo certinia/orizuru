@@ -25,46 +25,29 @@
  */
 
 import chai from 'chai';
-import sinon, { SinonStub } from 'sinon';
-import sinonChai from 'sinon-chai';
-
 import _ from 'lodash';
 
-import SchemaValidator from '../../../src/index/validator/shared/schema';
-
-import HandlerValidator from '../../../src/index/validator/handler';
-
-chai.use(sinonChai);
+import { HandlerValidator } from '../../../src/index/validator/handler';
 
 const expect = chai.expect;
 
 describe('index/validator/handler.ts', () => {
 
-	let handlerValidator: HandlerValidator;
-
-	beforeEach(() => {
-		handlerValidator = new HandlerValidator();
-		sinon.stub(SchemaValidator.prototype, 'validate');
-	});
-
-	afterEach(() => {
-		sinon.restore();
-	});
-
 	describe('constructor', () => {
 
-		it('should return the schema if it is valid (string format)', () => {
+		it('should return the schema if it is valid', () => {
 
 			// Given
 			const config = {
-				handler: _.noop,
-				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
+				transport: {
+					publish: _.noop,
+					subscribe: _.noop
+				}
 			};
 
 			// When
 			// Then
-			expect(handlerValidator.validate(config)).to.eql(config);
-			expect(SchemaValidator.prototype.validate).to.have.been.calledOnce;
+			expect(new HandlerValidator(config as any)).to.eql(config);
 
 		});
 
@@ -75,8 +58,7 @@ describe('index/validator/handler.ts', () => {
 				// Given
 				// When
 				// Then
-				expect(() => handlerValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
-				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
+				expect(() => new HandlerValidator(undefined as any)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 
@@ -85,47 +67,87 @@ describe('index/validator/handler.ts', () => {
 				// Given
 				// When
 				// Then
-				expect(() => handlerValidator.validate(2)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
-				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
+				expect(() => new HandlerValidator(2 as any)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
 
 			});
 
-			it('if no handler is provided', () => {
+			it('if no transport is provided', () => {
 
 				// Given
 				// When
 				// Then
-				expect(() => handlerValidator.validate({})).to.throw(/^Missing required function parameter: handler\.$/);
-				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
+				expect(() => new HandlerValidator({} as any)).to.throw(/^Missing required object parameter: transport\.$/);
 
 			});
 
-			it('if the handler is not a function', () => {
+			it('if the transport is not an object', () => {
 
 				// Given
 				const config = {
-					handler: 2
+					transport: 2
 				};
 				// When
 				// Then
-				expect(() => handlerValidator.validate(config)).to.throw(/^Invalid parameter: handler is not a function\.$/);
-				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
+				expect(() => new HandlerValidator(config as any)).to.throw(/^Invalid parameter: transport is not an object\.$/);
 
 			});
 
-			it('if the schema is invalid', () => {
+			it('if no transport publish function is provided', () => {
 
 				// Given
-				(SchemaValidator.prototype.validate as SinonStub).throws(new Error('invalid schema'));
-
 				const config = {
-					handler: _.noop
+					transport: {}
 				};
 
 				// When
 				// Then
-				expect(() => handlerValidator.validate(config)).to.throw(/^invalid schema$/);
-				expect(SchemaValidator.prototype.validate).to.have.been.calledOnce;
+				expect(() => new HandlerValidator(config as any)).to.throw(/^Missing required function parameter: transport\[publish\]\.$/);
+
+			});
+
+			it('if the transport publish is not a function', () => {
+
+				// Given
+				const config = {
+					transport: {
+						publish: 2
+					}
+				};
+
+				// When
+				// Then
+				expect(() => new HandlerValidator(config as any)).to.throw(/^Invalid parameter: transport\[publish\] is not a function\.$/);
+
+			});
+
+			it('if no transport subscribe function is provided', () => {
+
+				// Given
+				const config = {
+					transport: {
+						publish: _.noop
+					}
+				};
+
+				// When
+				// Then
+				expect(() => new HandlerValidator(config as any)).to.throw(/^Missing required function parameter: transport\[subscribe\]\.$/);
+
+			});
+
+			it('if the transport subscribe is not a function', () => {
+
+				// Given
+				const config = {
+					transport: {
+						publish: _.noop,
+						subscribe: 2
+					}
+				};
+
+				// When
+				// Then
+				expect(() => new HandlerValidator(config as any)).to.throw(/^Invalid parameter: transport\[subscribe\] is not a function\.$/);
 
 			});
 

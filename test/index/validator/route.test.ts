@@ -30,8 +30,9 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import { Options } from '../../../src';
-import RouteValidator from '../../../src/index/validator/route';
-import SchemaValidator from '../../../src/index/validator/shared/schema';
+import { SchemaValidator } from '../../../src/index/validator/shared/schema';
+
+import { RouteValidator } from '../../../src/index/validator/route';
 
 chai.use(sinonChai);
 

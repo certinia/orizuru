@@ -33,8 +33,9 @@ import avsc from 'avsc';
 import { EventEmitter } from 'events';
 import _ from 'lodash';
 
+import { HandlerFunctionValidator } from '../../src/index/validator/handlerFunction';
+
 import { Handler } from '../../src';
-import HandlerValidator from '../../src/index/validator/handler';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -100,7 +101,7 @@ describe('index/handler', () => {
 
 			// Given
 			mocks.config.transport.subscribe = sinon.stub().resolves();
-			sinon.stub(HandlerValidator.prototype, 'validate');
+			sinon.stub(HandlerFunctionValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
 
 			const handler = new Handler(mocks.config);
@@ -127,7 +128,7 @@ describe('index/handler', () => {
 			return expect(handler.handle(config as any))
 				.to.eventually.be.fulfilled
 				.then(() => {
-					expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
+					expect(HandlerFunctionValidator.prototype.validate).to.have.been.calledOnce;
 					expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
 					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
 					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Installing handler for com.example.FullName events.');
@@ -140,7 +141,7 @@ describe('index/handler', () => {
 			it('if no config is provided', () => {
 
 				// Given
-				sinon.stub(HandlerValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
+				sinon.stub(HandlerFunctionValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
 				const handler = new Handler(mocks.config);
 
@@ -148,7 +149,7 @@ describe('index/handler', () => {
 				// Then
 				return expect(handler.handle({} as any)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/)
 					.then(() => {
-						expect(HandlerValidator.prototype.validate).to.have.been.calledOnce;
+						expect(HandlerFunctionValidator.prototype.validate).to.have.been.calledOnce;
 					});
 
 			});

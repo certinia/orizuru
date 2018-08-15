@@ -29,7 +29,8 @@ import chai from 'chai';
 import fs from 'fs-extra';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import Transport from '../../../src/index/transport/transport';
+
+import { Transport } from '../../../src/index/transport/transport';
 
 chai.use(sinonChai);
 

@@ -24,19 +24,19 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc/types';
+import { Type } from 'avsc';
 import { EventEmitter } from 'events';
 
 import { ITransport, Options } from '..';
-import Transport from './transport/transport';
-import PublisherValidator from './validator/publisher';
-import ServerValidator from './validator/server';
+import { Transport } from './transport/transport';
+import { PublisherValidator } from './validator/publisher';
+import { PublishFunctionValidator } from './validator/publishFunction';
 
 /**
  * The Publisher for publishing messages based on Avro schemas.
  * @extends EventEmitter
  */
-export default class Publisher extends EventEmitter {
+export class Publisher extends EventEmitter {
 
 	/**
 	 * The error event name.
@@ -51,12 +51,12 @@ export default class Publisher extends EventEmitter {
 	private readonly transport: Transport;
 	private readonly transportConfig: Options.Transport.IConnect;
 	private readonly transportImpl: ITransport;
-	private readonly validator: PublisherValidator;
+	private readonly validator: PublishFunctionValidator;
 
 	/**
 	 * Constructs a new 'Publisher'.
 	 */
-	constructor(options: Options.IServer) {
+	constructor(options: Options.IPublisher) {
 
 		super();
 
@@ -65,15 +65,15 @@ export default class Publisher extends EventEmitter {
 		try {
 
 			// Validate the config
-			new ServerValidator(options);
+			new PublisherValidator(options);
 
 			// Define the transport
 			this.transport = new Transport();
 			this.transportConfig = options.transportConfig;
 			this.transportImpl = options.transport;
 
-			// Define the publisher validator
-			this.validator = new PublisherValidator();
+			// Define the publish function validator
+			this.validator = new PublishFunctionValidator();
 
 		} catch (err) {
 			this.error(err);
@@ -89,7 +89,7 @@ export default class Publisher extends EventEmitter {
 	 * // publishes a message
 	 * publisher.publish({ schema, message });
 	 */
-	public async publish(options: Options.IPublisher) {
+	public async publish(options: Options.IPublishFunction) {
 
 		// Validate the arguments.
 		try {

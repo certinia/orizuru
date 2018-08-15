@@ -24,29 +24,29 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc/types';
+import { Type } from 'avsc';
 import _ from 'lodash';
 
-import { Handler, Options } from '../../index';
-import Transport from '../transport/transport';
+import { Handler, Options } from '../..';
+import { Transport } from '../transport/transport';
 
 /**
  * @private
  */
-export default function messageHandler(server: Handler, options: Options.IHandler) {
+export function messageHandler(handler: Handler, options: Options.IHandlerFunction) {
 
 	const eventName = _.get(options.subscribeOptions, 'eventName') || _.get(options.schema, 'name');
 	const transport = new Transport();
 
 	return async (content: Buffer) => {
 
-		server.info(`Handler received ${eventName} event.`);
+		handler.info(`Handler received ${eventName} event.`);
 
 		try {
 			const decodedContent = transport.decode(options.schema as Type, content);
 			return await options.handler(decodedContent);
 		} catch (err) {
-			server.error(err);
+			handler.error(err);
 		}
 
 	};

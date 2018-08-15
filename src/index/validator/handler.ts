@@ -25,36 +25,49 @@
  */
 
 import _ from 'lodash';
-import SchemaValidator from './shared/schema';
+import { Options } from '../..';
 
 /**
  * Validates the {@link Handler} configuration.
  * @private
  */
-export default class HandlerValidator {
+export class HandlerValidator {
 
-	public validate(config: any) {
+	constructor(options: Options.IHandler) {
 
-		if (!config) {
+		if (!options) {
 			throw new Error('Missing required object parameter.');
 		}
 
-		if (!_.isPlainObject(config)) {
-			throw new Error(`Invalid parameter: ${config} is not an object.`);
+		if (!_.isPlainObject(options)) {
+			throw new Error(`Invalid parameter: ${options} is not an object.`);
 		}
 
-		if (!config.handler) {
-			throw new Error('Missing required function parameter: handler.');
+		if (!options.transport) {
+			throw new Error('Missing required object parameter: transport.');
 		}
 
-		if (!_.isFunction(config.handler)) {
-			throw new Error('Invalid parameter: handler is not a function.');
+		if (!_.isPlainObject(options.transport)) {
+			throw new Error('Invalid parameter: transport is not an object.');
 		}
 
-		// Validate the schema
-		new SchemaValidator().validate(config);
+		if (!options.transport.publish) {
+			throw new Error('Missing required function parameter: transport[publish].');
+		}
 
-		return config;
+		if (!_.isFunction(options.transport.publish)) {
+			throw new Error('Invalid parameter: transport[publish] is not a function.');
+		}
+
+		if (!options.transport.subscribe) {
+			throw new Error('Missing required function parameter: transport[subscribe].');
+		}
+
+		if (!_.isFunction(options.transport.subscribe)) {
+			throw new Error('Invalid parameter: transport[subscribe] is not a function.');
+		}
+
+		return options;
 
 	}
 

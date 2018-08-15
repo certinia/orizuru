@@ -27,7 +27,7 @@
 import chai from 'chai';
 import _ from 'lodash';
 
-import ServerValidator from '../../../src/index/validator/server';
+import { ServerValidator } from '../../../src/index/validator/server';
 
 const expect = chai.expect;
 

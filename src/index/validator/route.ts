@@ -24,19 +24,19 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc/types';
+import { Type } from 'avsc';
 import * as HTTP_STATUS_CODE from 'http-status-codes';
 import _ from 'lodash';
 
 import { Options } from '../..';
 import * as RouteMethod from '../server/routeMethod';
-import SchemaValidator from './shared/schema';
+import { SchemaValidator } from './shared/schema';
 
 /**
  * Validates the {@link Route} configuration.
  * @private
  */
-export default class RouteValidator {
+export class RouteValidator {
 
 	public validate(options: Options.Route.IRaw): Options.Route.IValidated {
 

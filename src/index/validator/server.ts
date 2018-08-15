@@ -31,7 +31,7 @@ import { Options } from '../..';
  * Validates the {@link Server} configuration.
  * @private
  */
-export default class ServerValidator {
+export class ServerValidator {
 
 	constructor(options: Options.IServer) {
 

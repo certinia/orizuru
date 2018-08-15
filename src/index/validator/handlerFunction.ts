@@ -24,63 +24,35 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
 import _ from 'lodash';
+import { SchemaValidator } from './shared/schema';
 
 /**
- * Parses the schema from a JSON string.
+ * Validates {@link Handler} function configurations.
  * @private
  */
-function parseSchema(schema: string) {
-
-	try {
-		return JSON.parse(schema);
-	} catch (error) {
-		throw new Error(`Invalid Avro Schema. Failed to parse JSON string: ${schema}.`);
-	}
-
-}
-
-/**
- * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc library}.
- * @private
- */
-function compileSchema(uncompiledSchema: any) {
-
-	try {
-		return Type.forSchema(uncompiledSchema);
-	} catch (error) {
-		throw new Error(`Invalid Avro Schema. Schema error: ${error.message}.`);
-	}
-
-}
-
-/**
- * Validates the Apache Avro schema.
- * @private
- */
-export class SchemaValidator {
+export class HandlerFunctionValidator {
 
 	public validate(config: any) {
 
-		if (!config.schema) {
-			throw new Error('Missing required avro-schema parameter: schema.');
+		if (!config) {
+			throw new Error('Missing required object parameter.');
 		}
 
-		if (_.isString(config.schema)) {
-			const parsedSchema = parseSchema(config.schema);
-			config.schema = compileSchema(parsedSchema);
-		} else if (_.isPlainObject(config.schema)) {
-			config.schema = compileSchema(config.schema);
-		} else if (_.hasIn(config.schema, 'toJSON') && _.hasIn(config.schema, 'toBuffer')) {
-			// Already have a compiled schema
-		} else {
-			throw new Error(`Invalid Avro Schema. Unexpected value type: ${typeof config.schema}.`);
+		if (!_.isPlainObject(config)) {
+			throw new Error(`Invalid parameter: ${config} is not an object.`);
 		}
 
-		if (!config.schema.name) {
-			throw new Error('Missing required string parameter: schema[name].');
+		if (!config.handler) {
+			throw new Error('Missing required function parameter: handler.');
 		}
+
+		if (!_.isFunction(config.handler)) {
+			throw new Error('Invalid parameter: handler is not a function.');
+		}
+
+		// Validate the schema
+		new SchemaValidator().validate(config);
 
 		return config;
 

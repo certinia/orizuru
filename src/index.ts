@@ -33,25 +33,25 @@
  * @see Publisher
  */
 
-import { Type } from 'avsc/types';
+import { Type } from 'avsc';
 import { Request, RequestHandler, Response } from 'express';
 
-import { default as Server } from './index/server';
+import { Server } from './index/server';
 
 /**
  * Handler
  */
-export { default as Handler } from './index/handler';
+export { Handler } from './index/handler';
 
 /**
  * Publisher
  */
-export { default as Publisher } from './index/publisher';
+export { Publisher } from './index/publisher';
 
 /**
  * Server
  */
-export { default as Server } from './index/server';
+export { Server } from './index/server';
 
 export { json, urlencoded, Request, Response, NextFunction } from 'express';
 
@@ -68,15 +68,19 @@ declare global {
 	namespace Orizuru {
 
 		// These open interfaces may be extended in an application-specific manner via declaration merging.
-		interface IServer { }
+		interface IHandler { }
 
 		interface IPublisher { }
 
-		interface IHandler { }
+		interface IServer { }
 
 		interface Context { }
 
+		interface IHandlerFunction { }
+
 		interface IHandlerResponse { }
+
+		interface IPublishFunction { }
 
 		// These open interfaces may be extended in an application-specific manner via declaration merging.
 		namespace Transport {
@@ -127,18 +131,28 @@ export type ResponseWriterFunction = (server: Server) => (error: Error | undefin
 
 export declare namespace Options {
 
-	export interface IServer extends Orizuru.IServer {
+	export interface IHandler extends Orizuru.IHandler {
 		transportConfig: Options.Transport.IConnect;
 		transport: ITransport;
 	}
 
 	export interface IPublisher extends Orizuru.IPublisher {
+		transportConfig: Options.Transport.IConnect;
+		transport: ITransport;
+	}
+
+	export interface IServer extends Orizuru.IServer {
+		transportConfig: Options.Transport.IConnect;
+		transport: ITransport;
+	}
+
+	export interface IPublishFunction extends Orizuru.IPublishFunction {
 		message: IOrizuruMessage;
 		schema: string | object | Type;
 		publishOptions?: Options.Transport.IPublish;
 	}
 
-	export interface IHandler extends Orizuru.IHandler {
+	export interface IHandlerFunction extends Orizuru.IHandlerFunction {
 		schema: string | object | Type;
 		handler: HandlerFunction;
 		subscribeOptions?: Options.Transport.ISubscribe;

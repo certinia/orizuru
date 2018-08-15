@@ -24,7 +24,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc/types';
+import { Type } from 'avsc';
 import { EventEmitter } from 'events';
 import express from 'express';
 import _ from 'lodash';
@@ -32,8 +32,8 @@ import _ from 'lodash';
 import { Options, Publisher } from '..';
 import { create as createRoute } from './server/route';
 import * as ROUTE_METHOD from './server/routeMethod';
-import RouteValidator from './validator/route';
-import ServerValidator from './validator/server';
+import { RouteValidator } from './validator/route';
+import { ServerValidator } from './validator/server';
 
 /**
  * @private
@@ -50,7 +50,7 @@ const PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
  *
  * Messages are consumed by {@link Handler}.
  */
-export default class Server extends EventEmitter {
+export class Server extends EventEmitter {
 
 	public static readonly ROUTE_METHOD = ROUTE_METHOD;
 
