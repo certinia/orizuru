@@ -76,107 +76,111 @@ describe('index/validator/route.ts', () => {
 
 		describe('should throw an error', () => {
 
-			it('if no config is provided', () => {
+			it('if no options are provided', () => {
 
 				// Given
+				const options: any = undefined;
+
 				// When
 				// Then
-				expect(() => routeValidator.validate(undefined as any)).to.throw(/^Missing required object parameter\.$/);
+				expect(() => routeValidator.validate(options)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 
-			it('if config is not an object', () => {
+			it('if options is not an object', () => {
 
 				// Given
+				const options: any = 2;
+
 				// When
 				// Then
-				expect(() => routeValidator.validate(2 as any)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
+				expect(() => routeValidator.validate(options)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
 
 			});
 
 			it('if the endpoint is not a string', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					endpoint: 2
 				};
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: endpoint is not a string\.$/);
+				expect(() => routeValidator.validate(options)).to.throw(/^Invalid parameter: endpoint is not a string\.$/);
 
 			});
 
 			it('if the method is not a string', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					method: 2
 				};
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: method is not a string\.$/);
+				expect(() => routeValidator.validate(options)).to.throw(/^Invalid parameter: method is not a string\.$/);
 
 			});
 
 			it('if the method is not a valid option', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					method: 'invalid'
 				};
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: method must be one of the following options: delete,get,head,options,patch,post,put,trace\. Got invalid\.$/);
+				expect(() => routeValidator.validate(options)).to.throw(/^Invalid parameter: method must be one of the following options: delete,get,head,options,patch,post,put,trace\. Got invalid\.$/);
 
 			});
 
 			it('if the middleware is not an array', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					middleware: 2
 				};
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: middleware is not an array\.$/);
+				expect(() => routeValidator.validate(options)).to.throw(/^Invalid parameter: middleware is not an array\.$/);
 
 			});
 
 			it('if a middleware is not a function', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					middleware: [2]
 				};
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: middleware\[0\] is not a function\.$/);
+				expect(() => routeValidator.validate(options)).to.throw(/^Invalid parameter: middleware\[0\] is not a function\.$/);
 
 			});
 
 			it('if the responseWriter is not a function', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					responseWriter: 2,
 					schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 				};
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: responseWriter is not a function\.$/);
+				expect(() => routeValidator.validate(options)).to.throw(/^Invalid parameter: responseWriter is not a function\.$/);
 
 			});
 
 			it('if the pathMapper is not a function', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					pathMapper: 23,
 					responseWriter: _.noop,
 					schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
@@ -184,7 +188,7 @@ describe('index/validator/route.ts', () => {
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^Invalid parameter: pathMapper is not a function\.$/);
+				expect(() => routeValidator.validate(options)).to.throw(/^Invalid parameter: pathMapper is not a function\.$/);
 
 			});
 
@@ -193,11 +197,11 @@ describe('index/validator/route.ts', () => {
 				// Given
 				sinon.stub(SchemaValidator.prototype, 'validate').throws(new Error('invalid schema'));
 
-				const config = {};
+				const options: any = {};
 
 				// When
 				// Then
-				expect(() => routeValidator.validate(config as any)).to.throw(/^invalid schema$/);
+				expect(() => routeValidator.validate(options)).to.throw(/^invalid schema$/);
 
 			});
 
@@ -210,57 +214,59 @@ describe('index/validator/route.ts', () => {
 		it('should send a 400 status if the request fails', () => {
 
 			// Given
-			const config = {
+			const options: any = {
 				middleware: [_.noop],
 				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 			};
 
-			const validatedConfig = routeValidator.validate(config as any);
+			const validatedoptions = routeValidator.validate(options);
 
-			const server = {
+			const server: any = {
 				error: sinon.stub()
 			};
 
-			const request = sinon.stub();
+			const request: any = sinon.stub();
 
-			const response = {
+			const response: any = {
 				send: sinon.stub().returnsThis(),
 				status: sinon.stub().returnsThis()
 			};
 
+			const expectedError = new Error('error');
+
 			// When
-			validatedConfig.responseWriter(server as any)('error' as any, request as any, response as any);
+			validatedoptions.responseWriter(server)(expectedError, request, response);
 
 			// Then
 			expect(response.status).to.have.been.calledOnce;
 			expect(response.status).to.have.been.calledWith(400);
 			expect(response.send).to.have.been.calledOnce;
-			expect(response.send).to.have.been.calledWith('error');
+			expect(response.send).to.have.been.calledWith(expectedError);
 
 		});
 
 		it('should send a 200 status if the request succeeds', () => {
 
 			// Given
-			const config = {
+			const options: any = {
 				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 			};
 
-			const validatedConfig = routeValidator.validate(config as any);
+			const validatedoptions = routeValidator.validate(options);
 
-			const server = {
+			const server: any = {
 				error: sinon.stub()
 			};
 
-			const request = sinon.stub();
+			const request: any = sinon.stub();
 
-			const response = {
+			const response: any = {
 				send: sinon.stub().returnsThis(),
 				status: sinon.stub().returnsThis()
 			};
 
 			// When
-			validatedConfig.responseWriter(server as any)(undefined, request as any, response as any);
+			validatedoptions.responseWriter(server)(undefined, request, response);
 
 			// Then
 			expect(response.status).to.have.been.calledOnce;

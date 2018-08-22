@@ -86,14 +86,16 @@ describe('index/server.ts', () => {
 
 	describe('constructor', () => {
 
-		it('should emit an error event if the configuration is invalid', () => {
+		it('should emit an error event if the optionsuration is invalid', () => {
 
 			// Given
+			const options: any = {};
+
 			sinon.spy(EventEmitter.prototype, 'emit');
 
 			// When
 			// Then
-			expect(() => new Server({} as any)).to.throw(/^Missing required object parameter: transport\.$/g);
+			expect(() => new Server(options)).to.throw(/^Missing required object parameter: transport\.$/g);
 
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating server.');
@@ -104,7 +106,7 @@ describe('index/server.ts', () => {
 		it('should extend EventEmitter', () => {
 
 			// Given
-			const config = {
+			const options: any = {
 				transport: {
 					publish: _.noop,
 					subscribe: _.noop
@@ -112,7 +114,7 @@ describe('index/server.ts', () => {
 			};
 
 			// When
-			const server = new Server(config as any);
+			const server = new Server(options);
 
 			// Then
 			expect(server).to.be.an.instanceof(EventEmitter);
@@ -130,7 +132,7 @@ describe('index/server.ts', () => {
 			sinon.spy(EventEmitter.prototype, 'emit');
 			// sinon.stub(Router, 'use');
 
-			const config = {
+			const options: any = {
 				transport: {
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
@@ -144,19 +146,19 @@ describe('index/server.ts', () => {
 				schema: schema1
 			};
 
-			let server = new Server(config as any);
+			let server = new Server(options);
 
 			sinon.spy(server, 'info');
 
 			// When
-			server = server.addRoute(route as any);
+			server = server.addRoute(route);
 
 			// Then
 			expect(server.info).to.have.been.calledTwice;
 			expect(server.info).to.have.been.calledWith('Creating router for namespace: /api/com/example.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
 			// expect(_.size(server.router_configuration)).to.eql(1);
-			// expect(server.route_configuration).to.eql({ '/api/com/example': { FullName: schema1 } });
+			// expect(server.route_optionsuration).to.eql({ '/api/com/example': { FullName: schema1 } });
 			// expect(Router.use).to.have.been.calledWith(route.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
@@ -169,7 +171,7 @@ describe('index/server.ts', () => {
 			sinon.spy(EventEmitter.prototype, 'emit');
 			// sinon.stub(Router, 'use');
 
-			const config = {
+			const options: any = {
 				transport: {
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
@@ -186,19 +188,19 @@ describe('index/server.ts', () => {
 				schema: schema4
 			};
 
-			let server = new Server(config as any);
+			let server = new Server(options);
 
 			sinon.spy(server, 'info');
 
 			// When
-			server = server.addRoute(route as any);
+			server = server.addRoute(route);
 
 			// Then
 			expect(server.info).to.have.been.calledTwice;
 			expect(server.info).to.have.been.calledWith('Creating router for namespace: /api/com/example/v1.0.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.v1_0.Surname.');
 			// expect(_.size(server.router_configuration)).to.eql(1);
-			// expect(server.route_configuration).to.eql({ '/api/com/example/v1.0': { Surname: schema4 } });
+			// expect(server.route_optionsuration).to.eql({ '/api/com/example/v1.0': { Surname: schema4 } });
 			// expect(Router.use).to.have.been.calledWith(route.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
@@ -211,7 +213,7 @@ describe('index/server.ts', () => {
 			sinon.spy(EventEmitter.prototype, 'emit');
 			// sinon.stub(Router, 'use');
 
-			const config = {
+			const options: any = {
 				transport: {
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
@@ -232,13 +234,13 @@ describe('index/server.ts', () => {
 				schema: schema2
 			};
 
-			let server = new Server(config as any);
+			let server = new Server(options);
 
 			sinon.spy(server, 'info');
 
 			// When
-			server = server.addRoute(route1 as any);
-			server = server.addRoute(route2 as any);
+			server = server.addRoute(route1);
+			server = server.addRoute(route2);
 
 			// Then
 			expect(server.info).to.have.callCount(4);
@@ -247,7 +249,7 @@ describe('index/server.ts', () => {
 			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example/two.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.two.FullName.');
 			// expect(_.size(server.router_configuration)).to.eql(2);
-			// expect(server.route_configuration).to.eql({
+			// expect(server.route_optionsuration).to.eql({
 			// 	'/com/example': { FullName: schema1 },
 			// 	'/com/example/two': { FullName: schema2 }
 			// });
@@ -264,7 +266,7 @@ describe('index/server.ts', () => {
 			sinon.spy(EventEmitter.prototype, 'emit');
 			// sinon.stub(Router, 'use');
 
-			const config = {
+			const options: any = {
 				transport: {
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
@@ -285,13 +287,13 @@ describe('index/server.ts', () => {
 				schema: schema3
 			};
 
-			let server = new Server(config as any);
+			let server = new Server(options);
 
 			sinon.spy(server, 'info');
 
 			// When
-			server = server.addRoute(route1 as any);
-			server = server.addRoute(route2 as any);
+			server = server.addRoute(route1);
+			server = server.addRoute(route2);
 
 			// Then
 			expect(server.info).to.have.been.calledThrice;
@@ -299,7 +301,7 @@ describe('index/server.ts', () => {
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.Surname.');
 			// expect(_.size(server.router_configuration)).to.eql(1);
-			// expect(server.route_configuration).to.eql({
+			// expect(server.route_optionsuration).to.eql({
 			// 	'/com/example': {
 			// 		FullName: schema1,
 			// 		Surname: schema3
@@ -317,14 +319,14 @@ describe('index/server.ts', () => {
 		it('should return the express server', () => {
 
 			// Given
-			const config = {
+			const options: any = {
 				transport: {
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
 				}
 			};
 
-			const server = new Server(config as any);
+			const server = new Server(options);
 
 			// When
 			const expressServer = server.getServer();
@@ -341,14 +343,14 @@ describe('index/server.ts', () => {
 		it('should return the publisher', () => {
 
 			// Given
-			const config = {
+			const options: any = {
 				transport: {
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
 				}
 			};
 
-			const server = new Server(config as any);
+			const server = new Server(options);
 
 			// When
 			const publisher = server.getPublisher();

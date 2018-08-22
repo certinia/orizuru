@@ -126,7 +126,7 @@ export class Server extends EventEmitter {
 		const apiEndpoint = validatedOptions.endpoint + validatedOptions.pathMapper(schemaNamespace);
 
 		let routeConfiguration = this.routeConfiguration[apiEndpoint];
-		let router = this.routerConfiguration[apiEndpoint];
+		let router: any = this.routerConfiguration[apiEndpoint];
 
 		// If we don't have the router for this endpoint then we need to create one.
 		if (!router) {
@@ -160,7 +160,7 @@ export class Server extends EventEmitter {
 		this.info(`Adding route: ${fullSchemaName}.`);
 
 		// Add the router method.
-		(router as any)[validatedOptions.method](PARAMETER_API_SCHEMA_ENDPOINT, createRoute(this, routeConfiguration, validatedOptions));
+		router[validatedOptions.method](PARAMETER_API_SCHEMA_ENDPOINT, createRoute(this, routeConfiguration, validatedOptions));
 
 		return this;
 

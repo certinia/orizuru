@@ -81,11 +81,13 @@ describe('index/handler', () => {
 		it('should emit an error event if the configuration is invalid', () => {
 
 			// Given
+			const options: any = {};
+
 			sinon.spy(EventEmitter.prototype, 'emit');
 
 			// When
 			// Then
-			expect(() => new Handler({} as any)).to.throw(/^Missing required object parameter: transport\.$/g);
+			expect(() => new Handler(options)).to.throw(/^Missing required object parameter: transport\.$/g);
 
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
@@ -97,7 +99,7 @@ describe('index/handler', () => {
 
 	describe('handle', () => {
 
-		it('should install the handler for a schema', () => {
+		it('should install the handler for a schema', async () => {
 
 			// Given
 			mocks.config.transport.subscribe = sinon.stub().resolves();
@@ -106,7 +108,7 @@ describe('index/handler', () => {
 
 			const handler = new Handler(mocks.config);
 
-			const config = {
+			const config: any = {
 				handler: sinon.stub(),
 				message: {
 					first: 'First',
@@ -124,15 +126,13 @@ describe('index/handler', () => {
 			};
 
 			// When
+			await handler.handle(config);
+
 			// Then
-			return expect(handler.handle(config as any))
-				.to.eventually.be.fulfilled
-				.then(() => {
-					expect(HandlerFunctionValidator.prototype.validate).to.have.been.calledOnce;
-					expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
-					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Installing handler for com.example.FullName events.');
-				});
+			expect(HandlerFunctionValidator.prototype.validate).to.have.been.calledOnce;
+			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Installing handler for com.example.FullName events.');
 
 		});
 
@@ -144,10 +144,11 @@ describe('index/handler', () => {
 				sinon.stub(HandlerFunctionValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
 				const handler = new Handler(mocks.config);
+				const options: any = {};
 
 				// When
 				// Then
-				return expect(handler.handle({} as any)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/)
+				return expect(handler.handle(options)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/)
 					.then(() => {
 						expect(HandlerFunctionValidator.prototype.validate).to.have.been.calledOnce;
 					});

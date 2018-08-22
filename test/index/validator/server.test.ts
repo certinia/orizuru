@@ -38,7 +38,7 @@ describe('index/validator/server.ts', () => {
 		it('should return the schema if it is valid', () => {
 
 			// Given
-			const config = {
+			const options: any = {
 				transport: {
 					publish: _.noop,
 					subscribe: _.noop
@@ -47,68 +47,74 @@ describe('index/validator/server.ts', () => {
 
 			// When
 			// Then
-			expect(new ServerValidator(config as any)).to.eql(config);
+			expect(new ServerValidator(options)).to.eql(options);
 
 		});
 
 		describe('should throw an error', () => {
 
-			it('if no config is provided', () => {
+			it('if no options are provided', () => {
 
 				// Given
+				const options: any = undefined;
+
 				// When
 				// Then
-				expect(() => new ServerValidator(undefined as any)).to.throw(/^Missing required object parameter\.$/);
+				expect(() => new ServerValidator(options)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 
-			it('if config is not an object', () => {
+			it('if options is not an object', () => {
 
 				// Given
+				const options: any = 2;
+
 				// When
 				// Then
-				expect(() => new ServerValidator(2 as any)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
+				expect(() => new ServerValidator(options)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
 
 			});
 
 			it('if no transport is provided', () => {
 
 				// Given
+				const options: any = {};
+
 				// When
 				// Then
-				expect(() => new ServerValidator({} as any)).to.throw(/^Missing required object parameter: transport\.$/);
+				expect(() => new ServerValidator(options)).to.throw(/^Missing required object parameter: transport\.$/);
 
 			});
 
 			it('if the transport is not an object', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					transport: 2
 				};
 				// When
 				// Then
-				expect(() => new ServerValidator(config as any)).to.throw(/^Invalid parameter: transport is not an object\.$/);
+				expect(() => new ServerValidator(options)).to.throw(/^Invalid parameter: transport is not an object\.$/);
 
 			});
 
 			it('if no transport publish function is provided', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					transport: {}
 				};
 
 				// When
 				// Then
-				expect(() => new ServerValidator(config as any)).to.throw(/^Missing required function parameter: transport\[publish\]\.$/);
+				expect(() => new ServerValidator(options)).to.throw(/^Missing required function parameter: transport\[publish\]\.$/);
 
 			});
 
 			it('if the transport publish is not a function', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					transport: {
 						publish: 2
 					}
@@ -116,14 +122,14 @@ describe('index/validator/server.ts', () => {
 
 				// When
 				// Then
-				expect(() => new ServerValidator(config as any)).to.throw(/^Invalid parameter: transport\[publish\] is not a function\.$/);
+				expect(() => new ServerValidator(options)).to.throw(/^Invalid parameter: transport\[publish\] is not a function\.$/);
 
 			});
 
 			it('if no transport subscribe function is provided', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					transport: {
 						publish: _.noop
 					}
@@ -131,14 +137,14 @@ describe('index/validator/server.ts', () => {
 
 				// When
 				// Then
-				expect(() => new ServerValidator(config as any)).to.throw(/^Missing required function parameter: transport\[subscribe\]\.$/);
+				expect(() => new ServerValidator(options)).to.throw(/^Missing required function parameter: transport\[subscribe\]\.$/);
 
 			});
 
 			it('if the transport subscribe is not a function', () => {
 
 				// Given
-				const config = {
+				const options: any = {
 					transport: {
 						publish: _.noop,
 						subscribe: 2
@@ -147,7 +153,7 @@ describe('index/validator/server.ts', () => {
 
 				// When
 				// Then
-				expect(() => new ServerValidator(config as any)).to.throw(/^Invalid parameter: transport\[subscribe\] is not a function\.$/);
+				expect(() => new ServerValidator(options)).to.throw(/^Invalid parameter: transport\[subscribe\] is not a function\.$/);
 
 			});
 

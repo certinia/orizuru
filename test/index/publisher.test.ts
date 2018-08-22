@@ -51,14 +51,16 @@ describe('index/publisher.ts', () => {
 
 	describe('constructor', () => {
 
-		it('should emit an error event if the configuration is invalid', () => {
+		it('should emit an error event if the optionsuration is invalid', () => {
 
 			// Given
 			sinon.spy(EventEmitter.prototype, 'emit');
 
+			const options: any = {};
+
 			// When
 			// Then
-			expect(() => new Publisher({} as any)).to.throw(/^Missing required object parameter: transport\.$/g);
+			expect(() => new Publisher(options)).to.throw(/^Missing required object parameter: transport\.$/g);
 
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
@@ -69,7 +71,7 @@ describe('index/publisher.ts', () => {
 		it('should extend EventEmitter', () => {
 
 			// Given
-			const config = {
+			const options: any = {
 				transport: {
 					publish: _.noop,
 					subscribe: _.noop
@@ -77,7 +79,7 @@ describe('index/publisher.ts', () => {
 			};
 
 			// When
-			const publisher = new Publisher(config as any);
+			const publisher = new Publisher(options);
 
 			// Then
 			expect(publisher).to.be.an.instanceof(EventEmitter);
@@ -95,7 +97,7 @@ describe('index/publisher.ts', () => {
 			sinon.spy(EventEmitter.prototype, 'emit');
 			sinon.spy(Transport.prototype, 'encode');
 
-			const config = {
+			const options: any = {
 				transport: {
 					connect: sinon.stub().resolves(),
 					publish: sinon.stub().resolves(),
@@ -103,7 +105,7 @@ describe('index/publisher.ts', () => {
 				}
 			};
 
-			const publisher = new Publisher(config as any);
+			const publisher = new Publisher(options);
 
 			const message = {
 				message: {
@@ -132,7 +134,7 @@ describe('index/publisher.ts', () => {
 
 			// When
 			// Then
-			return expect(publisher.publish(message as any))
+			return expect(publisher.publish(message))
 				.to.eventually.be.fulfilled
 				.then(() => {
 					expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
@@ -148,23 +150,23 @@ describe('index/publisher.ts', () => {
 
 		describe('should throw an error', () => {
 
-			it('if no config is provided', () => {
+			it('if no options is provided', () => {
 
 				// Given
 				sinon.stub(PublishFunctionValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
-				const config = {
+				const options: any = {
 					transport: {
 						publish: sinon.stub().resolves(),
 						subscribe: sinon.stub().resolves()
 					}
 				};
 
-				const publisher = new Publisher(config as any);
+				const publisher = new Publisher(options);
 
 				// When
 				// Then
-				return expect(publisher.publish({} as any)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/)
+				return expect(publisher.publish(options)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/)
 					.then(() => {
 						expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
 					});
@@ -177,7 +179,7 @@ describe('index/publisher.ts', () => {
 				sinon.stub(PublishFunctionValidator.prototype, 'validate');
 				sinon.stub(Transport.prototype, 'encode').throws(new Error('encoding error'));
 
-				const config = {
+				const options: any = {
 					transport: {
 						connect: sinon.stub().resolves(),
 						publish: sinon.stub().resolves(),
@@ -200,13 +202,13 @@ describe('index/publisher.ts', () => {
 					})
 				};
 
-				const publisher = new Publisher(config as any);
+				const publisher = new Publisher(options);
 
 				sinon.spy(publisher, 'error');
 
 				// When
 				// Then
-				return expect(publisher.publish(publishMessage as any))
+				return expect(publisher.publish(publishMessage))
 					.to.eventually.be.rejectedWith('Error encoding message for schema (com.example.FullName):\ninvalid value (undefined) for path (first) it should be of type (string)\ninvalid value (undefined) for path (last) it should be of type (string)')
 					.then(() => {
 						expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
@@ -223,7 +225,7 @@ describe('index/publisher.ts', () => {
 
 				const expectedError = new Error('Failed to publish message.');
 
-				const config = {
+				const options: any = {
 					transport: {
 						connect: sinon.stub().resolves(),
 						publish: sinon.stub().rejects(expectedError),
@@ -249,13 +251,13 @@ describe('index/publisher.ts', () => {
 					})
 				};
 
-				const publisher = new Publisher(config as any);
+				const publisher = new Publisher(options);
 
 				sinon.spy(publisher, 'error');
 
 				// When
 				// Then
-				return expect(publisher.publish(publishMessage as any))
+				return expect(publisher.publish(publishMessage))
 					.to.eventually.be.rejectedWith('Failed to publish message.')
 					.then(() => {
 						expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
