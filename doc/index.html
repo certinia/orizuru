@@ -70,13 +70,12 @@
 				<p>Orizuru is a library that streamlines strongly typed communication between Heroku dynos (or other processes).
 				It leverages <a href="https://avro.apache.org/">Apache Avro</a> for schema validation and communication.</p>
 				<h2 id="install">Install</h2>
-				<pre><code class="lang-bash">npm install @financialforcedev/orizuru
-</code></pre>
+				<pre><code class="language-bash">npm install @financialforcedev/orizuru</code></pre>
 				<h2 id="usage">Usage</h2>
 				<h3 id="configuration">Configuration</h3>
 				<p>All Orizuru classes require reference to a transport layer. The transport layer governs how messages are published and
 				subscribed. We inject this as a class constructor configuration parameter.</p>
-				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { Server } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { Server } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
 <span class="hljs-keyword">import</span> { createTransport } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
 
 <span class="hljs-keyword">const</span> server = <span class="hljs-keyword">new</span> Server({
@@ -85,7 +84,6 @@
         url: <span class="hljs-string">'amqp://localhost'</span>
     }
 });
-
 </code></pre>
 				<p>The example above shows how to use our RabbitMQ transport layer with a <code>Server</code>. The same method is used with our other classes.
 					The <code>transportConfig</code> is passed through to the transport layer via its function APIs, in the case of the RabbitMQ transport, we require
@@ -94,7 +92,7 @@
 				<p>A Orizuru Server allows you combine Avro schemas with API POST endpoints to create webhooks that validate API post body content and publish events
 					via your chosen transport layer implementation. POST bodies are automatically validated against the Avro schema they are paired with, so the consumer
 				of your events always receives valid input if it is invoked.</p>
-				<pre><code class="lang-typescript">
+				<pre><code class="language-typescript">
 <span class="hljs-keyword">import</span> { Server } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
 <span class="hljs-keyword">import</span> { createTransport } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
 
@@ -121,13 +119,12 @@ server.addRoute({
 
 <span class="hljs-keyword">let</span> expressServer = server.getServer();
 
-expressServer.listen(<span class="hljs-number">8080</span>);
-</code></pre>
+expressServer.listen(<span class="hljs-number">8080</span>);</code></pre>
 				<p>In the above example, the <code>getServer()</code> method returns an express server, where you can add your own routes, etc, before listening to a port. This example would create a POST API for <code>/api/path/ageAndDob</code>. The post body you send would be validated against the schema, requiring <code>age</code> and <code>dob</code> string fields in its JSON. If the validation succeeds, an event name passed to the transport layer will be the fully qualified name of the Avro schema type <code>ageAndDob</code>, along with an Avro serialised buffer of the POST body.</p>
 				<p>Additionally, if there is an object on the express request called <code>orizuru</code>, e.g. <code>request.orizuru</code>, this will also be serialized and added to the buffer as <code>context</code>. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.</p>
 				<h3 id="publisher">Publisher</h3>
 				<p>The Orizuru Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.</p>
-				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { Publisher, IOrizuruMessage } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { Publisher, IOrizuruMessage } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
 <span class="hljs-keyword">import</span> { createTransport } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
 
 <span class="hljs-keyword">const</span> schema = {
@@ -157,14 +154,13 @@ expressServer.listen(<span class="hljs-number">8080</span>);
     }
 });
 
-publisher.publish({ schema, message });
-</code></pre>
+publisher.publish({ schema, message });</code></pre>
 				<p>This example publishes an event named &#39;foo.bar&#39; with the <code>message</code> described. The <code>message</code> part is validated against the <code>schema</code>. The <code>context</code> object is unvalidated and can contain anything.</p>
 				<h3 id="handler">Handler</h3>
 				<p>The handler handles messages published by the <code>Server</code> or <code>Publisher</code>. It requires a schema name and a handler.</p>
 				<p><strong>NOTE:</strong> The supplied callback to this handler should <strong>always</strong> handle errors.
 				This means it should never <code>throw</code> an exception, and any <code>promise</code> it returns should always have a <code>catch</code> block. Any errors thrown / rejecting promises returned will be <strong>swallowed</strong>.</p>
-				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { Handler, IOrizuruMessage } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { Handler, IOrizuruMessage } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
 <span class="hljs-keyword">import</span> { createTransport } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
 
 <span class="hljs-keyword">const</span> schema = {
@@ -192,8 +188,7 @@ publisher.publish({ schema, message });
 
 <span class="hljs-built_in">Promise</span>.all([
     handlerInstance.handle({ schema, handler })
-]);
-</code></pre>
+]);</code></pre>
 				<p>The handler can handle multiple events, with callbacks for each wired in. The input to the callback <code>{ message, context }</code> is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middlewares or supplied to the publish function.</p>
 				<h2 id="api-docs">API Docs</h2>
 				<p>Click to view <a href="http://htmlpreview.github.io/?https://github.com/financialforcedev/orizuru/blob/master/doc/index.html">TSDoc API documentation</a>.</p>
