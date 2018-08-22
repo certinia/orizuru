@@ -2,6 +2,6 @@
 
 ## Latest changes (not yet released)
 
-### FIXES
+### NEW FEATURES
 
-- Update dependencies as some had alerts.
+- Conversion to Typescript.
