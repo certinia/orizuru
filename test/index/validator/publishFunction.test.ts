@@ -36,7 +36,7 @@ chai.use(sinonChai);
 
 const expect = chai.expect;
 
-describe('index/validator/publisher.ts', () => {
+describe('index/validator/publisher', () => {
 
 	let publishFunctionValidator: PublishFunctionValidator;
 

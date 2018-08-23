@@ -28,7 +28,7 @@ import { expect } from 'chai';
 
 import * as routeMethod from '../../../src/index/server/routeMethod';
 
-describe('index/server/routeMethod.ts', () => {
+describe('index/server/routeMethod', () => {
 
 	it('should expose the correct route methods', () => {
 

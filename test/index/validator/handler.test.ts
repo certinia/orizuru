@@ -31,7 +31,7 @@ import { HandlerValidator } from '../../../src/index/validator/handler';
 
 const expect = chai.expect;
 
-describe('index/validator/handler.ts', () => {
+describe('index/validator/handler', () => {
 
 	describe('constructor', () => {
 

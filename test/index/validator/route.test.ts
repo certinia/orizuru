@@ -38,7 +38,7 @@ chai.use(sinonChai);
 
 const expect = chai.expect;
 
-describe('index/validator/route.ts', () => {
+describe('index/validator/route', () => {
 
 	let routeValidator: RouteValidator;
 

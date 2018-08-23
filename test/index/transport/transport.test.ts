@@ -37,7 +37,7 @@ chai.use(sinonChai);
 const expect = chai.expect;
 const transportSchema = fs.readJsonSync(__dirname + '/../../../src/index/transport/transport.avsc');
 
-describe('index/transport/transport.ts', () => {
+describe('index/transport/transport', () => {
 
 	const messageSchemaV1 = avsc.Type.forSchema({
 		fields: [

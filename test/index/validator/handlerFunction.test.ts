@@ -38,7 +38,7 @@ chai.use(sinonChai);
 
 const expect = chai.expect;
 
-describe('index/validator/handlerFunction.ts', () => {
+describe('index/validator/handlerFunction', () => {
 
 	let handlerFunctionValidator: HandlerFunctionValidator;
 

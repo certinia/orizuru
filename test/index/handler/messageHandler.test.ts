@@ -37,7 +37,7 @@ chai.use(sinonChai);
 
 const expect = chai.expect;
 
-describe('index/handler/messageHandler.ts', () => {
+describe('index/handler/messageHandler', () => {
 
 	let config: any;
 	let server: any;

@@ -31,7 +31,7 @@ import { PublisherValidator } from '../../../src/index/validator/publisher';
 
 const expect = chai.expect;
 
-describe('index/validator/publisher.ts', () => {
+describe('index/validator/publisher', () => {
 
 	describe('constructor', () => {
 

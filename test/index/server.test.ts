@@ -41,7 +41,7 @@ chai.use(sinonChai);
 
 const expect = chai.expect;
 
-describe('index/server.ts', () => {
+describe('index/server', () => {
 
 	const Router: any = express.Router;
 

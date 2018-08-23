@@ -31,7 +31,7 @@ import { SchemaValidator } from '../../../../src/index/validator/shared/schema';
 
 const expect = chai.expect;
 
-describe('index/validator/shared/schema.ts', () => {
+describe('index/validator/shared/schema', () => {
 
 	let schemaValidator: SchemaValidator;
 
