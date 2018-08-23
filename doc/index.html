@@ -65,8 +65,7 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<h1 id="orizuru">Orizuru</h1>
-				<p><a href="https://travis-ci.org/financialforcedev/orizuru"><img src="https://travis-ci.org/financialforcedev/orizuru.svg?branch=master" alt="Build Status"></a>
-				<a href="https://nodesecurity.io/orgs/ffres/projects/4b0e31c0-4913-4d2f-b1de-802ac4de447f"><img src="https://nodesecurity.io/orgs/ffres/projects/4b0e31c0-4913-4d2f-b1de-802ac4de447f/badge" alt="NSP Status"></a></p>
+				<p><a href="https://travis-ci.org/financialforcedev/orizuru"><img src="https://travis-ci.org/financialforcedev/orizuru.svg?branch=master" alt="Build Status"></a></p>
 				<p>Orizuru is a library that streamlines strongly typed communication between Heroku dynos (or other processes).
 				It leverages <a href="https://avro.apache.org/">Apache Avro</a> for schema validation and communication.</p>
 				<h2 id="install">Install</h2>
@@ -76,10 +75,10 @@
 				<p>All Orizuru classes require reference to a transport layer. The transport layer governs how messages are published and
 				subscribed. We inject this as a class constructor configuration parameter.</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { Server } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
-<span class="hljs-keyword">import</span> { createTransport } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> transport <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
 
 <span class="hljs-keyword">const</span> server = <span class="hljs-keyword">new</span> Server({
-    transport: createTransport(),
+    transport,
     transportConfig: {
         url: <span class="hljs-string">'amqp://localhost'</span>
     }
@@ -94,7 +93,7 @@
 				of your events always receives valid input if it is invoked.</p>
 				<pre><code class="language-typescript">
 <span class="hljs-keyword">import</span> { Server } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
-<span class="hljs-keyword">import</span> { createTransport } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> transport <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
 
 <span class="hljs-keyword">const</span> schema = {
     name: <span class="hljs-string">'ageAndDob'</span>,
@@ -106,7 +105,7 @@
 };
 
 <span class="hljs-keyword">const</span> server = <span class="hljs-keyword">new</span> Server({
-    transport: createTransport(),
+    transport,
     transportConfig: {
         url: <span class="hljs-string">'amqp://localhost'</span>
     }
@@ -125,7 +124,7 @@ expressServer.listen(<span class="hljs-number">8080</span>);</code></pre>
 				<h3 id="publisher">Publisher</h3>
 				<p>The Orizuru Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { Publisher, IOrizuruMessage } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
-<span class="hljs-keyword">import</span> { createTransport } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> transport <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
 
 <span class="hljs-keyword">const</span> schema = {
     <span class="hljs-keyword">namespace</span>: <span class="hljs-string">'foo'</span>,
@@ -148,7 +147,7 @@ expressServer.listen(<span class="hljs-number">8080</span>);</code></pre>
 };
 
 <span class="hljs-keyword">const</span> publisher = <span class="hljs-keyword">new</span> Publisher({
-    transport: createTransport(),
+    transport,
     transportConfig: {
         url: <span class="hljs-string">'amqp://localhost'</span>
     }
@@ -161,7 +160,7 @@ publisher.publish({ schema, message });</code></pre>
 				<p><strong>NOTE:</strong> The supplied callback to this handler should <strong>always</strong> handle errors.
 				This means it should never <code>throw</code> an exception, and any <code>promise</code> it returns should always have a <code>catch</code> block. Any errors thrown / rejecting promises returned will be <strong>swallowed</strong>.</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { Handler, IOrizuruMessage } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
-<span class="hljs-keyword">import</span> { createTransport } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> transport <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru-transport-rabbitmq'</span>;
 
 <span class="hljs-keyword">const</span> schema = {
     <span class="hljs-keyword">namespace</span>: <span class="hljs-string">'foo'</span>,
@@ -180,7 +179,7 @@ publisher.publish({ schema, message });</code></pre>
 }
 
 <span class="hljs-keyword">const</span> handlerInstance = <span class="hljs-keyword">new</span> Handler({
-    transport: createTransport(),
+    transport,
     transportConfig: {
         url: <span class="hljs-string">'amqp://localhost'</span>
     }
