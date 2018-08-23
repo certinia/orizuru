@@ -258,7 +258,7 @@ describe('index/server', () => {
 			// Given
 			sinon.spy(RouteValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			// sinon.stub(Router, 'use');
+			sinon.stub(Router, 'use');
 
 			const options: any = {
 				transport: {
