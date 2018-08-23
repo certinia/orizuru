@@ -20,13 +20,13 @@ subscribed. We inject this as a class constructor configuration parameter.
 
 ```typescript
 import { Server } from '@financialforcedev/orizuru';
-import { createTransport } from '@financialforcedev/orizuru-transport-rabbitmq';
+import * as transport from '@financialforcedev/orizuru-transport-rabbitmq';
 
 const server = new Server({
-	transport: createTransport(),
-	transportConfig: {
-		url: 'amqp://localhost'
-	}
+    transport,
+    transportConfig: {
+        url: 'amqp://localhost'
+    }
 });
 
 ```
@@ -44,27 +44,27 @@ of your events always receives valid input if it is invoked.
 ```typescript
 
 import { Server } from '@financialforcedev/orizuru';
-import { createTransport } from '@financialforcedev/orizuru-transport-rabbitmq';
+import * as transport from '@financialforcedev/orizuru-transport-rabbitmq';
 
 const schema = {
-	name: 'ageAndDob',
-	type: 'record',
-	fields: [
-		{ name: 'age', type: 'string' },
-		{ name: 'dob', type: 'string' }
-	]
+    name: 'ageAndDob',
+    type: 'record',
+    fields: [
+        { name: 'age', type: 'string' },
+        { name: 'dob', type: 'string' }
+    ]
 };
 
 const server = new Server({
-	transport: createTransport(),
-	transportConfig: {
-		url: 'amqp://localhost'
-	}
+    transport,
+    transportConfig: {
+        url: 'amqp://localhost'
+    }
 });
 
 server.addRoute({
-	endpoint: '/api/path/',
-	schema
+    endpoint: '/api/path/',
+    schema
 })
 
 let expressServer = server.getServer();
@@ -82,33 +82,33 @@ The Orizuru Publisher allows you to publish events directly from Node.js via a t
 
 ```typescript
 import { Publisher, IOrizuruMessage } from '@financialforcedev/orizuru';
-import { createTransport } from '@financialforcedev/orizuru-transport-rabbitmq';
+import * as transport from '@financialforcedev/orizuru-transport-rabbitmq';
 
 const schema = {
-	namespace: 'foo',
-	name: 'bar',
-	type: 'record',
-	fields: [
-		{ name: 'age', type: 'string' },
-		{ name: 'dob', type: 'string' }
-	]
+    namespace: 'foo',
+    name: 'bar',
+    type: 'record',
+    fields: [
+        { name: 'age', type: 'string' },
+        { name: 'dob', type: 'string' }
+    ]
 };
 
 const message: IOrizuruMessage = {
-	context: {
-		anything: 'something untyped'
-	},
-	message: {
-		age: 'fifty',
-		dob: '07/01/1991'
-	}
+    context: {
+        anything: 'something untyped'
+    },
+    message: {
+        age: 'fifty',
+        dob: '07/01/1991'
+    }
 };
 
 const publisher = new Publisher({
-	transport: createTransport(),
-	transportConfig: {
-		url: 'amqp://localhost'
-	}
+    transport,
+    transportConfig: {
+        url: 'amqp://localhost'
+    }
 });
 
 publisher.publish({ schema, message });
@@ -125,33 +125,33 @@ This means it should never ```throw``` an exception, and any ```promise``` it re
 
 ```typescript
 import { Handler, IOrizuruMessage } from '@financialforcedev/orizuru';
-import { createTransport } from '@financialforcedev/orizuru-transport-rabbitmq';
+import * as transport from '@financialforcedev/orizuru-transport-rabbitmq';
 
 const schema = {
-	namespace: 'foo',
-	name: 'bar',
-	type: 'record',
-	fields: [
-		{ name: 'age', type: 'string' },
-		{ name: 'dob', type: 'string' }
-	]
+    namespace: 'foo',
+    name: 'bar',
+    type: 'record',
+    fields: [
+        { name: 'age', type: 'string' },
+        { name: 'dob', type: 'string' }
+    ]
 };
 
 const handler = async ({ message, context }: IOrizuruMessage) => {
-	console.log('handling messages from the server API');
-	console.log(message);
-	console.log(context);
+    console.log('handling messages from the server API');
+    console.log(message);
+    console.log(context);
 }
 
 const handlerInstance = new Handler({
-	transport: createTransport(),
-	transportConfig: {
-		url: 'amqp://localhost'
-	}
+    transport,
+    transportConfig: {
+        url: 'amqp://localhost'
+    }
 })
 
 Promise.all([
-	handlerInstance.handle({ schema, handler })
+    handlerInstance.handle({ schema, handler })
 ]);
 ```
 
