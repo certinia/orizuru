@@ -51,7 +51,7 @@ describe('index/publisher.ts', () => {
 
 	describe('constructor', () => {
 
-		it('should emit an error event if the optionsuration is invalid', () => {
+		it('should emit an error event if the options are invalid', () => {
 
 			// Given
 			sinon.spy(EventEmitter.prototype, 'emit');

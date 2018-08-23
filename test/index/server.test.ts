@@ -30,6 +30,7 @@ import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 import { EventEmitter } from 'events';
+import express from 'express';
 import _ from 'lodash';
 
 import { RouteValidator } from '../../src/index/validator/route';
@@ -41,6 +42,8 @@ chai.use(sinonChai);
 const expect = chai.expect;
 
 describe('index/server.ts', () => {
+
+	const Router: any = express.Router;
 
 	const schema1 = avsc.Type.forSchema({
 		fields: [
@@ -86,7 +89,7 @@ describe('index/server.ts', () => {
 
 	describe('constructor', () => {
 
-		it('should emit an error event if the optionsuration is invalid', () => {
+		it('should emit an error event if the options are invalid', () => {
 
 			// Given
 			const options: any = {};
@@ -130,7 +133,7 @@ describe('index/server.ts', () => {
 			// Given
 			sinon.spy(RouteValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			// sinon.stub(Router, 'use');
+			sinon.stub(Router, 'use');
 
 			const options: any = {
 				transport: {
@@ -157,9 +160,7 @@ describe('index/server.ts', () => {
 			expect(server.info).to.have.been.calledTwice;
 			expect(server.info).to.have.been.calledWith('Creating router for namespace: /api/com/example.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
-			// expect(_.size(server.router_configuration)).to.eql(1);
-			// expect(server.route_optionsuration).to.eql({ '/api/com/example': { FullName: schema1 } });
-			// expect(Router.use).to.have.been.calledWith(route.middleware[0]);
+			expect(Router.use).to.have.been.calledWith(route.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
 		});
@@ -169,7 +170,7 @@ describe('index/server.ts', () => {
 			// Given
 			sinon.spy(RouteValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			// sinon.stub(Router, 'use');
+			sinon.stub(Router, 'use');
 
 			const options: any = {
 				transport: {
@@ -199,9 +200,7 @@ describe('index/server.ts', () => {
 			expect(server.info).to.have.been.calledTwice;
 			expect(server.info).to.have.been.calledWith('Creating router for namespace: /api/com/example/v1.0.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.v1_0.Surname.');
-			// expect(_.size(server.router_configuration)).to.eql(1);
-			// expect(server.route_optionsuration).to.eql({ '/api/com/example/v1.0': { Surname: schema4 } });
-			// expect(Router.use).to.have.been.calledWith(route.middleware[0]);
+			expect(Router.use).to.have.been.calledWith(route.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
 		});
@@ -211,7 +210,7 @@ describe('index/server.ts', () => {
 			// Given
 			sinon.spy(RouteValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			// sinon.stub(Router, 'use');
+			sinon.stub(Router, 'use');
 
 			const options: any = {
 				transport: {
@@ -248,13 +247,8 @@ describe('index/server.ts', () => {
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
 			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example/two.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.two.FullName.');
-			// expect(_.size(server.router_configuration)).to.eql(2);
-			// expect(server.route_optionsuration).to.eql({
-			// 	'/com/example': { FullName: schema1 },
-			// 	'/com/example/two': { FullName: schema2 }
-			// });
-			// expect(Router.use).to.have.been.calledWith(route1.middleware[0]);
-			// expect(Router.use).to.have.been.calledWith(route2.middleware[0]);
+			expect(Router.use).to.have.been.calledWith(route1.middleware[0]);
+			expect(Router.use).to.have.been.calledWith(route2.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledTwice;
 
 		});
@@ -300,14 +294,7 @@ describe('index/server.ts', () => {
 			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
 			expect(server.info).to.have.been.calledWith('Adding route: com.example.Surname.');
-			// expect(_.size(server.router_configuration)).to.eql(1);
-			// expect(server.route_optionsuration).to.eql({
-			// 	'/com/example': {
-			// 		FullName: schema1,
-			// 		Surname: schema3
-			// 	}
-			// });
-			// expect(Router.use).to.have.been.calledWith(route1.middleware[0]);
+			expect(Router.use).to.have.been.calledWith(route1.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledTwice;
 
 		});
