@@ -1,59 +1,18 @@
 {
 	"version": "0.2.0",
-	"configurations": [{
-		"type": "node",
-		"request": "launch",
-		"name": "Debug web example",
-		"runtimeArgs": [
-			"src/example/web.js"
-		],
-		"envFile": "${workspaceFolder}/local.run.properties"
-	}, {
-		"type": "node",
-		"request": "launch",
-		"name": "Debug publisher example",
-		"runtimeArgs": [
-			"src/example/publisher.js"
-		],
-		"envFile": "${workspaceFolder}/local.run.properties"
-	}, {
-		"type": "node",
-		"request": "launch",
-		"name": "Debug worker example 1",
-		"runtimeArgs": [
-			"src/example/worker1.js"
-		],
-		"envFile": "${workspaceFolder}/local.run.properties"
-	}, {
-		"type": "node",
-		"request": "launch",
-		"name": "Debug worker example 2",
-		"runtimeArgs": [
-			"src/example/worker2.js"
-		],
-		"envFile": "${workspaceFolder}/local.run.properties"
-	}, {
-		"type": "node",
-		"request": "launch",
-		"name": "Debug worker example 3",
-		"runtimeArgs": [
-			"src/example/worker3.js"
-		],
-		"envFile": "${workspaceFolder}/local.run.properties"
-	}, {
-		"type": "node",
-		"request": "launch",
-		"name": "Debug Tests",
-		"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-		"args": [
-			"-u",
-			"tdd",
-			"--timeout",
-			"999999",
-			"--colors",
-			"--recursive",
-			"${workspaceRoot}/src/spec"
-		],
-		"internalConsoleOptions": "openOnSessionStart"
-	}]
+	"configurations": [
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Debug Tests",
+			"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+			"args": [
+				"-u",
+				"tdd",
+				"--timeout",
+				"999999"
+			],
+			"internalConsoleOptions": "openOnSessionStart"
+		}
+	]
 }

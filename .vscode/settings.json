@@ -1,20 +1,4 @@
 {
-	"beautify.config": "node_modules/@financialforcedev/eslint-config/.jsbeautifyrc",
-	"beautify.language": {
-		"js": {
-			"type": [
-				"javascript",
-				"json"
-			],
-			"filename": [
-				".jsbeautifyrc"
-			]
-		}
-	},
-	"beautify.ignore": [
-		"**/.vscode/*",
-		"package.json"
-	],
 	"editor.detectIndentation": false,
 	"editor.formatOnSave": true,
 	"editor.insertSpaces": false,
@@ -34,11 +18,10 @@
 	"lcov.path": "coverage/lcov.info",
 	"lcov.watch": [
 		{
-			"pattern": "**/*.js",
+			"pattern": "**/*.ts",
 			"command": "npm test"
 		}
 	],
-	"runCurrentTest.run": "npm run single-test -- ${relativeTestPath}",
 	"terminal.integrated.scrollback": 10000,
 	"workbench.colorCustomizations": {
 		"activityBar.foreground": "#007DFF"
