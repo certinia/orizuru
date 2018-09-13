@@ -47,7 +47,7 @@ export class ServerValidator {
 			throw new Error('Missing required object parameter: transport.');
 		}
 
-		if (!_.isPlainObject(options.transport)) {
+		if (!_.isObjectLike(options.transport)) {
 			throw new Error('Invalid parameter: transport is not an object.');
 		}
 
@@ -65,6 +65,22 @@ export class ServerValidator {
 
 		if (!_.isFunction(options.transport.subscribe)) {
 			throw new Error('Invalid parameter: transport[subscribe] is not a function.');
+		}
+
+		if (!options.transport.close) {
+			throw new Error('Missing required function parameter: transport[close].');
+		}
+
+		if (!_.isFunction(options.transport.close)) {
+			throw new Error('Invalid parameter: transport[close] is not a function.');
+		}
+
+		if (!options.transport.connect) {
+			throw new Error('Missing required function parameter: transport[connect].');
+		}
+
+		if (!_.isFunction(options.transport.connect)) {
+			throw new Error('Invalid parameter: transport[connect] is not a function.');
 		}
 
 		return options;
