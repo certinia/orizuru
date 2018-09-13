@@ -4,4 +4,4 @@
 
 ### NEW FEATURES
 
-- Conversion to Typescript.
+- Allow for ES6 transport classes.
