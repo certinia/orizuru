@@ -55,7 +55,7 @@ describe('index/validator/server', () => {
 
 			});
 
-			it('if transport is an ES6 class instance', () => {
+			it('if transport has a constructor other than Object', () => {
 
 				// Given
 

@@ -4,4 +4,4 @@
 
 ### NEW FEATURES
 
-- Allow for ES6 transport classes.
+- Allow for transport objects created by constructors other than Object.
