@@ -35,19 +35,65 @@ describe('index/validator/server', () => {
 
 	describe('constructor', () => {
 
-		it('should return the schema if it is valid', () => {
+		describe('should return the schema', () => {
 
-			// Given
-			const options: any = {
-				transport: {
-					publish: _.noop,
-					subscribe: _.noop
+			it('if transport is a plain object', () => {
+
+				// Given
+				const options: any = {
+					transport: {
+						close: _.noop,
+						connect: _.noop,
+						publish: _.noop,
+						subscribe: _.noop
+					}
+				};
+
+				// When
+				// Then
+				expect(new ServerValidator(options)).to.eql(options);
+
+			});
+
+			it('if transport has a constructor other than Object', () => {
+
+				// Given
+
+				class TestTransport {
+					constructor() {
+						// Cover these methods..
+						this.publish();
+						this.subscribe();
+						this.close();
+						this.connect();
+					}
+
+					public publish() {
+						return;
+					}
+
+					public subscribe() {
+						return;
+					}
+
+					public close() {
+						return;
+					}
+
+					public connect() {
+						return;
+					}
 				}
-			};
 
-			// When
-			// Then
-			expect(new ServerValidator(options)).to.eql(options);
+				const options: any = {
+					transport: new TestTransport()
+				};
+
+				// When
+				// Then
+				expect(new ServerValidator(options)).to.eql(options);
+
+			});
 
 		});
 
@@ -131,6 +177,8 @@ describe('index/validator/server', () => {
 				// Given
 				const options: any = {
 					transport: {
+						close: _.noop,
+						connect: _.noop,
 						publish: _.noop
 					}
 				};
@@ -146,6 +194,8 @@ describe('index/validator/server', () => {
 				// Given
 				const options: any = {
 					transport: {
+						close: _.noop,
+						connect: _.noop,
 						publish: _.noop,
 						subscribe: 2
 					}
@@ -154,6 +204,76 @@ describe('index/validator/server', () => {
 				// When
 				// Then
 				expect(() => new ServerValidator(options)).to.throw(/^Invalid parameter: transport\[subscribe\] is not a function\.$/);
+
+			});
+
+			it('if no transport close function is provided', () => {
+
+				// Given
+				const options: any = {
+					transport: {
+						connect: _.noop,
+						publish: _.noop,
+						subscribe: _.noop
+					}
+				};
+
+				// When
+				// Then
+				expect(() => new ServerValidator(options)).to.throw(/^Missing required function parameter: transport\[close\]\.$/);
+
+			});
+
+			it('if the transport close is not a function', () => {
+
+				// Given
+				const options: any = {
+					transport: {
+						close: 2,
+						connect: _.noop,
+						publish: _.noop,
+						subscribe: _.noop
+					}
+				};
+
+				// When
+				// Then
+				expect(() => new ServerValidator(options)).to.throw(/^Invalid parameter: transport\[close\] is not a function\.$/);
+
+			});
+
+			it('if no transport connect function is provided', () => {
+
+				// Given
+				const options: any = {
+					transport: {
+						close: _.noop,
+						publish: _.noop,
+						subscribe: _.noop
+					}
+				};
+
+				// When
+				// Then
+				expect(() => new ServerValidator(options)).to.throw(/^Missing required function parameter: transport\[connect\]\.$/);
+
+			});
+
+			it('if the transport connect is not a function', () => {
+
+				// Given
+				const options: any = {
+					transport: {
+						close: _.noop,
+						connect: 2,
+						publish: _.noop,
+						subscribe: _.noop
+					}
+				};
+
+				// When
+				// Then
+				expect(() => new ServerValidator(options)).to.throw(/^Invalid parameter: transport\[connect\] is not a function\.$/);
 
 			});
 

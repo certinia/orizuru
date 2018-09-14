@@ -111,6 +111,8 @@ describe('index/server', () => {
 			// Given
 			const options: any = {
 				transport: {
+					close: _.noop,
+					connect: _.noop,
 					publish: _.noop,
 					subscribe: _.noop
 				}
@@ -137,6 +139,8 @@ describe('index/server', () => {
 
 			const options: any = {
 				transport: {
+					close: sinon.stub().resolves(),
+					connect: sinon.stub().resolves(),
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
 				}
@@ -174,6 +178,8 @@ describe('index/server', () => {
 
 			const options: any = {
 				transport: {
+					close: sinon.stub().resolves(),
+					connect: sinon.stub().resolves(),
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
 				}
@@ -214,6 +220,8 @@ describe('index/server', () => {
 
 			const options: any = {
 				transport: {
+					close: sinon.stub().resolves(),
+					connect: sinon.stub().resolves(),
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
 				}
@@ -262,6 +270,8 @@ describe('index/server', () => {
 
 			const options: any = {
 				transport: {
+					close: sinon.stub().resolves(),
+					connect: sinon.stub().resolves(),
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
 				}
@@ -308,6 +318,8 @@ describe('index/server', () => {
 			// Given
 			const options: any = {
 				transport: {
+					close: sinon.stub().resolves(),
+					connect: sinon.stub().resolves(),
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
 				}
@@ -332,6 +344,8 @@ describe('index/server', () => {
 			// Given
 			const options: any = {
 				transport: {
+					close: sinon.stub().resolves(),
+					connect: sinon.stub().resolves(),
 					publish: sinon.stub().resolves(),
 					subscribe: sinon.stub().resolves()
 				}

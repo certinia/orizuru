@@ -4,4 +4,4 @@
 
 ### NEW FEATURES
 
-- Conversion to Typescript.
+- Allow for transport objects created by constructors other than Object.
