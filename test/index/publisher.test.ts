@@ -26,13 +26,14 @@
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 import { EventEmitter } from 'events';
+import _ from 'lodash';
 
+import { ITransport, Options } from '../../src';
 import { Transport } from '../../src/index/transport/transport';
 import { PublishFunctionValidator } from '../../src/index/validator/publishFunction';
 
@@ -45,6 +46,27 @@ const expect = chai.expect;
 
 describe('index/publisher', () => {
 
+	let transport: ITransport;
+	let options: Options.IPublisher;
+
+	beforeEach(() => {
+
+		transport = {
+			close: sinon.stub(),
+			connect: sinon.stub(),
+			publish: sinon.stub(),
+			subscribe: sinon.stub()
+		};
+
+		options = {
+			transport,
+			transportConfig: {
+				url: 'testUrl'
+			}
+		};
+
+	});
+
 	afterEach(() => {
 		sinon.restore();
 	});
@@ -56,14 +78,14 @@ describe('index/publisher', () => {
 			// Given
 			sinon.spy(EventEmitter.prototype, 'emit');
 
-			const options: any = {};
+			delete options.transport;
 
 			// When
 			// Then
 			expect(() => new Publisher(options)).to.throw(/^Missing required object parameter: transport\.$/g);
 
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Creating publisher.');
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
 
 		});
@@ -71,13 +93,6 @@ describe('index/publisher', () => {
 		it('should extend EventEmitter', () => {
 
 			// Given
-			const options: any = {
-				transport: {
-					publish: _.noop,
-					subscribe: _.noop
-				}
-			};
-
 			// When
 			const publisher = new Publisher(options);
 
@@ -90,20 +105,12 @@ describe('index/publisher', () => {
 
 	describe('publish', () => {
 
-		it('should publish a message', () => {
+		it('should publish a message', async () => {
 
 			// Given
 			sinon.stub(PublishFunctionValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
 			sinon.spy(Transport.prototype, 'encode');
-
-			const options: any = {
-				transport: {
-					connect: sinon.stub().resolves(),
-					publish: sinon.stub().resolves(),
-					subscribe: sinon.stub().resolves()
-				}
-			};
 
 			const publisher = new Publisher(options);
 
@@ -132,60 +139,46 @@ describe('index/publisher', () => {
 
 			sinon.spy(publisher, 'info');
 
+			options.transport.publish = sinon.stub().resolves();
+
 			// When
+			await publisher.publish(message);
+
 			// Then
-			return expect(publisher.publish(message))
-				.to.eventually.be.fulfilled
-				.then(() => {
-					expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
-					expect(Transport.prototype.encode).to.have.been.calledWith(message.schema, message.message);
-					expect(publisher.info).to.have.been.calledOnce;
-					expect(publisher.info).to.have.been.calledWith('Published com.example.FullName event.');
-					expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
-					expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Published com.example.FullName event.');
-				});
+			expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
+			expect(Transport.prototype.encode).to.have.been.calledWithExactly(message.schema, message.message);
+			expect(publisher.info).to.have.been.calledOnce;
+			expect(publisher.info).to.have.been.calledWithExactly('Published com.example.FullName event.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Creating publisher.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Published com.example.FullName event.');
 
 		});
 
 		describe('should throw an error', () => {
 
-			it('if no options is provided', () => {
+			it('if no options is provided', async () => {
 
 				// Given
 				sinon.stub(PublishFunctionValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
-				const options: any = {
-					transport: {
-						publish: sinon.stub().resolves(),
-						subscribe: sinon.stub().resolves()
-					}
-				};
-
 				const publisher = new Publisher(options);
 
+				const publishOptions: any = {};
+
 				// When
+				await expect(publisher.publish(publishOptions)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/);
+
 				// Then
-				return expect(publisher.publish(options)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/)
-					.then(() => {
-						expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
-					});
+				expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
 
 			});
 
-			it('if the transport cannot be encoded', () => {
+			it('if the transport cannot be encoded', async () => {
 
 				// Given
 				sinon.stub(PublishFunctionValidator.prototype, 'validate');
 				sinon.stub(Transport.prototype, 'encode').throws(new Error('encoding error'));
-
-				const options: any = {
-					transport: {
-						connect: sinon.stub().resolves(),
-						publish: sinon.stub().resolves(),
-						subscribe: sinon.stub().resolves()
-					}
-				};
 
 				const publishMessage = {
 					message: {
@@ -207,17 +200,15 @@ describe('index/publisher', () => {
 				sinon.spy(publisher, 'error');
 
 				// When
+				await expect(publisher.publish(publishMessage)).to.eventually.be.rejectedWith('Error encoding message for schema (com.example.FullName):\ninvalid value (undefined) for path (first) it should be of type (string)\ninvalid value (undefined) for path (last) it should be of type (string)');
+
 				// Then
-				return expect(publisher.publish(publishMessage))
-					.to.eventually.be.rejectedWith('Error encoding message for schema (com.example.FullName):\ninvalid value (undefined) for path (first) it should be of type (string)\ninvalid value (undefined) for path (last) it should be of type (string)')
-					.then(() => {
-						expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
-						expect(publisher.error).to.have.been.calledOnce;
-					});
+				expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
+				expect(publisher.error).to.have.been.calledOnce;
 
 			});
 
-			it('if the publishing the message fails', () => {
+			it('if the publishing the message fails', async () => {
 
 				// Given
 				sinon.stub(PublishFunctionValidator.prototype, 'validate');
@@ -225,13 +216,7 @@ describe('index/publisher', () => {
 
 				const expectedError = new Error('Failed to publish message.');
 
-				const options: any = {
-					transport: {
-						connect: sinon.stub().resolves(),
-						publish: sinon.stub().rejects(expectedError),
-						subscribe: sinon.stub().resolves()
-					}
-				};
+				options.transport.publish = sinon.stub().rejects(expectedError);
 
 				const publishMessage = {
 					message: {
@@ -256,17 +241,15 @@ describe('index/publisher', () => {
 				sinon.spy(publisher, 'error');
 
 				// When
+				await expect(publisher.publish(publishMessage)).to.eventually.be.rejectedWith('Failed to publish message.');
+
 				// Then
-				return expect(publisher.publish(publishMessage))
-					.to.eventually.be.rejectedWith('Failed to publish message.')
-					.then(() => {
-						expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
-						expect(publisher.error).to.have.been.calledOnce;
-						expect(publisher.error).to.have.been.calledWith('Error publishing message on transport.');
-						expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-						expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating publisher.');
-						expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event', 'Error publishing message on transport.');
-					});
+				expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
+				expect(publisher.error).to.have.been.calledOnce;
+				expect(publisher.error).to.have.been.calledWithExactly('Error publishing message on transport.');
+				expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
+				expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Creating publisher.');
+				expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
 
 			});
 

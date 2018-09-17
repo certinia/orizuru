@@ -35,7 +35,7 @@ describe('index/validator/server', () => {
 
 	describe('constructor', () => {
 
-		describe('should return the schema', () => {
+		describe('should validate the transport', () => {
 
 			it('if transport is a plain object', () => {
 
@@ -51,7 +51,7 @@ describe('index/validator/server', () => {
 
 				// When
 				// Then
-				expect(new ServerValidator(options)).to.eql(options);
+				expect(new ServerValidator(options)).to.not.throw;
 
 			});
 
@@ -91,7 +91,7 @@ describe('index/validator/server', () => {
 
 				// When
 				// Then
-				expect(new ServerValidator(options)).to.eql(options);
+				expect(new ServerValidator(options)).to.not.throw;
 
 			});
 

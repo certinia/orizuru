@@ -110,7 +110,7 @@ describe('index/server/route', () => {
 
 			// Then
 			expect(options.responseWriter).to.have.been.calledOnce;
-			expect(server.getPublisher().publish).to.have.been.calledWith({
+			expect(server.getPublisher().publish).to.have.been.calledWithExactly({
 				message: {
 					context: request.orizuru,
 					message: request.body
@@ -152,7 +152,7 @@ describe('index/server/route', () => {
 
 			// Then
 			expect(server.error).to.have.been.calledOnce;
-			expect(server.error).to.have.been.calledWith('No schema for \'test\' found.');
+			expect(server.error).to.have.been.calledWithExactly('No schema for \'test\' found.');
 
 		});
 
@@ -204,7 +204,7 @@ describe('index/server/route', () => {
 			// Then
 			expect(options.responseWriter).to.have.been.calledOnce;
 			expect(responseFunction).to.have.been.calledOnce;
-			expect(responseFunction).to.have.been.calledWith(expectedError);
+			expect(responseFunction).to.have.been.calledWithExactly(expectedError, request, response);
 
 		});
 
@@ -256,7 +256,7 @@ describe('index/server/route', () => {
 			// Then
 			expect(options.responseWriter).to.have.been.calledOnce;
 			expect(responseFunction).to.have.been.calledOnce;
-			expect(responseFunction).to.have.been.calledWith(expectedError);
+			expect(responseFunction).to.have.been.calledWithExactly(expectedError, request, response);
 
 		});
 

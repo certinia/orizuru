@@ -239,9 +239,9 @@ describe('index/validator/route', () => {
 
 			// Then
 			expect(response.status).to.have.been.calledOnce;
-			expect(response.status).to.have.been.calledWith(400);
+			expect(response.status).to.have.been.calledWithExactly(400);
 			expect(response.send).to.have.been.calledOnce;
-			expect(response.send).to.have.been.calledWith(expectedError);
+			expect(response.send).to.have.been.calledWithExactly(expectedError);
 
 		});
 
@@ -270,9 +270,9 @@ describe('index/validator/route', () => {
 
 			// Then
 			expect(response.status).to.have.been.calledOnce;
-			expect(response.status).to.have.been.calledWith(200);
+			expect(response.status).to.have.been.calledWithExactly(200);
 			expect(response.send).to.have.been.calledOnce;
-			expect(response.send).to.have.been.calledWith('Ok.');
+			expect(response.send).to.have.been.calledWithExactly('Ok.');
 
 		});
 
