@@ -80,9 +80,9 @@ describe('index/handler/messageHandler', () => {
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
-		expect(config.handler).to.have.been.calledWith('test');
+		expect(config.handler).to.have.been.calledWithExactly('test');
 		expect(server.info).to.have.been.calledOnce;
-		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
+		expect(server.info).to.have.been.calledWithExactly('Handler received com.example.FullName event.');
 		expect(server.error).to.not.have.been.called;
 
 	});
@@ -99,9 +99,9 @@ describe('index/handler/messageHandler', () => {
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
-		expect(config.handler).to.have.been.calledWith('test');
+		expect(config.handler).to.have.been.calledWithExactly('test');
 		expect(server.info).to.have.been.calledOnce;
-		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
+		expect(server.info).to.have.been.calledWithExactly('Handler received com.example.FullName event.');
 		expect(server.error).to.not.have.been.called;
 
 	});
@@ -121,10 +121,10 @@ describe('index/handler/messageHandler', () => {
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
-		expect(config.handler).to.have.been.calledWith('test');
+		expect(config.handler).to.have.been.calledWithExactly('test');
 		expect(server.info).to.have.been.calledOnce;
-		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
-		expect(server.error).to.have.been.calledWith(expectedError);
+		expect(server.info).to.have.been.calledWithExactly('Handler received com.example.FullName event.');
+		expect(server.error).to.have.been.calledWithExactly(expectedError);
 
 	});
 
@@ -142,10 +142,10 @@ describe('index/handler/messageHandler', () => {
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
-		expect(config.handler).to.have.been.calledWith('test');
+		expect(config.handler).to.have.been.calledWithExactly('test');
 		expect(server.info).to.have.been.calledOnce;
-		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
-		expect(server.error).to.have.been.calledWith(expectedError);
+		expect(server.info).to.have.been.calledWithExactly('Handler received com.example.FullName event.');
+		expect(server.error).to.have.been.calledWithExactly(expectedError);
 
 	});
 
@@ -161,9 +161,9 @@ describe('index/handler/messageHandler', () => {
 
 		// Then
 		expect(server.info).to.have.been.calledOnce;
-		expect(server.info).to.have.been.calledWith('Handler received com.example.FullName event.');
+		expect(server.info).to.have.been.calledWithExactly('Handler received com.example.FullName event.');
 		expect(server.error).to.have.been.calledOnce;
-		expect(server.error).to.have.been.calledWith(expectedError);
+		expect(server.error).to.have.been.calledWithExactly(expectedError);
 		expect(config.handler).to.not.have.been.called;
 
 	});

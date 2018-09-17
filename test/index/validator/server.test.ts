@@ -27,6 +27,8 @@
 import chai from 'chai';
 import _ from 'lodash';
 
+import { CommonValidator } from '../../../src/index/validator/shared/common';
+
 import { ServerValidator } from '../../../src/index/validator/server';
 
 const expect = chai.expect;
@@ -35,7 +37,27 @@ describe('index/validator/server', () => {
 
 	describe('constructor', () => {
 
-		describe('should return the schema', () => {
+		it('should extend CommonValidator', () => {
+
+			// Given
+			const options: any = {
+				transport: {
+					close: _.noop,
+					connect: _.noop,
+					publish: _.noop,
+					subscribe: _.noop
+				}
+			};
+
+			// When
+			const validator = new ServerValidator(options);
+
+			// Then
+			expect(validator).to.be.an.instanceof(CommonValidator);
+
+		});
+
+		describe('should validate the transport', () => {
 
 			it('if transport is a plain object', () => {
 
@@ -51,7 +73,7 @@ describe('index/validator/server', () => {
 
 				// When
 				// Then
-				expect(new ServerValidator(options)).to.eql(options);
+				expect(new ServerValidator(options)).to.not.throw;
 
 			});
 
@@ -91,7 +113,7 @@ describe('index/validator/server', () => {
 
 				// When
 				// Then
-				expect(new ServerValidator(options)).to.eql(options);
+				expect(new ServerValidator(options)).to.not.throw;
 
 			});
 

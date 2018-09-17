@@ -25,50 +25,18 @@
  */
 
 import _ from 'lodash';
+
 import { Options } from '../..';
+import { CommonValidator } from './shared/common';
 
 /**
  * Validates the {@link Handler} configuration.
  * @private
  */
-export class HandlerValidator {
+export class HandlerValidator extends CommonValidator {
 
 	constructor(options: Options.IHandler) {
-
-		if (!options) {
-			throw new Error('Missing required object parameter.');
-		}
-
-		if (!_.isPlainObject(options)) {
-			throw new Error(`Invalid parameter: ${options} is not an object.`);
-		}
-
-		if (!options.transport) {
-			throw new Error('Missing required object parameter: transport.');
-		}
-
-		if (!_.isPlainObject(options.transport)) {
-			throw new Error('Invalid parameter: transport is not an object.');
-		}
-
-		if (!options.transport.publish) {
-			throw new Error('Missing required function parameter: transport[publish].');
-		}
-
-		if (!_.isFunction(options.transport.publish)) {
-			throw new Error('Invalid parameter: transport[publish] is not a function.');
-		}
-
-		if (!options.transport.subscribe) {
-			throw new Error('Missing required function parameter: transport[subscribe].');
-		}
-
-		if (!_.isFunction(options.transport.subscribe)) {
-			throw new Error('Invalid parameter: transport[subscribe] is not a function.');
-		}
-
-		return options;
-
+		super(options);
 	}
 
 }

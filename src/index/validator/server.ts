@@ -25,66 +25,18 @@
  */
 
 import _ from 'lodash';
+
 import { Options } from '../..';
+import { CommonValidator } from './shared/common';
 
 /**
  * Validates the {@link Server} configuration.
  * @private
  */
-export class ServerValidator {
+export class ServerValidator extends CommonValidator {
 
 	constructor(options: Options.IServer) {
-
-		if (!options) {
-			throw new Error('Missing required object parameter.');
-		}
-
-		if (!_.isPlainObject(options)) {
-			throw new Error(`Invalid parameter: ${options} is not an object.`);
-		}
-
-		if (!options.transport) {
-			throw new Error('Missing required object parameter: transport.');
-		}
-
-		if (!_.isObjectLike(options.transport)) {
-			throw new Error('Invalid parameter: transport is not an object.');
-		}
-
-		if (!options.transport.publish) {
-			throw new Error('Missing required function parameter: transport[publish].');
-		}
-
-		if (!_.isFunction(options.transport.publish)) {
-			throw new Error('Invalid parameter: transport[publish] is not a function.');
-		}
-
-		if (!options.transport.subscribe) {
-			throw new Error('Missing required function parameter: transport[subscribe].');
-		}
-
-		if (!_.isFunction(options.transport.subscribe)) {
-			throw new Error('Invalid parameter: transport[subscribe] is not a function.');
-		}
-
-		if (!options.transport.close) {
-			throw new Error('Missing required function parameter: transport[close].');
-		}
-
-		if (!_.isFunction(options.transport.close)) {
-			throw new Error('Invalid parameter: transport[close] is not a function.');
-		}
-
-		if (!options.transport.connect) {
-			throw new Error('Missing required function parameter: transport[connect].');
-		}
-
-		if (!_.isFunction(options.transport.connect)) {
-			throw new Error('Invalid parameter: transport[connect] is not a function.');
-		}
-
-		return options;
-
+		super(options);
 	}
 
 }

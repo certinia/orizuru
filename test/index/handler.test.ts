@@ -35,7 +35,7 @@ import _ from 'lodash';
 
 import { HandlerFunctionValidator } from '../../src/index/validator/handlerFunction';
 
-import { Handler } from '../../src';
+import { Handler, ITransport, Options } from '../../src';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -44,19 +44,23 @@ const expect = chai.expect;
 
 describe('index/handler', () => {
 
-	let mocks: any;
+	let transport: ITransport;
+	let options: Options.IHandler;
 
 	beforeEach(() => {
 
-		mocks = {};
+		transport = {
+			close: sinon.stub(),
+			connect: sinon.stub(),
+			publish: sinon.stub(),
+			subscribe: sinon.stub()
+		};
 
-		mocks.config = {
-			transport: {
-				connect: _.noop,
-				publish: _.noop,
-				subscribe: _.noop
-			},
-			transportConfig: _.noop
+		options = {
+			transport,
+			transportConfig: {
+				url: 'testUrl'
+			}
 		};
 
 	});
@@ -71,7 +75,7 @@ describe('index/handler', () => {
 
 			// Given
 			// When
-			const handler = new Handler(mocks.config);
+			const handler = new Handler(options);
 
 			// Then
 			expect(handler).to.be.an.instanceof(EventEmitter);
@@ -81,16 +85,16 @@ describe('index/handler', () => {
 		it('should emit an error event if the configuration is invalid', () => {
 
 			// Given
-			const options: any = {};
-
 			sinon.spy(EventEmitter.prototype, 'emit');
+
+			delete options.transport;
 
 			// When
 			// Then
 			expect(() => new Handler(options)).to.throw(/^Missing required object parameter: transport\.$/g);
 
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Creating handler.');
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
 
 		});
@@ -102,11 +106,11 @@ describe('index/handler', () => {
 		it('should install the handler for a schema', async () => {
 
 			// Given
-			mocks.config.transport.subscribe = sinon.stub().resolves();
+			options.transport.subscribe = sinon.stub().resolves();
 			sinon.stub(HandlerFunctionValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
 
-			const handler = new Handler(mocks.config);
+			const handler = new Handler(options);
 
 			const config: any = {
 				handler: sinon.stub(),
@@ -131,27 +135,26 @@ describe('index/handler', () => {
 			// Then
 			expect(HandlerFunctionValidator.prototype.validate).to.have.been.calledOnce;
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating handler.');
-			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Installing handler for com.example.FullName events.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Creating handler.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Installing handler for com.example.FullName events.');
 
 		});
 
 		describe('should throw an error', () => {
 
-			it('if no config is provided', () => {
+			it('if no config is provided', async () => {
 
 				// Given
 				sinon.stub(HandlerFunctionValidator.prototype, 'validate').throws(new Error('Missing required object parameter.'));
 
-				const handler = new Handler(mocks.config);
-				const options: any = {};
+				const handler = new Handler(options);
+				const handleOptions: any = {};
 
 				// When
+				await expect(handler.handle(handleOptions)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/);
+
 				// Then
-				return expect(handler.handle(options)).to.eventually.be.rejectedWith(/^Missing required object parameter\.$/)
-					.then(() => {
-						expect(HandlerFunctionValidator.prototype.validate).to.have.been.calledOnce;
-					});
+				expect(HandlerFunctionValidator.prototype.validate).to.have.been.calledOnce;
 
 			});
 

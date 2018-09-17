@@ -101,7 +101,7 @@ describe('index/server', () => {
 			expect(() => new Server(options)).to.throw(/^Missing required object parameter: transport\.$/g);
 
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWith('info_event', 'Creating server.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Creating server.');
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
 
 		});
@@ -162,9 +162,9 @@ describe('index/server', () => {
 
 			// Then
 			expect(server.info).to.have.been.calledTwice;
-			expect(server.info).to.have.been.calledWith('Creating router for namespace: /api/com/example.');
-			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
-			expect(Router.use).to.have.been.calledWith(route.middleware[0]);
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /api/com/example.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.FullName.');
+			expect(Router.use).to.have.been.calledWithExactly(route.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
 		});
@@ -204,9 +204,9 @@ describe('index/server', () => {
 
 			// Then
 			expect(server.info).to.have.been.calledTwice;
-			expect(server.info).to.have.been.calledWith('Creating router for namespace: /api/com/example/v1.0.');
-			expect(server.info).to.have.been.calledWith('Adding route: com.example.v1_0.Surname.');
-			expect(Router.use).to.have.been.calledWith(route.middleware[0]);
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /api/com/example/v1.0.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.v1_0.Surname.');
+			expect(Router.use).to.have.been.calledWithExactly(route.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
 		});
@@ -251,12 +251,12 @@ describe('index/server', () => {
 
 			// Then
 			expect(server.info).to.have.callCount(4);
-			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example.');
-			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
-			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example/two.');
-			expect(server.info).to.have.been.calledWith('Adding route: com.example.two.FullName.');
-			expect(Router.use).to.have.been.calledWith(route1.middleware[0]);
-			expect(Router.use).to.have.been.calledWith(route2.middleware[0]);
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /com/example.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.FullName.');
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /com/example/two.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.two.FullName.');
+			expect(Router.use).to.have.been.calledWithExactly(route1.middleware[0]);
+			expect(Router.use).to.have.been.calledWithExactly(route2.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledTwice;
 
 		});
@@ -301,10 +301,10 @@ describe('index/server', () => {
 
 			// Then
 			expect(server.info).to.have.been.calledThrice;
-			expect(server.info).to.have.been.calledWith('Creating router for namespace: /com/example.');
-			expect(server.info).to.have.been.calledWith('Adding route: com.example.FullName.');
-			expect(server.info).to.have.been.calledWith('Adding route: com.example.Surname.');
-			expect(Router.use).to.have.been.calledWith(route1.middleware[0]);
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /com/example.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.FullName.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.Surname.');
+			expect(Router.use).to.have.been.calledWithExactly(route1.middleware[0]);
 			expect(RouteValidator.prototype.validate).to.have.been.calledTwice;
 
 		});

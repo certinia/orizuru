@@ -27,35 +27,13 @@
 import chai from 'chai';
 import _ from 'lodash';
 
-import { CommonValidator } from '../../../src/index/validator/shared/common';
-
-import { HandlerValidator } from '../../../src/index/validator/handler';
+import { CommonValidator } from '../../../../src/index/validator/shared/common';
 
 const expect = chai.expect;
 
 describe('index/validator/shared/common', () => {
 
 	describe('constructor', () => {
-
-		it('should extend CommonValidator', () => {
-
-			// Given
-			const options: any = {
-				transport: {
-					close: _.noop,
-					connect: _.noop,
-					publish: _.noop,
-					subscribe: _.noop
-				}
-			};
-
-			// When
-			const validator = new HandlerValidator(options);
-
-			// Then
-			expect(validator).to.be.an.instanceof(CommonValidator);
-
-		});
 
 		describe('should validate the transport', () => {
 
@@ -73,7 +51,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(new HandlerValidator(options)).to.not.throw;
+				expect(new CommonValidator(options)).to.not.throw;
 
 			});
 
@@ -113,7 +91,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(new HandlerValidator(options)).to.not.throw;
+				expect(new CommonValidator(options)).to.not.throw;
 
 			});
 
@@ -128,7 +106,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Missing required object parameter\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Missing required object parameter\.$/);
 
 			});
 
@@ -139,7 +117,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
 
 			});
 
@@ -150,7 +128,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Missing required object parameter: transport\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Missing required object parameter: transport\.$/);
 
 			});
 
@@ -162,7 +140,7 @@ describe('index/validator/shared/common', () => {
 				};
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Invalid parameter: transport is not an object\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Invalid parameter: transport is not an object\.$/);
 
 			});
 
@@ -175,7 +153,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Missing required function parameter: transport\[publish\]\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Missing required function parameter: transport\[publish\]\.$/);
 
 			});
 
@@ -190,7 +168,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Invalid parameter: transport\[publish\] is not a function\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Invalid parameter: transport\[publish\] is not a function\.$/);
 
 			});
 
@@ -207,7 +185,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Missing required function parameter: transport\[subscribe\]\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Missing required function parameter: transport\[subscribe\]\.$/);
 
 			});
 
@@ -225,7 +203,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Invalid parameter: transport\[subscribe\] is not a function\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Invalid parameter: transport\[subscribe\] is not a function\.$/);
 
 			});
 
@@ -242,7 +220,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Missing required function parameter: transport\[close\]\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Missing required function parameter: transport\[close\]\.$/);
 
 			});
 
@@ -260,7 +238,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Invalid parameter: transport\[close\] is not a function\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Invalid parameter: transport\[close\] is not a function\.$/);
 
 			});
 
@@ -277,7 +255,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Missing required function parameter: transport\[connect\]\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Missing required function parameter: transport\[connect\]\.$/);
 
 			});
 
@@ -295,7 +273,7 @@ describe('index/validator/shared/common', () => {
 
 				// When
 				// Then
-				expect(() => new HandlerValidator(options)).to.throw(/^Invalid parameter: transport\[connect\] is not a function\.$/);
+				expect(() => new CommonValidator(options)).to.throw(/^Invalid parameter: transport\[connect\] is not a function\.$/);
 
 			});
 
