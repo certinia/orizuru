@@ -27,6 +27,8 @@
 import chai from 'chai';
 import _ from 'lodash';
 
+import { CommonValidator } from '../../../src/index/validator/shared/common';
+
 import { PublisherValidator } from '../../../src/index/validator/publisher';
 
 const expect = chai.expect;
@@ -34,6 +36,26 @@ const expect = chai.expect;
 describe('index/validator/publisher', () => {
 
 	describe('constructor', () => {
+
+		it('should extend CommonValidator', () => {
+
+			// Given
+			const options: any = {
+				transport: {
+					close: _.noop,
+					connect: _.noop,
+					publish: _.noop,
+					subscribe: _.noop
+				}
+			};
+
+			// When
+			const validator = new PublisherValidator(options);
+
+			// Then
+			expect(validator).to.be.an.instanceof(CommonValidator);
+
+		});
 
 		describe('should validate the transport', () => {
 
