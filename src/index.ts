@@ -53,7 +53,7 @@ export { Publisher } from './index/publisher';
  */
 export { Server } from './index/server';
 
-export { json, urlencoded, Request, Response, NextFunction } from 'express';
+export { json, urlencoded, Request, Response, NextFunction, static as addStaticRoute } from 'express';
 
 declare global {
 
@@ -120,12 +120,23 @@ export interface ITransport {
 
 }
 
-export interface IOrizuruMessage {
-	message: any;
-	context?: any;
+/**
+ * The Orizuru messaage sent via the transport layer.
+ */
+export interface IOrizuruMessage<C extends Orizuru.Context, M> {
+
+	/**
+	 * The context for the message.
+	 */
+	context: C;
+
+	/**
+	 * The message.
+	 */
+	message: M;
 }
 
-export type HandlerFunction = (message: IOrizuruMessage) => Promise<void | Orizuru.IHandlerResponse>;
+export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMessage<C, M>) => Promise<void | Orizuru.IHandlerResponse>;
 
 export type ResponseWriterFunction = (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
 
@@ -146,15 +157,15 @@ export declare namespace Options {
 		transport: ITransport;
 	}
 
-	export interface IPublishFunction extends Orizuru.IPublishFunction {
-		message: IOrizuruMessage;
+	export interface IPublishFunction<C extends Orizuru.Context, M> extends Orizuru.IPublishFunction {
+		message: IOrizuruMessage<C, M>;
 		schema: string | object | Type;
 		publishOptions?: Options.Transport.IPublish;
 	}
 
-	export interface IHandlerFunction extends Orizuru.IHandlerFunction {
+	export interface IHandlerFunction<C extends Orizuru.Context, M> extends Orizuru.IHandlerFunction {
 		schema: string | object | Type;
-		handler: HandlerFunction;
+		handler: HandlerFunction<C, M>;
 		subscribeOptions?: Options.Transport.ISubscribe;
 	}
 

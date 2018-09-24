@@ -59,13 +59,31 @@
 					<a href="iorizurumessage.html">IOrizuruMessage</a>
 				</li>
 			</ul>
-			<h1>Interface IOrizuruMessage</h1>
+			<h1>Interface IOrizuruMessage&lt;C, M&gt;</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>The Orizuru messaage sent via the transport layer.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-type-parameters">
+				<h3>Type parameters</h3>
+				<ul class="tsd-type-parameters">
+					<li>
+						<h4>C<span class="tsd-signature-symbol">: </span><a href="__global.orizuru.context.html" class="tsd-signature-type">Context</a></h4>
+					</li>
+					<li>
+						<h4>M</h4>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -92,23 +110,33 @@
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="context" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> context</h3>
-					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<h3>context</h3>
+					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">C</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/97a793a/src/index.ts#L125">index.ts:125</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/0d78741/src/index.ts#L131">index.ts:131</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The context for the message.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="message" class="tsd-anchor"></a>
 					<h3>message</h3>
-					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">M</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/97a793a/src/index.ts#L124">index.ts:124</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/0d78741/src/index.ts#L136">index.ts:136</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The message.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -160,7 +188,7 @@
 					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-is-external">
+					<li class="current tsd-kind-interface tsd-has-type-parameter tsd-is-external">
 						<a href="iorizurumessage.html" class="tsd-kind-icon">IOrizuru<wbr>Message</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -176,7 +204,7 @@
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="itransport.html" class="tsd-kind-icon">ITransport</a>
 					</li>
-					<li class=" tsd-kind-type-alias tsd-is-external">
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-external">
 						<a href="../globals.html#handlerfunction" class="tsd-kind-icon">Handler<wbr>Function</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
@@ -218,7 +246,7 @@
 					<li class=" tsd-kind-function tsd-is-private">
 						<a href="../globals.html#create" class="tsd-kind-icon">create</a>
 					</li>
-					<li class=" tsd-kind-function tsd-is-private">
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-private">
 						<a href="../globals.html#messagehandler" class="tsd-kind-icon">message<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">

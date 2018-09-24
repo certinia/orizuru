@@ -27,6 +27,7 @@
 import { Type } from 'avsc';
 import { EventEmitter } from 'events';
 import express from 'express';
+import { Application, ApplicationRequestHandler } from 'express-serve-static-core';
 import _ from 'lodash';
 
 import { Options, Publisher } from '..';
@@ -64,6 +65,9 @@ export class Server extends EventEmitter {
 	 */
 	public static readonly INFO: string = 'info_event';
 
+	public set: (setting: string, val: any) => Application;
+	public use: ApplicationRequestHandler<Application>;
+
 	private readonly publisher: Publisher;
 	private readonly server: express.Express;
 	private readonly validator: RouteValidator;
@@ -89,6 +93,10 @@ export class Server extends EventEmitter {
 
 			// Add the server
 			this.server = express();
+
+			// Add commonly used express functions
+			this.set = this.server.set.bind(this.server);
+			this.use = this.server.use.bind(this.server);
 
 			// Add the publisher
 			this.publisher = new Publisher(options);

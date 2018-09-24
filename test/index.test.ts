@@ -24,31 +24,39 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
-import _ from 'lodash';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 
-import { Handler, IOrizuruMessage, Options } from '../..';
-import { Transport } from '../transport/transport';
+import * as index from '../src/index';
 
-/**
- * @private
- */
-export function messageHandler<C extends Orizuru.Context, M>(handler: Handler, options: Options.IHandlerFunction<C, M>) {
+chai.use(chaiAsPromised);
+chai.use(sinonChai);
 
-	const eventName = _.get(options.subscribeOptions, 'eventName') || _.get(options.schema, 'name');
-	const transport = new Transport();
+const expect = chai.expect;
 
-	return async (content: Buffer) => {
+describe('index', () => {
 
-		handler.info(`Handler received ${eventName} event.`);
+	afterEach(() => {
+		sinon.restore();
+	});
 
-		try {
-			const decodedContent: IOrizuruMessage<C, M> = transport.decode(options.schema as Type, content);
-			return await options.handler(decodedContent);
-		} catch (err) {
-			handler.error(err);
-		}
+	it('should export the correct functions', () => {
 
-	};
+		// Given
+		// When
+		// Then
+		expect(index).to.have.all.keys(['addStaticRoute', 'Handler', 'json', 'Publisher', 'Server', 'urlencoded']);
 
-}
+		expect(index.addStaticRoute).to.be.a('function');
+		expect(index.json).to.be.a('function');
+		expect(index.urlencoded).to.be.a('function');
+
+		expect(index.Handler).to.be.a('function');
+		expect(index.Publisher).to.be.a('function');
+		expect(index.Server).to.be.a('function');
+
+	});
+
+});

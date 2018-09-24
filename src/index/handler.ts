@@ -92,7 +92,7 @@ export class Handler extends EventEmitter {
 	 * }});
 	 * ```
 	 */
-	public async handle(options: Options.IHandlerFunction) {
+	public async handle<C extends Orizuru.Context, M>(options: Options.IHandlerFunction<C, M>) {
 
 		try {
 			this.validator.validate(options);

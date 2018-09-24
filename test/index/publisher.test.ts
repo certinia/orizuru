@@ -182,6 +182,7 @@ describe('index/publisher', () => {
 
 				const publishMessage = {
 					message: {
+						context: {},
 						message: 'test'
 					},
 					schema: avsc.Type.forSchema({
@@ -220,6 +221,7 @@ describe('index/publisher', () => {
 
 				const publishMessage = {
 					message: {
+						context: {},
 						message: {
 							first: 'Test',
 							last: 'Tester'
