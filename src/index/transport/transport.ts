@@ -53,7 +53,7 @@ export class Transport {
 	/**
 	 * Decode a message using the transport schema.
 	 */
-	public decode(schema: Type, content: Buffer): IOrizuruMessage {
+	public decode<C extends Orizuru.Context, M>(schema: Type, content: Buffer): IOrizuruMessage<C, M> {
 
 		const decompiledTransportObject: any = this.compiledSchema.fromBuffer(content);
 
@@ -63,8 +63,8 @@ export class Transport {
 		const resolver = schema.createResolver(compiledWriterMessageSchema);
 
 		// Create plain objects from the AVSC types.
-		const context = Object.assign({}, compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer));
-		const message = Object.assign({}, schema.fromBuffer(decompiledTransportObject.messageBuffer, resolver));
+		const context: C = Object.assign({}, compiledContextSchema.fromBuffer(decompiledTransportObject.contextBuffer));
+		const message: M = Object.assign({}, schema.fromBuffer(decompiledTransportObject.messageBuffer, resolver));
 
 		return { context, message };
 
@@ -73,9 +73,9 @@ export class Transport {
 	/**
 	 * Encode a message using the transport schema.
 	 */
-	public encode(schema: Type, { context, message }: IOrizuruMessage) {
+	public encode<C extends Orizuru.Context, M>(schema: Type, { context, message }: IOrizuruMessage<C, M>) {
 
-		const compiledContextSchema = Type.forValue(context || {});
+		const compiledContextSchema = Type.forValue(context);
 		const transport = {
 			contextBuffer: compiledContextSchema.toBuffer(context),
 			contextSchema: JSON.stringify(compiledContextSchema),

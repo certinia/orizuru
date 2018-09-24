@@ -120,12 +120,12 @@ export interface ITransport {
 
 }
 
-export interface IOrizuruMessage {
-	message: any;
-	context?: any;
+export interface IOrizuruMessage<C extends Orizuru.Context, M> {
+	context: C;
+	message: M;
 }
 
-export type HandlerFunction = (message: IOrizuruMessage) => Promise<void | Orizuru.IHandlerResponse>;
+export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMessage<C, M>) => Promise<void | Orizuru.IHandlerResponse>;
 
 export type ResponseWriterFunction = (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
 
@@ -146,15 +146,15 @@ export declare namespace Options {
 		transport: ITransport;
 	}
 
-	export interface IPublishFunction extends Orizuru.IPublishFunction {
-		message: IOrizuruMessage;
+	export interface IPublishFunction<C extends Orizuru.Context, M> extends Orizuru.IPublishFunction {
+		message: IOrizuruMessage<C, M>;
 		schema: string | object | Type;
 		publishOptions?: Options.Transport.IPublish;
 	}
 
-	export interface IHandlerFunction extends Orizuru.IHandlerFunction {
+	export interface IHandlerFunction<C extends Orizuru.Context, M> extends Orizuru.IHandlerFunction {
 		schema: string | object | Type;
-		handler: HandlerFunction;
+		handler: HandlerFunction<C, M>;
 		subscribeOptions?: Options.Transport.ISubscribe;
 	}
 

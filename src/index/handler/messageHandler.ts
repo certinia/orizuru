@@ -27,13 +27,13 @@
 import { Type } from 'avsc';
 import _ from 'lodash';
 
-import { Handler, Options } from '../..';
+import { Handler, IOrizuruMessage, Options } from '../..';
 import { Transport } from '../transport/transport';
 
 /**
  * @private
  */
-export function messageHandler(handler: Handler, options: Options.IHandlerFunction) {
+export function messageHandler<C extends Orizuru.Context, M>(handler: Handler, options: Options.IHandlerFunction<C, M>) {
 
 	const eventName = _.get(options.subscribeOptions, 'eventName') || _.get(options.schema, 'name');
 	const transport = new Transport();
@@ -43,7 +43,7 @@ export function messageHandler(handler: Handler, options: Options.IHandlerFuncti
 		handler.info(`Handler received ${eventName} event.`);
 
 		try {
-			const decodedContent = transport.decode(options.schema as Type, content);
+			const decodedContent: IOrizuruMessage<C, M> = transport.decode(options.schema as Type, content);
 			return await options.handler(decodedContent);
 		} catch (err) {
 			handler.error(err);
