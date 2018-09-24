@@ -89,6 +89,17 @@ describe('index/server', () => {
 
 	describe('constructor', () => {
 
+		let transport: any;
+
+		beforeEach(() => {
+			transport = {
+				close: _.noop,
+				connect: _.noop,
+				publish: _.noop,
+				subscribe: _.noop
+			}
+		});
+
 		it('should emit an error event if the options are invalid', () => {
 
 			// Given
@@ -110,12 +121,7 @@ describe('index/server', () => {
 
 			// Given
 			const options: any = {
-				transport: {
-					close: _.noop,
-					connect: _.noop,
-					publish: _.noop,
-					subscribe: _.noop
-				}
+				transport
 			};
 
 			// When
@@ -123,6 +129,29 @@ describe('index/server', () => {
 
 			// Then
 			expect(server).to.be.an.instanceof(EventEmitter);
+
+		});
+
+		it('should bind the express use and set functions to the server', () => {
+
+			// Given
+			const options: any = {
+				transport
+			};
+
+			const expressServer: any = express;
+
+			sinon.spy(expressServer.application.set, 'bind');
+			sinon.spy(expressServer.application.use, 'bind');
+
+			// When
+			const server = new Server(options);
+
+			// Then
+			expect(expressServer.application.set.bind).to.have.been.calledOnce;
+			expect(expressServer.application.set.bind).to.have.been.calledWithExactly(server.getServer());
+			expect(expressServer.application.use.bind).to.have.been.calledOnce;
+			expect(expressServer.application.use.bind).to.have.been.calledWithExactly(server.getServer());
 
 		});
 
