@@ -120,8 +120,19 @@ export interface ITransport {
 
 }
 
+/**
+ * The Orizuru messaage sent via the transport layer.
+ */
 export interface IOrizuruMessage<C extends Orizuru.Context, M> {
+
+	/**
+	 * The context for the message.
+	 */
 	context: C;
+
+	/**
+	 * The message.
+	 */
 	message: M;
 }
 
