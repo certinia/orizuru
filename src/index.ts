@@ -53,7 +53,7 @@ export { Publisher } from './index/publisher';
  */
 export { Server } from './index/server';
 
-export { json, urlencoded, Request, Response, NextFunction } from 'express';
+export { json, urlencoded, Request, Response, NextFunction, static } from 'express';
 
 declare global {
 
