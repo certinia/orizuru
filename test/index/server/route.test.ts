@@ -61,202 +61,265 @@ describe('index/server/route', () => {
 
 		});
 
-		it('should publish a message', async () => {
+		describe('should publish a message', () => {
 
-			// Given
-			const server: any = {
-				getPublisher: sinon.stub().returns({
-					publish: sinon.stub().resolves()
-				})
-			};
+			it('if the request orizuru property is set', async () => {
 
-			const routeConfiguration = {
-				test: avsc.Type.forSchema({
-					fields: [
-						{ name: 'first', type: 'string' },
-						{ name: 'last', type: 'string' }
-					],
-					name: 'FullName',
-					namespace: 'com.example',
-					type: 'record'
-				})
-			};
+				// Given
+				const server: any = {
+					getPublisher: sinon.stub().returns({
+						publish: sinon.stub().resolves()
+					})
+				};
 
-			const options: any = {
-				responseWriter: sinon.stub().returns(sinon.stub())
-			};
+				const routeConfiguration = {
+					test: avsc.Type.forSchema({
+						fields: [
+							{ name: 'first', type: 'string' },
+							{ name: 'last', type: 'string' }
+						],
+						name: 'FullName',
+						namespace: 'com.example',
+						type: 'record'
+					})
+				};
 
-			const routeFunction = create(server, routeConfiguration, options);
+				const options: any = {
+					responseWriter: sinon.stub().returns(sinon.stub())
+				};
 
-			const request: any = {
-				body: { something: 10 },
-				orizuru: {
-					user: {
-						username: 'test'
+				const routeFunction = create(server, routeConfiguration, options);
+
+				const request: any = {
+					body: { something: 10 },
+					orizuru: {
+						user: {
+							username: 'test'
+						}
+					},
+					params: {
+						schemaName: 'test'
 					}
-				},
-				params: {
-					schemaName: 'test'
-				}
-			};
+				};
 
-			const response: any = {
-				send: sinon.stub().returnsThis(),
-				status: sinon.stub().returnsThis()
-			};
+				const response: any = {
+					send: sinon.stub().returnsThis(),
+					status: sinon.stub().returnsThis()
+				};
 
-			// When
-			await routeFunction(request, response);
+				// When
+				await routeFunction(request, response);
 
-			// Then
-			expect(options.responseWriter).to.have.been.calledOnce;
-			expect(server.getPublisher().publish).to.have.been.calledWithExactly({
-				message: {
-					context: request.orizuru,
-					message: request.body
-				},
-				publishOptions: {},
-				schema: routeConfiguration.test
+				// Then
+				expect(options.responseWriter).to.have.been.calledOnce;
+				expect(server.getPublisher().publish).to.have.been.calledWithExactly({
+					message: {
+						context: request.orizuru,
+						message: request.body
+					},
+					publishOptions: {},
+					schema: routeConfiguration.test
+				});
+
+			});
+
+			it('if the request orizuru property is not set', async () => {
+
+				// Given
+				const server: any = {
+					getPublisher: sinon.stub().returns({
+						publish: sinon.stub().resolves()
+					})
+				};
+
+				const routeConfiguration = {
+					test: avsc.Type.forSchema({
+						fields: [
+							{ name: 'first', type: 'string' },
+							{ name: 'last', type: 'string' }
+						],
+						name: 'FullName',
+						namespace: 'com.example',
+						type: 'record'
+					})
+				};
+
+				const options: any = {
+					responseWriter: sinon.stub().returns(sinon.stub())
+				};
+
+				const routeFunction = create(server, routeConfiguration, options);
+
+				const request: any = {
+					body: { something: 10 },
+					params: {
+						schemaName: 'test'
+					}
+				};
+
+				const response: any = {
+					send: sinon.stub().returnsThis(),
+					status: sinon.stub().returnsThis()
+				};
+
+				// When
+				await routeFunction(request, response);
+
+				// Then
+				expect(options.responseWriter).to.have.been.calledOnce;
+				expect(server.getPublisher().publish).to.have.been.calledWithExactly({
+					message: {
+						context: {},
+						message: request.body
+					},
+					publishOptions: {},
+					schema: routeConfiguration.test
+				});
+
 			});
 
 		});
 
-		it('should error if a schema is not found for the request', () => {
+		describe('should error', () => {
 
-			// Given
-			const server: any = {
-				error: sinon.stub()
-			};
+			it('if a schema is not found for the request', () => {
 
-			const routeConfiguration: any = sinon.stub();
+				// Given
+				const server: any = {
+					error: sinon.stub()
+				};
 
-			const options: any = {
-				responseWriter: sinon.stub()
-			};
+				const routeConfiguration: any = sinon.stub();
 
-			const routeFunction = create(server, routeConfiguration, options);
+				const options: any = {
+					responseWriter: sinon.stub()
+				};
 
-			const request: any = {
-				params: {
-					schemaName: 'test'
-				}
-			};
+				const routeFunction = create(server, routeConfiguration, options);
 
-			const response: any = {
-				send: sinon.stub().returnsThis(),
-				status: sinon.stub().returnsThis()
-			};
+				const request: any = {
+					params: {
+						schemaName: 'test'
+					}
+				};
 
-			// When
-			routeFunction(request, response);
+				const response: any = {
+					send: sinon.stub().returnsThis(),
+					status: sinon.stub().returnsThis()
+				};
 
-			// Then
-			expect(server.error).to.have.been.calledOnce;
-			expect(server.error).to.have.been.calledWithExactly('No schema for \'test\' found.');
+				// When
+				routeFunction(request, response);
 
-		});
+				// Then
+				expect(server.error).to.have.been.calledOnce;
+				expect(server.error).to.have.been.calledWithExactly('No schema for \'test\' found.');
 
-		it('should error if publishing the message rejects', async () => {
+			});
 
-			// Given
-			const expectedError = new Error('Failed to publish message');
+			it('if publishing the message rejects', async () => {
 
-			const server: any = {
-				getPublisher: sinon.stub().returns({
-					publish: sinon.stub().rejects(expectedError)
-				})
-			};
+				// Given
+				const expectedError = new Error('Failed to publish message');
 
-			const routeConfiguration = {
-				test: avsc.Type.forSchema({
-					fields: [
-						{ name: 'first', type: 'string' },
-						{ name: 'last', type: 'string' }
-					],
-					name: 'FullName',
-					namespace: 'com.example',
-					type: 'record'
-				})
-			};
+				const server: any = {
+					getPublisher: sinon.stub().returns({
+						publish: sinon.stub().rejects(expectedError)
+					})
+				};
 
-			const responseFunction = sinon.stub();
+				const routeConfiguration = {
+					test: avsc.Type.forSchema({
+						fields: [
+							{ name: 'first', type: 'string' },
+							{ name: 'last', type: 'string' }
+						],
+						name: 'FullName',
+						namespace: 'com.example',
+						type: 'record'
+					})
+				};
 
-			const options: any = {
-				responseWriter: sinon.stub().returns(responseFunction)
-			};
+				const responseFunction = sinon.stub();
 
-			const routeFunction = create(server, routeConfiguration, options);
+				const options: any = {
+					responseWriter: sinon.stub().returns(responseFunction)
+				};
 
-			const request: any = {
-				params: {
-					schemaName: 'test'
-				}
-			};
+				const routeFunction = create(server, routeConfiguration, options);
 
-			const response: any = {
-				send: sinon.stub().returnsThis(),
-				status: sinon.stub().returnsThis()
-			};
+				const request: any = {
+					params: {
+						schemaName: 'test'
+					}
+				};
 
-			// When
-			await routeFunction(request, response);
+				const response: any = {
+					send: sinon.stub().returnsThis(),
+					status: sinon.stub().returnsThis()
+				};
 
-			// Then
-			expect(options.responseWriter).to.have.been.calledOnce;
-			expect(responseFunction).to.have.been.calledOnce;
-			expect(responseFunction).to.have.been.calledWithExactly(expectedError, request, response);
+				// When
+				await routeFunction(request, response);
 
-		});
+				// Then
+				expect(options.responseWriter).to.have.been.calledOnce;
+				expect(responseFunction).to.have.been.calledOnce;
+				expect(responseFunction).to.have.been.calledWithExactly(expectedError, request, response);
 
-		it('should error if publishing the message throws an error', async () => {
+			});
 
-			// Given
-			const expectedError = new Error('Failed to publish message');
+			it('if publishing the message throws an error', async () => {
 
-			const server: any = {
-				getPublisher: sinon.stub().returns({
-					publish: sinon.stub().rejects(expectedError)
-				})
-			};
+				// Given
+				const expectedError = new Error('Failed to publish message');
 
-			const routeConfiguration = {
-				test: avsc.Type.forSchema({
-					fields: [
-						{ name: 'first', type: 'string' },
-						{ name: 'last', type: 'string' }
-					],
-					name: 'FullName',
-					namespace: 'com.example',
-					type: 'record'
-				})
-			};
+				const server: any = {
+					getPublisher: sinon.stub().returns({
+						publish: sinon.stub().rejects(expectedError)
+					})
+				};
 
-			const responseFunction = sinon.stub();
+				const routeConfiguration = {
+					test: avsc.Type.forSchema({
+						fields: [
+							{ name: 'first', type: 'string' },
+							{ name: 'last', type: 'string' }
+						],
+						name: 'FullName',
+						namespace: 'com.example',
+						type: 'record'
+					})
+				};
 
-			const options: any = {
-				responseWriter: sinon.stub().returns(responseFunction)
-			};
+				const responseFunction = sinon.stub();
 
-			const routeFunction = create(server, routeConfiguration, options);
+				const options: any = {
+					responseWriter: sinon.stub().returns(responseFunction)
+				};
 
-			const request: any = {
-				params: {
-					schemaName: 'test'
-				}
-			};
+				const routeFunction = create(server, routeConfiguration, options);
 
-			const response: any = {
-				send: sinon.stub().returnsThis(),
-				status: sinon.stub().returnsThis()
-			};
+				const request: any = {
+					params: {
+						schemaName: 'test'
+					}
+				};
 
-			// When
-			await routeFunction(request, response);
+				const response: any = {
+					send: sinon.stub().returnsThis(),
+					status: sinon.stub().returnsThis()
+				};
 
-			// Then
-			expect(options.responseWriter).to.have.been.calledOnce;
-			expect(responseFunction).to.have.been.calledOnce;
-			expect(responseFunction).to.have.been.calledWithExactly(expectedError, request, response);
+				// When
+				await routeFunction(request, response);
+
+				// Then
+				expect(options.responseWriter).to.have.been.calledOnce;
+				expect(responseFunction).to.have.been.calledOnce;
+				expect(responseFunction).to.have.been.calledWithExactly(expectedError, request, response);
+
+			});
 
 		});
 

@@ -97,7 +97,7 @@ describe('index/server', () => {
 				connect: _.noop,
 				publish: _.noop,
 				subscribe: _.noop
-			}
+			};
 		});
 
 		it('should emit an error event if the options are invalid', () => {
