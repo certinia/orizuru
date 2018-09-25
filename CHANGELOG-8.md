@@ -1,5 +1,11 @@
 # @financialforcedev/orizuru
 
+## 8.0.1
+
+### FIXES
+
+- Make sure that messages can be published if the context is empty.
+
 ## 8.0.0
 
 ### BREAKING CHANGES
