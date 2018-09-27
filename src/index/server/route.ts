@@ -37,22 +37,28 @@ export function create(server: Server, routeConfiguration: { [s: string]: Type }
 	return async (request: Request, response: Response) => {
 
 		const schemaName = request.params.schemaName;
-		const schema = routeConfiguration[schemaName];
-		const message = {
-			message: {
-				context: request.orizuru || {},
-				message: request.body
-			},
-			publishOptions: publishOptions || {},
-			schema
-		};
 
+		const schema = routeConfiguration[schemaName];
 		if (!schema) {
 			const errorMsg = `No schema for '${schemaName}' found.`;
 			server.error(errorMsg);
 			response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(errorMsg);
 			return;
 		}
+
+		publishOptions = publishOptions || {};
+		if (!publishOptions.eventName) {
+			publishOptions.eventName = schema.name;
+		}
+
+		const message = {
+			message: {
+				context: request.orizuru || {},
+				message: request.body
+			},
+			publishOptions,
+			schema
+		};
 
 		return Promise.resolve(message)
 			.then(server.getPublisher().publish.bind(server.getPublisher()))
