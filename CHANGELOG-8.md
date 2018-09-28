@@ -1,5 +1,11 @@
 # @financialforcedev/orizuru
 
+## 8.0.2
+
+### FIXES
+
+- Default the event name to the schema name when publishing a message.
+
 ## 8.0.1
 
 ### FIXES
