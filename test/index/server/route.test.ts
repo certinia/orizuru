@@ -63,7 +63,7 @@ describe('index/server/route', () => {
 
 		describe('should publish a message', () => {
 
-			it('if the request orizuru property is set', async () => {
+			it('if the request orizuru property is set (without publish options)', async () => {
 
 				// Given
 				const server: any = {
@@ -117,7 +117,74 @@ describe('index/server/route', () => {
 						context: request.orizuru,
 						message: request.body
 					},
-					publishOptions: {},
+					publishOptions: {
+						eventName: 'com.example.FullName'
+					},
+					schema: routeConfiguration.test
+				});
+
+			});
+
+			it('if the request orizuru property is set (with publish options)', async () => {
+
+				// Given
+				const server: any = {
+					getPublisher: sinon.stub().returns({
+						publish: sinon.stub().resolves()
+					})
+				};
+
+				const routeConfiguration = {
+					test: avsc.Type.forSchema({
+						fields: [
+							{ name: 'first', type: 'string' },
+							{ name: 'last', type: 'string' }
+						],
+						name: 'FullName',
+						namespace: 'com.example',
+						type: 'record'
+					})
+				};
+
+				const options: any = {
+					publishOptions: {
+						eventName: 'com.example.FullName'
+					},
+					responseWriter: sinon.stub().returns(sinon.stub())
+				};
+
+				const routeFunction = create(server, routeConfiguration, options);
+
+				const request: any = {
+					body: { something: 10 },
+					orizuru: {
+						user: {
+							username: 'test'
+						}
+					},
+					params: {
+						schemaName: 'test'
+					}
+				};
+
+				const response: any = {
+					send: sinon.stub().returnsThis(),
+					status: sinon.stub().returnsThis()
+				};
+
+				// When
+				await routeFunction(request, response);
+
+				// Then
+				expect(options.responseWriter).to.have.been.calledOnce;
+				expect(server.getPublisher().publish).to.have.been.calledWithExactly({
+					message: {
+						context: request.orizuru,
+						message: request.body
+					},
+					publishOptions: {
+						eventName: 'com.example.FullName'
+					},
 					schema: routeConfiguration.test
 				});
 
@@ -172,7 +239,9 @@ describe('index/server/route', () => {
 						context: {},
 						message: request.body
 					},
-					publishOptions: {},
+					publishOptions: {
+						eventName: 'com.example.FullName'
+					},
 					schema: routeConfiguration.test
 				});
 
