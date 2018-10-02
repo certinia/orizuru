@@ -93,12 +93,18 @@ describe('System Test Suite 1', () => {
 
 			// Given
 			// When
-			await request(app)
-				.post('/api/test')
-				.send({
-					id: 'testId'
-				})
-				.expect(200);
+			try {
+
+				await request(app)
+					.post('/api/test')
+					.send({
+						id: 'testId'
+					})
+					.expect(200);
+
+			} catch (error) {
+				expect.fail('Initial request failed.');
+			}
 
 			// Then
 			const response = await axios.post('http://0.0.0.0:15672/api/queues/%2F/api.test/get',
@@ -125,19 +131,31 @@ describe('System Test Suite 1', () => {
 
 			// Given
 			// When
-			await request(app)
-				.post('/api/test')
-				.send({
-					id: 'testId'
-				})
-				.expect(200);
+			try {
 
-			await request(app)
-				.post('/api/test2')
-				.send({
-					id: 'testId'
-				})
-				.expect(200);
+				await request(app)
+					.post('/api/test')
+					.send({
+						id: 'testId'
+					})
+					.expect(200);
+
+			} catch (error) {
+				expect.fail('First request failed.');
+			}
+
+			try {
+
+				await request(app)
+					.post('/api/test2')
+					.send({
+						id: 'testId'
+					})
+					.expect(200);
+
+			} catch (error) {
+				expect.fail('Second request failed.');
+			}
 
 			// Then
 			let response = await axios.post('http://0.0.0.0:15672/api/queues/%2F/api.test/get',
