@@ -113,6 +113,7 @@ describe('System Test Suite 1', () => {
 					count: '1',
 					encoding: 'auto',
 					name: 'api.test',
+					requeue: false,
 					truncate: '50000',
 					vhost: '/'
 				}, {
@@ -165,6 +166,7 @@ describe('System Test Suite 1', () => {
 					count: '1',
 					encoding: 'auto',
 					name: 'api.test',
+					requeue: false,
 					truncate: '50000',
 					vhost: '/'
 				});
@@ -179,6 +181,7 @@ describe('System Test Suite 1', () => {
 					count: '1',
 					encoding: 'auto',
 					name: 'api.test',
+					requeue: false,
 					truncate: '50000',
 					vhost: '/'
 				});
