@@ -3,8 +3,10 @@
 
 coverage
 doc
+docker
 src
 test
+systemtests
 
 .travis.yml
 
