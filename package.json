@@ -10,7 +10,7 @@
 		"init-project": "cp run.properties local.run.properties && cp test.properties local.test.properties",
 		"prepare": "npm run build",
 		"pretest": "tslint -p tsconfig.json",
-		"test": "nyc mocha"
+		"test": "nyc --nycrc-path=test/nyc.opts mocha"
 	},
 	"repository": {
 		"type": "git",
@@ -55,34 +55,5 @@
 		"tslint": "^5.11.0",
 		"typedoc": "^0.12.0",
 		"typescript": "^3.0.3"
-	},
-	"nyc": {
-		"all": true,
-		"check-coverage": true,
-		"per-file": true,
-		"lines": 100,
-		"statements": 100,
-		"functions": 100,
-		"branches": 100,
-		"require": [
-			"ts-node/register"
-		],
-		"extension": [
-			".ts"
-		],
-		"exclude": [
-			"coverage",
-			"dist",
-			"doc",
-			"**/*.d.ts"
-		],
-		"reporter": [
-			"lcov",
-			"html",
-			"text",
-			"text-summary"
-		],
-		"sourceMap": true,
-		"instrument": true
 	}
 }
