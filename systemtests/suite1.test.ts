@@ -101,7 +101,7 @@ describe('System Test Suite 1', () => {
 				.expect(200);
 
 			// Then
-			const response = await axios.post('http://localhost:15672/api/queues/%2F/api.test/get',
+			const response = await axios.post('http://0.0.0.0:15672/api/queues/%2F/api.test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -140,7 +140,7 @@ describe('System Test Suite 1', () => {
 				.expect(200);
 
 			// Then
-			let response = await axios.post('http://localhost:15672/api/queues/%2F/api.test/get',
+			let response = await axios.post('http://0.0.0.0:15672/api/queues/%2F/api.test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -158,7 +158,7 @@ describe('System Test Suite 1', () => {
 			expect(response.data[0].message_count).to.eql(0);
 			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJgBeyJuYW1lIjoiYXBpLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfQ4MdGVzdElk');
 
-			response = await axios.post('http://localhost:15672/api/queues/%2F/api.test2/get',
+			response = await axios.post('http://0.0.0.0:15672/api/queues/%2F/api.test2/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
