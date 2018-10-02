@@ -26,6 +26,7 @@
 
 import { Type } from 'avsc';
 import * as  HTTP_STATUS_CODE from 'http-status-codes';
+import _ from 'lodash';
 
 import { Options, Request, Response, Server } from '../..';
 
@@ -46,9 +47,9 @@ export function create(server: Server, routeConfiguration: { [s: string]: Type }
 			return;
 		}
 
-		publishOptions = publishOptions || {};
-		if (!publishOptions.eventName) {
-			publishOptions.eventName = schema.name;
+		const messagePublishOptions = _.cloneDeep(publishOptions) || {};
+		if (!messagePublishOptions.eventName) {
+			messagePublishOptions.eventName = schema.name;
 		}
 
 		const message = {
@@ -56,7 +57,7 @@ export function create(server: Server, routeConfiguration: { [s: string]: Type }
 				context: request.orizuru || {},
 				message: request.body
 			},
-			publishOptions,
+			publishOptions: messagePublishOptions,
 			schema
 		};
 
