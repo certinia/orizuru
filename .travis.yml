@@ -4,4 +4,4 @@ node_js:
 services:
   - rabbitmq
 before_script:
-  - rabbitmq-plugins enable rabbitmq_management
+  - sudo rabbitmq-plugins enable rabbitmq_management
