@@ -121,7 +121,7 @@ describe('System Test Suite 1', () => {
 					}
 				});
 
-			expect(response.statusText).to.eql('OK', `Failed to check the message queue: $JSON.stringify(response)`);
+			expect(response.statusText).to.eql('OK', `Failed to check the message queue: ${JSON.stringify(response)}`);
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
 			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJgBeyJuYW1lIjoiYXBpLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfQ4MdGVzdElk');
