@@ -107,7 +107,7 @@ describe('System Test Suite 1', () => {
 			}
 
 			// Then
-			const response = await axios.post('http://127.0.0.1:15672/api/queues/%2F/api.test/get',
+			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -116,9 +116,6 @@ describe('System Test Suite 1', () => {
 					truncate: '50000',
 					vhost: '/'
 				}, {
-					headers: {
-						Authorization: 'Basic Z3Vlc3Q6Z3Vlc3Q='
-					},
 					validateStatus: () => {
 						return true;
 					}
@@ -162,7 +159,7 @@ describe('System Test Suite 1', () => {
 			}
 
 			// Then
-			let response = await axios.post('http://127.0.0.1:15672/api/queues/%2F/api.test/get',
+			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -170,17 +167,13 @@ describe('System Test Suite 1', () => {
 					name: 'api.test',
 					truncate: '50000',
 					vhost: '/'
-				}, {
-					headers: {
-						Authorization: 'Basic Z3Vlc3Q6Z3Vlc3Q='
-					}
 				});
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
 			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJgBeyJuYW1lIjoiYXBpLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfQ4MdGVzdElk');
 
-			response = await axios.post('http://127.0.0.1:15672/api/queues/%2F/api.test2/get',
+			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test2/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -188,10 +181,6 @@ describe('System Test Suite 1', () => {
 					name: 'api.test',
 					truncate: '50000',
 					vhost: '/'
-				}, {
-					headers: {
-						Authorization: 'Basic Z3Vlc3Q6Z3Vlc3Q='
-					}
 				});
 
 			expect(response.data.length).to.eql(1);
