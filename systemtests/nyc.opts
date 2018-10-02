@@ -1,0 +1,33 @@
+{
+	"all": true,
+	"check-coverage": true,
+	"lines": 95,
+	"statements": 95,
+	"functions": 95,
+	"branches": 75,
+	"require": [
+		"ts-node/register"
+	],
+	"extension": [
+		".ts"
+	],
+	"exclude": [
+		"coverage",
+		"coverage-systemtests",
+		"dist",
+		"doc",
+		"**/*.d.ts",
+		"test",
+		"manualtests",
+		"systemtests"
+	],
+	"report-dir": "coverage",
+	"reporter": [
+		"lcov",
+		"html",
+		"text",
+		"text-summary"
+	],
+	"sourceMap": true,
+	"instrument": true
+}
