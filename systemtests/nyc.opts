@@ -1,10 +1,10 @@
 {
 	"all": true,
 	"check-coverage": true,
-	"lines": 95,
-	"statements": 95,
-	"functions": 95,
-	"branches": 75,
+	"lines": 50,
+	"statements": 50,
+	"functions": 50,
+	"branches": 50,
 	"require": [
 		"ts-node/register"
 	],
