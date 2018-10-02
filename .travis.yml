@@ -4,4 +4,4 @@ node_js:
 services:
   - rabbitmq
 before_script:
-  - sudo rabbitmq-plugins enable rabbitmq_management
+  - sudo lsof -i :15672 && sudo lsof -i :5672
