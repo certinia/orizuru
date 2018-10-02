@@ -3,3 +3,5 @@ node_js:
   - "lts/*"
 services:
   - rabbitmq
+before_script:
+  - rabbitmq-plugins enable rabbitmq_management
