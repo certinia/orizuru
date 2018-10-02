@@ -4,4 +4,4 @@ node_js:
 services:
   - rabbitmq
 before_script:
-  - sudo rabbitmq-plugins enable rabbitmq_management && rabbitmqadmin export rabbit.definitions.json && cat rabbit.definitions.json
+  - sudo rabbitmq-plugins enable rabbitmq_management
