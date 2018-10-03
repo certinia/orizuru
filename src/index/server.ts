@@ -27,10 +27,11 @@
 import { Type } from 'avsc';
 import { EventEmitter } from 'events';
 import express from 'express';
-import { Application, ApplicationRequestHandler } from 'express-serve-static-core';
+import { RequestHandler } from 'express-serve-static-core';
+import http from 'http';
 import _ from 'lodash';
 
-import { Options, Publisher } from '..';
+import { IServerImpl, Options, Publisher } from '..';
 import { create as createRoute } from './server/route';
 import * as ROUTE_METHOD from './server/routeMethod';
 import { RouteValidator } from './validator/route';
@@ -58,21 +59,21 @@ export class Server extends EventEmitter {
 	/**
 	 * The error event name.
 	 */
-	public static readonly ERROR: string = 'error_event';
+	public static readonly ERROR = Symbol();
 
 	/**
 	 * The info event name.
 	 */
-	public static readonly INFO: string = 'info_event';
+	public static readonly INFO = Symbol();
 
-	public set: (setting: string, val: any) => Application;
-	public use: ApplicationRequestHandler<Application>;
-
+	private readonly options: Options.IServer;
 	private readonly publisher: Publisher;
-	private readonly server: express.Express;
+	private readonly server: IServerImpl;
 	private readonly validator: RouteValidator;
 	private readonly routerConfiguration: { [s: string]: express.Router };
 	private readonly routeConfiguration: { [s: string]: { [s: string]: Type } };
+
+	private httpServer?: http.Server;
 
 	/**
 	 * Constructs a new 'Server'.
@@ -84,22 +85,28 @@ export class Server extends EventEmitter {
 
 		super();
 
-		this.info('Creating server.');
-
 		try {
 
 			// Validate the server options
 			new ServerValidator(options);
 
-			// Add the server
-			this.server = express();
+			this.options = options;
 
-			// Add commonly used express functions
-			this.set = this.server.set.bind(this.server);
-			this.use = this.server.use.bind(this.server);
+			// Add the server
+			this.server = options.server || express();
 
 			// Add the publisher
 			this.publisher = new Publisher(options);
+
+			// Make sure that  the publisher emits server error events
+			this.publisher.on(Publisher.ERROR, (...args: any[]) => {
+				this.emit(Server.ERROR, ...args);
+			});
+
+			// Make sure that  the publisher emits server info events
+			this.publisher.on(Publisher.INFO, (...args: any[]) => {
+				this.emit(Server.INFO, ...args);
+			});
 
 			// Define the router configuration for the server
 			this.routerConfiguration = {};
@@ -175,12 +182,60 @@ export class Server extends EventEmitter {
 	}
 
 	/**
-	 * Returns the express server.
+	 * Starts the server listening for connections.
+	 */
+	public listen(callback?: (app: Server) => void) {
+		this.httpServer = this.server.listen(this.options.port, () => {
+			this.info(`Listening to new connections on port: ${this.options.port}.`);
+			if (callback) {
+				callback(this);
+			}
+		});
+		return this.httpServer;
+	}
+
+	/**
+	 * Stops the server from accepting new connections.
+	 */
+	public async close(callback?: (app: Server) => void) {
+		if (this.httpServer) {
+			await this.httpServer.close(async () => {
+				this.info(`Stopped listening to connections on port: ${this.options.port}.`);
+				await this.options.transport.close();
+				if (callback) {
+					callback(this);
+				}
+			});
+		} else {
+			throw Error('The server has not started listening to connections.');
+		}
+	}
+
+	/**
+	 * Assigns setting `name` to `value`.
+	 */
+	public set(setting: string, val: any) {
+		this.server.set(setting, val);
+		return this;
+	}
+
+	/**
+	 * Use the given request handlers for the specified paths.
+	 */
+	public use(path: string, ...handlers: RequestHandler[]) {
+		this.server.use(path, ...handlers);
+		return this;
+	}
+
+	/**
+	 * Returns the server implementation.
+	 *
+	 * Defaults to express.
 	 *
 	 * @example
-	 * // returns the express server
+	 * // returns the server implementation
 	 * server.getServer().listen('8080');
-	 * @returns {express} The express server.
+	 * @returns The server implementation.
 	 */
 	public getServer() {
 		return this.server;
@@ -189,7 +244,7 @@ export class Server extends EventEmitter {
 	/**
 	 * Returns the message publisher.
 	 *
-	 * @returns {Publisher} The message publisher.
+	 * @returns The message publisher.
 	 */
 	public getPublisher() {
 		return this.publisher;
@@ -197,7 +252,7 @@ export class Server extends EventEmitter {
 
 	/**
 	 * Emit an error event.
-	 * @param {Object} event - The error event.
+	 * @param event - The error event.
 	 */
 	public error(event: any) {
 		this.emit(Server.ERROR, event);
@@ -205,7 +260,7 @@ export class Server extends EventEmitter {
 
 	/**
 	 * Emit an info event.
-	 * @param {Object} event - The info event.
+	 * @param event - The info event.
 	 */
 	public info(event: any) {
 		this.emit(Server.INFO, event);
