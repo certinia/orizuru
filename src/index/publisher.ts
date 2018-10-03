@@ -41,15 +41,14 @@ export class Publisher extends EventEmitter {
 	/**
 	 * The error event name.
 	 */
-	public static readonly ERROR: string = 'error_event';
+	public static readonly ERROR = Symbol();
 
 	/**
 	 * The info event name.
 	 */
-	public static readonly INFO: string = 'info_event';
+	public static readonly INFO = Symbol();
 
 	private readonly transport: Transport;
-	private readonly transportConfig: Options.Transport.IConnect;
 	private readonly transportImpl: ITransport;
 	private readonly validator: PublishFunctionValidator;
 
@@ -69,7 +68,6 @@ export class Publisher extends EventEmitter {
 
 			// Define the transport
 			this.transport = new Transport();
-			this.transportConfig = options.transportConfig;
 			this.transportImpl = options.transport;
 
 			// Define the publish function validator
@@ -105,6 +103,9 @@ export class Publisher extends EventEmitter {
 		const eventName = schema.name as string;
 
 		const publishOptions = options.publishOptions || {};
+		if (!publishOptions.eventName) {
+			publishOptions.eventName = eventName;
+		}
 		publishOptions.message = options.message;
 		publishOptions.schema = schema;
 
@@ -131,7 +132,7 @@ export class Publisher extends EventEmitter {
 
 		}
 
-		await this.transportImpl.connect(this.transportConfig);
+		await this.transportImpl.connect();
 
 		// publish buffer on transport
 		return this.transportImpl.publish(buffer, publishOptions)
@@ -148,7 +149,7 @@ export class Publisher extends EventEmitter {
 
 	/**
 	 * Emit an error event.
-	 * @param {Object} event - The error event.
+	 * @param event - The error event.
 	 */
 	public error(event: any) {
 		this.emit(Publisher.ERROR, event);
@@ -156,7 +157,7 @@ export class Publisher extends EventEmitter {
 
 	/**
 	 * Emit an info event.
-	 * @param {Object} event - The info event.
+	 * @param event - The info event.
 	 */
 	public info(event: any) {
 		this.emit(Publisher.INFO, event);
