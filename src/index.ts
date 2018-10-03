@@ -100,7 +100,7 @@ export interface ITransport {
 	/**
 	 * Connects to the transport layer.
 	 */
-	connect: () => Promise<boolean>;
+	connect: () => Promise<void>;
 
 	/**
 	 * Publishes a message.
@@ -115,7 +115,7 @@ export interface ITransport {
 	/**
 	 * Closes the transport gracefully.
 	 */
-	close: () => Promise<any>;
+	close: () => Promise<void>;
 
 }
 
