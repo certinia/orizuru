@@ -87,7 +87,7 @@ describe('RabbitMQ server', () => {
 	});
 
 	after(async () => {
-		server.close();
+		await server.close();
 	});
 
 	it('should return a 400 if the message is invalid', async () => {
