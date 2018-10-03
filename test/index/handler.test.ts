@@ -57,10 +57,7 @@ describe('index/handler', () => {
 		};
 
 		options = {
-			transport,
-			transportConfig: {
-				url: 'testUrl'
-			}
+			transport
 		};
 
 	});
@@ -94,8 +91,8 @@ describe('index/handler', () => {
 			expect(() => new Handler(options)).to.throw(/^Missing required object parameter: transport\.$/g);
 
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Creating handler.');
-			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Handler.INFO, 'Creating handler.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith(Handler.ERROR);
 
 		});
 
@@ -135,8 +132,8 @@ describe('index/handler', () => {
 			// Then
 			expect(HandlerFunctionValidator.prototype.validate).to.have.been.calledOnce;
 			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Creating handler.');
-			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Installing handler for com.example.FullName events.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Handler.INFO, 'Creating handler.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Handler.INFO, 'Installing handler for com.example.FullName events.');
 
 		});
 

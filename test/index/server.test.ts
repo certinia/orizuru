@@ -28,14 +28,15 @@ import chai from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
-import avsc from 'avsc';
+import avsc, { Type } from 'avsc';
 import { EventEmitter } from 'events';
 import express from 'express';
+import http from 'http';
 import _ from 'lodash';
 
 import { RouteValidator } from '../../src/index/validator/route';
 
-import { Server } from '../../src';
+import { Options, Publisher, Server } from '../../src';
 
 chai.use(sinonChai);
 
@@ -45,42 +46,63 @@ describe('index/server', () => {
 
 	const Router: any = express.Router;
 
-	const schema1 = avsc.Type.forSchema({
-		fields: [
-			{ name: 'first', type: 'string' },
-			{ name: 'last', type: 'string' }
-		],
-		name: 'FullName',
-		namespace: 'com.example',
-		type: 'record'
-	});
+	let defaultOptions: Options.IServer;
 
-	const schema2 = avsc.Type.forSchema({
-		fields: [
-			{ name: 'first', type: 'string' },
-			{ name: 'last', type: 'string' }
-		],
-		name: 'FullName',
-		namespace: 'com.example.two',
-		type: 'record'
-	});
+	let schema1: Type;
+	let schema2: Type;
+	let schema3: Type;
+	let schema4: Type;
 
-	const schema3 = avsc.Type.forSchema({
-		fields: [
-			{ name: 'last', type: 'string' }
-		],
-		name: 'Surname',
-		namespace: 'com.example',
-		type: 'record'
-	});
+	beforeEach(() => {
 
-	const schema4 = avsc.Type.forSchema({
-		fields: [
-			{ name: 'last', type: 'string' }
-		],
-		name: 'Surname',
-		namespace: 'com.example.v1_0',
-		type: 'record'
+		defaultOptions = {
+			port: 8080,
+			transport: {
+				close: sinon.stub().resolves(),
+				connect: sinon.stub().resolves(),
+				publish: sinon.stub().resolves(),
+				subscribe: sinon.stub().resolves()
+			}
+		};
+
+		schema1 = avsc.Type.forSchema({
+			fields: [
+				{ name: 'first', type: 'string' },
+				{ name: 'last', type: 'string' }
+			],
+			name: 'FullName',
+			namespace: 'com.example',
+			type: 'record'
+		});
+
+		schema2 = avsc.Type.forSchema({
+			fields: [
+				{ name: 'first', type: 'string' },
+				{ name: 'last', type: 'string' }
+			],
+			name: 'FullName',
+			namespace: 'com.example.two',
+			type: 'record'
+		});
+
+		schema3 = avsc.Type.forSchema({
+			fields: [
+				{ name: 'last', type: 'string' }
+			],
+			name: 'Surname',
+			namespace: 'com.example',
+			type: 'record'
+		});
+
+		schema4 = avsc.Type.forSchema({
+			fields: [
+				{ name: 'last', type: 'string' }
+			],
+			name: 'Surname',
+			namespace: 'com.example.v1_0',
+			type: 'record'
+		});
+
 	});
 
 	afterEach(() => {
@@ -88,17 +110,6 @@ describe('index/server', () => {
 	});
 
 	describe('constructor', () => {
-
-		let transport: any;
-
-		beforeEach(() => {
-			transport = {
-				close: _.noop,
-				connect: _.noop,
-				publish: _.noop,
-				subscribe: _.noop
-			};
-		});
 
 		it('should emit an error event if the options are invalid', () => {
 
@@ -111,47 +122,64 @@ describe('index/server', () => {
 			// Then
 			expect(() => new Server(options)).to.throw(/^Missing required object parameter: transport\.$/g);
 
-			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly('info_event', 'Creating server.');
-			expect(EventEmitter.prototype.emit).to.have.been.calledWith('error_event');
+			expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
+			expect(EventEmitter.prototype.emit).to.have.been.calledWith(Server.ERROR);
 
 		});
 
 		it('should extend EventEmitter', () => {
 
 			// Given
-			const options: any = {
-				transport
-			};
-
 			// When
-			const server = new Server(options);
+			const server = new Server(defaultOptions);
 
 			// Then
 			expect(server).to.be.an.instanceof(EventEmitter);
 
 		});
 
-		it('should bind the express use and set functions to the server', () => {
+		it('should add listeners to the publisher', () => {
 
 			// Given
-			const options: any = {
-				transport
-			};
-
-			const expressServer: any = express;
-
-			sinon.spy(expressServer.application.set, 'bind');
-			sinon.spy(expressServer.application.use, 'bind');
+			sinon.stub(Publisher.prototype, 'on');
 
 			// When
-			const server = new Server(options);
+			new Server(defaultOptions);
 
 			// Then
-			expect(expressServer.application.set.bind).to.have.been.calledOnce;
-			expect(expressServer.application.set.bind).to.have.been.calledWithExactly(server.getServer());
-			expect(expressServer.application.use.bind).to.have.been.calledOnce;
-			expect(expressServer.application.use.bind).to.have.been.calledWithExactly(server.getServer());
+			expect(Publisher.prototype.on).to.have.been.calledTwice;
+			expect(Publisher.prototype.on).to.have.been.calledWithExactly(Publisher.ERROR, sinon.match.func);
+			expect(Publisher.prototype.on).to.have.been.calledWithExactly(Publisher.INFO, sinon.match.func);
+
+		});
+
+		it('should emit a Server error event for errors in the publisher', () => {
+
+			// Given
+			sinon.stub(Publisher.prototype, 'on').withArgs(Publisher.ERROR, sinon.match.func).yields('error');
+			sinon.spy(Server.prototype, 'emit');
+
+			// When
+			const server = new Server(defaultOptions);
+
+			// Then
+			expect(server.emit).to.have.been.calledOnce;
+			expect(server.emit).to.have.been.calledWithExactly(Server.ERROR, 'error');
+
+		});
+
+		it('should emit a Server info event for info events in the publisher', () => {
+
+			// Given
+			sinon.stub(Publisher.prototype, 'on').withArgs(Publisher.INFO, sinon.match.func).yields('info');
+			sinon.spy(Server.prototype, 'emit');
+
+			// When
+			const server = new Server(defaultOptions);
+
+			// Then
+			expect(server.emit).to.have.been.calledOnce;
+			expect(server.emit).to.have.been.calledWithExactly(Server.INFO, 'info');
 
 		});
 
@@ -166,15 +194,6 @@ describe('index/server', () => {
 			sinon.spy(EventEmitter.prototype, 'emit');
 			sinon.stub(Router, 'use');
 
-			const options: any = {
-				transport: {
-					close: sinon.stub().resolves(),
-					connect: sinon.stub().resolves(),
-					publish: sinon.stub().resolves(),
-					subscribe: sinon.stub().resolves()
-				}
-			};
-
 			const route = {
 				endpoint: '/api/',
 				method: 'post',
@@ -182,7 +201,7 @@ describe('index/server', () => {
 				schema: schema1
 			};
 
-			let server = new Server(options);
+			let server = new Server(defaultOptions);
 
 			sinon.spy(server, 'info');
 
@@ -205,15 +224,6 @@ describe('index/server', () => {
 			sinon.spy(EventEmitter.prototype, 'emit');
 			sinon.stub(Router, 'use');
 
-			const options: any = {
-				transport: {
-					close: sinon.stub().resolves(),
-					connect: sinon.stub().resolves(),
-					publish: sinon.stub().resolves(),
-					subscribe: sinon.stub().resolves()
-				}
-			};
-
 			const route = {
 				endpoint: '/api/',
 				method: 'post',
@@ -224,7 +234,7 @@ describe('index/server', () => {
 				schema: schema4
 			};
 
-			let server = new Server(options);
+			let server = new Server(defaultOptions);
 
 			sinon.spy(server, 'info');
 
@@ -247,15 +257,6 @@ describe('index/server', () => {
 			sinon.spy(EventEmitter.prototype, 'emit');
 			sinon.stub(Router, 'use');
 
-			const options: any = {
-				transport: {
-					close: sinon.stub().resolves(),
-					connect: sinon.stub().resolves(),
-					publish: sinon.stub().resolves(),
-					subscribe: sinon.stub().resolves()
-				}
-			};
-
 			const route1 = {
 				endpoint: '/',
 				method: 'post',
@@ -270,7 +271,7 @@ describe('index/server', () => {
 				schema: schema2
 			};
 
-			let server = new Server(options);
+			let server = new Server(defaultOptions);
 
 			sinon.spy(server, 'info');
 
@@ -297,15 +298,6 @@ describe('index/server', () => {
 			sinon.spy(EventEmitter.prototype, 'emit');
 			sinon.stub(Router, 'use');
 
-			const options: any = {
-				transport: {
-					close: sinon.stub().resolves(),
-					connect: sinon.stub().resolves(),
-					publish: sinon.stub().resolves(),
-					subscribe: sinon.stub().resolves()
-				}
-			};
-
 			const route1 = {
 				endpoint: '/',
 				method: 'post',
@@ -320,7 +312,7 @@ describe('index/server', () => {
 				schema: schema3
 			};
 
-			let server = new Server(options);
+			let server = new Server(defaultOptions);
 
 			sinon.spy(server, 'info');
 
@@ -345,16 +337,7 @@ describe('index/server', () => {
 		it('should return the express server', () => {
 
 			// Given
-			const options: any = {
-				transport: {
-					close: sinon.stub().resolves(),
-					connect: sinon.stub().resolves(),
-					publish: sinon.stub().resolves(),
-					subscribe: sinon.stub().resolves()
-				}
-			};
-
-			const server = new Server(options);
+			const server = new Server(defaultOptions);
 
 			// When
 			const expressServer = server.getServer();
@@ -371,7 +354,242 @@ describe('index/server', () => {
 		it('should return the publisher', () => {
 
 			// Given
+			const server = new Server(defaultOptions);
+
+			// When
+			const publisher = server.getPublisher();
+
+			// Then
+			expect(publisher).to.not.be.undefined;
+			expect(publisher).to.be.an.instanceOf(EventEmitter);
+
+		});
+
+	});
+
+	describe('listen', () => {
+
+		it('should start the http server listening on the port specified in the options', () => {
+
+			// Given
+			const httpServerStub = {
+				listen: sinon.stub()
+			};
+
+			// express extends the http server so stub the createServer function,
+			// return a listen stub
+			sinon.stub(http, 'createServer').returns(httpServerStub);
+
+			const server = new Server(defaultOptions);
+
+			// When
+			server.listen();
+
+			// Then
+			expect(httpServerStub.listen).to.have.been.calledOnce;
+			expect(httpServerStub.listen).to.have.been.calledWithExactly(8080, sinon.match.func);
+
+		});
+
+		it('should emit an info event stating that the server is listening', () => {
+
+			// Given
+			const httpServerStub = {
+				listen: sinon.stub().yields()
+			};
+
+			// express extends the http server so stub the createServer function,
+			// return a listen stub
+			sinon.stub(http, 'createServer').returns(httpServerStub);
+
+			const server = new Server(defaultOptions);
+			sinon.spy(server, 'info');
+
+			// When
+			server.listen();
+
+			// Then
+			expect(httpServerStub.listen).to.have.been.calledOnce;
+			expect(httpServerStub.listen).to.have.been.calledWithExactly(8080, sinon.match.func);
+			expect(server.info).to.have.been.calledOnce;
+			expect(server.info).to.have.been.calledWithExactly('Listening to new connections on port: 8080.');
+
+		});
+
+		it('should invoke the callback if specified after the server has started listening', () => {
+
+			// Given
+			const httpServerStub = {
+				listen: sinon.stub().yields()
+			};
+
+			// express extends the http server so stub the createServer function,
+			// return a listen stub
+			sinon.stub(http, 'createServer').returns(httpServerStub);
+
+			const server = new Server(defaultOptions);
+			sinon.spy(server, 'info');
+
+			const callbackStub = sinon.stub();
+
+			// When
+			server.listen(callbackStub);
+
+			// Then
+			expect(httpServerStub.listen).to.have.been.calledOnce;
+			expect(httpServerStub.listen).to.have.been.calledWithExactly(8080, sinon.match.func);
+			expect(server.info).to.have.been.calledOnce;
+			expect(server.info).to.have.been.calledWithExactly('Listening to new connections on port: 8080.');
+			expect(callbackStub).to.have.been.calledOnce;
+			expect(callbackStub).to.have.been.calledWithExactly(server);
+
+		});
+
+	});
+
+	describe('close', () => {
+
+		it('should throw an error if the server has not started listening to connections', async () => {
+
+			// Given
+			const server = new Server(defaultOptions);
+
+			// When
+			// Then
+			await expect(server.close()).to.be.rejectedWith('The server has not started listening to connections.');
+
+		});
+
+		it('should stop the http server listening', async () => {
+
+			// Given
+			const httpServerStub = {
+				close: sinon.stub(),
+				listen: sinon.stub().returnsThis()
+			};
+
+			// express extends the http server so stub the createServer function,
+			// return a listen stub
+			sinon.stub(http, 'createServer').returns(httpServerStub);
+
+			const server = new Server(defaultOptions);
+			server.listen();
+
+			// When
+			await server.close();
+
+			// Then
+			expect(httpServerStub.listen).to.have.been.calledOnce;
+			expect(httpServerStub.listen).to.have.been.calledWithExactly(8080, sinon.match.func);
+			expect(httpServerStub.close).to.have.been.calledOnce;
+			expect(httpServerStub.close).to.have.been.calledWithExactly(sinon.match.func);
+
+		});
+
+		it('should close the transport', async () => {
+
+			// Given
+			const httpServerStub = {
+				close: sinon.stub().yields(),
+				listen: sinon.stub().returnsThis()
+			};
+
+			// express extends the http server so stub the createServer function,
+			// return a listen stub
+			sinon.stub(http, 'createServer').returns(httpServerStub);
+
+			const server = new Server(defaultOptions);
+			sinon.spy(server, 'info');
+			server.listen();
+
+			// When
+			await server.close();
+
+			// Then
+			expect(httpServerStub.listen).to.have.been.calledOnce;
+			expect(httpServerStub.listen).to.have.been.calledWithExactly(8080, sinon.match.func);
+			expect(httpServerStub.close).to.have.been.calledOnce;
+			expect(httpServerStub.close).to.have.been.calledWithExactly(sinon.match.func);
+			expect(defaultOptions.transport.close).to.have.been.calledOnce;
+			expect(defaultOptions.transport.close).to.have.been.calledWithExactly();
+
+		});
+
+		it('should emit an info event stating that the server has stopped listening', async () => {
+
+			// Given
+			const httpServerStub = {
+				close: sinon.stub().yields(),
+				listen: sinon.stub().returnsThis()
+			};
+
+			// express extends the http server so stub the createServer function,
+			// return a listen stub
+			sinon.stub(http, 'createServer').returns(httpServerStub);
+
+			const server = new Server(defaultOptions);
+			sinon.spy(server, 'info');
+			server.listen();
+
+			// When
+			await server.close();
+
+			// Then
+			expect(httpServerStub.listen).to.have.been.calledOnce;
+			expect(httpServerStub.listen).to.have.been.calledWithExactly(8080, sinon.match.func);
+			expect(httpServerStub.close).to.have.been.calledOnce;
+			expect(httpServerStub.close).to.have.been.calledWithExactly(sinon.match.func);
+			expect(server.info).to.have.been.calledOnce;
+			expect(server.info).to.have.been.calledWithExactly('Stopped listening to connections on port: 8080.');
+			expect(defaultOptions.transport.close).to.have.been.calledOnce;
+			expect(defaultOptions.transport.close).to.have.been.calledWithExactly();
+
+		});
+
+		it('should invoke the callback if specified after the server has stopped listening', async () => {
+
+			// Given
+			const httpServerStub = {
+				close: sinon.stub().yields(),
+				listen: sinon.stub().returnsThis()
+			};
+
+			// express extends the http server so stub the createServer function, 
+			// return a listen stub
+			sinon.stub(http, 'createServer').returns(httpServerStub);
+
+			const server = new Server(defaultOptions);
+			sinon.spy(server, 'info');
+			server.listen();
+
+			const callbackStub = sinon.stub();
+
+			// When
+			await server.close(callbackStub);
+
+			// Then
+			expect(httpServerStub.listen).to.have.been.calledOnce;
+			expect(httpServerStub.listen).to.have.been.calledWithExactly(8080, sinon.match.func);
+			expect(server.info).to.have.been.calledOnce;
+			expect(server.info).to.have.been.calledWithExactly('Stopped listening to connections on port: 8080.');
+			expect(defaultOptions.transport.close).to.have.been.calledOnce;
+			expect(defaultOptions.transport.close).to.have.been.calledWithExactly();
+			expect(callbackStub).to.have.been.calledOnce;
+			expect(callbackStub).to.have.been.calledWithExactly(server);
+
+		});
+
+	});
+
+	describe('set', () => {
+
+		it('should set the specified setting on the server', () => {
+
+			// Given
 			const options: any = {
+				server: {
+					set: sinon.stub()
+				},
 				transport: {
 					close: sinon.stub().resolves(),
 					connect: sinon.stub().resolves(),
@@ -383,11 +601,72 @@ describe('index/server', () => {
 			const server = new Server(options);
 
 			// When
-			const publisher = server.getPublisher();
+			server.set('setting', 'test');
 
 			// Then
-			expect(publisher).to.not.be.undefined;
-			expect(publisher).to.be.an.instanceOf(EventEmitter);
+			expect(options.server.set).to.have.been.calledOnce;
+			expect(options.server.set).to.have.been.calledWithExactly('setting', 'test');
+
+		});
+
+	});
+
+	describe('set', () => {
+
+		it('should use the specified middleware on the given path', () => {
+
+			// Given
+			const options: any = {
+				server: {
+					use: sinon.stub()
+				},
+				transport: {
+					close: sinon.stub().resolves(),
+					connect: sinon.stub().resolves(),
+					publish: sinon.stub().resolves(),
+					subscribe: sinon.stub().resolves()
+				}
+			};
+
+			const middlewareStub: any = sinon.stub();
+
+			const server = new Server(options);
+
+			// When
+			server.use('/', middlewareStub);
+
+			// Then
+			expect(options.server.use).to.have.been.calledOnce;
+			expect(options.server.use).to.have.been.calledWithExactly('/', middlewareStub);
+
+		});
+
+		it('should use the specified middlewares on the given path', () => {
+
+			// Given
+			const options: any = {
+				server: {
+					use: sinon.stub()
+				},
+				transport: {
+					close: sinon.stub().resolves(),
+					connect: sinon.stub().resolves(),
+					publish: sinon.stub().resolves(),
+					subscribe: sinon.stub().resolves()
+				}
+			};
+
+			const middleware1Stub: any = sinon.stub();
+			const middleware2Stub: any = sinon.stub();
+
+			const server = new Server(options);
+
+			// When
+			server.use('/', middleware1Stub, middleware2Stub);
+
+			// Then
+			expect(options.server.use).to.have.been.calledOnce;
+			expect(options.server.use).to.have.been.calledWithExactly('/', middleware1Stub, middleware2Stub);
 
 		});
 

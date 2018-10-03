@@ -241,7 +241,9 @@ describe('index/validator/route', () => {
 			expect(response.status).to.have.been.calledOnce;
 			expect(response.status).to.have.been.calledWithExactly(400);
 			expect(response.send).to.have.been.calledOnce;
-			expect(response.send).to.have.been.calledWithExactly(expectedError);
+			expect(response.send).to.have.been.calledWithExactly({
+				error: 'error'
+			});
 
 		});
 
@@ -261,18 +263,15 @@ describe('index/validator/route', () => {
 			const request: any = sinon.stub();
 
 			const response: any = {
-				send: sinon.stub().returnsThis(),
-				status: sinon.stub().returnsThis()
+				sendStatus: sinon.stub()
 			};
 
 			// When
 			validatedoptions.responseWriter(server)(undefined, request, response);
 
 			// Then
-			expect(response.status).to.have.been.calledOnce;
-			expect(response.status).to.have.been.calledWithExactly(200);
-			expect(response.send).to.have.been.calledOnce;
-			expect(response.send).to.have.been.calledWithExactly('Ok.');
+			expect(response.sendStatus).to.have.been.calledOnce;
+			expect(response.sendStatus).to.have.been.calledWithExactly(200);
 
 		});
 
