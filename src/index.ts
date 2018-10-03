@@ -35,6 +35,7 @@
 
 import { Type } from 'avsc';
 import { Request, RequestHandler, Response } from 'express';
+import http from 'http';
 
 import { Server } from './index/server';
 
@@ -85,8 +86,6 @@ declare global {
 		// These open interfaces may be extended in an application-specific manner via declaration merging.
 		namespace Transport {
 
-			interface IConnect { }
-
 			interface IPublish { }
 
 			interface ISubscribe { }
@@ -101,17 +100,17 @@ export interface ITransport {
 	/**
 	 * Connects to the transport layer.
 	 */
-	connect: (options: Options.Transport.IConnect) => Promise<boolean>;
+	connect: () => Promise<boolean>;
 
 	/**
 	 * Publishes a message.
 	 */
-	publish: (buffer: Buffer, options: Options.Transport.IPublish) => Promise<boolean>;
+	publish: (buffer: Buffer, options: Orizuru.Transport.IPublish) => Promise<boolean>;
 
 	/**
 	 * Subscribes to a message queue.
 	 */
-	subscribe: (handler: (content: Buffer) => Promise<void | Orizuru.IHandlerResponse>, options: Options.Transport.ISubscribe) => Promise<void>;
+	subscribe: (handler: (content: Buffer) => Promise<void | Orizuru.IHandlerResponse>, options: Orizuru.Transport.ISubscribe) => Promise<void>;
 
 	/**
 	 * Closes the transport gracefully.
@@ -140,20 +139,25 @@ export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMe
 
 export type ResponseWriterFunction = (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
 
+export interface IServerImpl {
+	listen(port: number, callback?: (app: this) => void): http.Server;
+	set(setting: string, val: any): this;
+	use(path: string, ...handlers: RequestHandler[]): this;
+}
+
 export declare namespace Options {
 
 	export interface IHandler extends Orizuru.IHandler {
-		transportConfig: Options.Transport.IConnect;
 		transport: ITransport;
 	}
 
 	export interface IPublisher extends Orizuru.IPublisher {
-		transportConfig: Options.Transport.IConnect;
 		transport: ITransport;
 	}
 
 	export interface IServer extends Orizuru.IServer {
-		transportConfig: Options.Transport.IConnect;
+		port: number;
+		server?: IServerImpl;
 		transport: ITransport;
 	}
 
@@ -194,10 +198,6 @@ export declare namespace Options {
 	}
 
 	export namespace Transport {
-
-		export interface IConnect extends Orizuru.Transport.IConnect {
-			url: string;
-		}
 
 		export interface IPublish extends Orizuru.Transport.IPublish {
 			eventName?: string;
