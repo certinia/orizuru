@@ -100,13 +100,9 @@ describe('RabbitMQ handler', () => {
 
 	});
 
-	afterEach(async () => {
-		await serverTransport.close();
-		app.close();
-	});
-
 	after(async () => {
 		await handlerTransport.close();
+		app.close();
 	});
 
 	it('should consume messages from the correct queue', async () => {
