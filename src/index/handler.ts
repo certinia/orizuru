@@ -41,14 +41,13 @@ export class Handler extends EventEmitter {
 	/**
 	 * The error event name.
 	 */
-	public static readonly ERROR: string = 'error_event';
+	public static readonly ERROR = Symbol();
 
 	/**
 	 * The info event name.
 	 */
-	public static readonly INFO: string = 'info_event';
+	public static readonly INFO = Symbol();
 
-	private readonly transportConfig: Options.Transport.IConnect;
 	private readonly transport: ITransport;
 	private readonly validator: HandlerFunctionValidator;
 
@@ -67,7 +66,6 @@ export class Handler extends EventEmitter {
 			new HandlerValidator(options);
 
 			// Define the transport
-			this.transportConfig = options.transportConfig;
 			this.transport = options.transport;
 
 			// Define the handler function validator
@@ -109,7 +107,7 @@ export class Handler extends EventEmitter {
 
 		this.info(`Installing handler for ${eventName} events.`);
 
-		await this.transport.connect(this.transportConfig);
+		await this.transport.connect();
 
 		return this.transport.subscribe(handler, subscribeOptions);
 
@@ -117,7 +115,7 @@ export class Handler extends EventEmitter {
 
 	/**
 	 * Emit an error event.
-	 * @param {Object} event - The error event.
+	 * @param event - The error event.
 	 */
 	public error(event: any) {
 		this.emit(Handler.ERROR, event);
@@ -125,7 +123,7 @@ export class Handler extends EventEmitter {
 
 	/**
 	 * Emit an info event.
-	 * @param {Object} event - The info event.
+	 * @param event - The info event.
 	 */
 	public info(event: any) {
 		this.emit(Handler.INFO, event);
