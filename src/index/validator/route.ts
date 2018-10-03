@@ -25,7 +25,7 @@
  */
 
 import { Type } from 'avsc';
-import * as HTTP_STATUS_CODE from 'http-status-codes';
+import { BAD_REQUEST, OK } from 'http-status-codes';
 import _ from 'lodash';
 
 import { Options } from '../..';
@@ -90,9 +90,11 @@ export class RouteValidator {
 			responseWriter: (server) => (error, request, response) => {
 				if (error) {
 					server.error(error);
-					response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(error);
+					response.status(BAD_REQUEST).send({
+						error: error.message
+					});
 				} else {
-					response.status(HTTP_STATUS_CODE.OK).send('Ok.');
+					response.sendStatus(OK);
 				}
 			},
 			schema: options.schema as Type
