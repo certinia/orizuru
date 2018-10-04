@@ -21,7 +21,6 @@
 		"manualtests",
 		"systemtests"
 	],
-	"report-dir": "coverage",
 	"reporter": [
 		"lcov",
 		"html",
