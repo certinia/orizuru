@@ -141,7 +141,10 @@ describe('RabbitMQ handler', () => {
 			// When
 			handler.handle({
 				handler: handlerSpy,
-				schema: schema1
+				schema: schema1,
+				subscribeOptions: {
+					eventName: 'api.test'
+				}
 			});
 
 		});
