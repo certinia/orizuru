@@ -6,12 +6,14 @@
 	"types": "dist/index.d.ts",
 	"scripts": {
 		"build": "tsc && cp src/index/transport/transport.avsc dist/index/transport",
+		"coverage": "nyc --report-dir=coverage --nycrc-path=test/nyc.opts mocha",
+		"coverage-systemtests": "nyc --report-dir=coverage --nycrc-path=systemtests/nyc.opts mocha --opts systemtests/mocha.opts",
 		"doc": "typedoc --ignoreCompilerErrors --out doc src/**/* --mode file",
 		"init-project": "cp run.properties local.run.properties && cp test.properties local.test.properties",
 		"prepare": "npm run build",
 		"pretest": "tslint -p tsconfig.json",
-		"posttest": "nyc --nycrc-path=systemtests/nyc.opts mocha --opts systemtests/mocha.opts",
-		"test": "nyc --nycrc-path=test/nyc.opts mocha"
+		"posttest": "nyc --report-dir=coverage-systemtests --nycrc-path=systemtests/nyc.opts mocha --opts systemtests/mocha.opts",
+		"test": "nyc --report-dir=coverage --nycrc-path=test/nyc.opts mocha"
 	},
 	"repository": {
 		"type": "git",
@@ -39,7 +41,7 @@
 		"lodash": "^4.17.11"
 	},
 	"devDependencies": {
-		"@financialforcedev/orizuru-transport-rabbitmq": "^4.0.0",
+		"@financialforcedev/orizuru-transport-rabbitmq": "^5.0.0-0",
 		"@types/chai": "^4.1.5",
 		"@types/chai-as-promised": "^7.1.0",
 		"@types/mocha": "^5.2.5",
