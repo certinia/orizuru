@@ -24,7 +24,6 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
 import { EventEmitter } from 'events';
 import express from 'express';
 import { RequestHandler } from 'express-serve-static-core';
@@ -41,11 +40,6 @@ import { ServerValidator } from './validator/server';
  * @private
  */
 const Router = express.Router;
-
-/**
- * @private
- */
-const PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
 
 /**
  * The Server for creating routes in a web dyno based on Avro schemas.
@@ -71,7 +65,6 @@ export class Server extends EventEmitter {
 	private readonly server: IServerImpl;
 	private readonly validator: RouteValidator;
 	private readonly routerConfiguration: { [s: string]: express.Router };
-	private readonly routeConfiguration: { [s: string]: { [s: string]: Type } };
 
 	private httpServer?: http.Server;
 
@@ -111,9 +104,6 @@ export class Server extends EventEmitter {
 			// Define the router configuration for the server
 			this.routerConfiguration = {};
 
-			// Define the route configuration for the server
-			this.routeConfiguration = {};
-
 			// Define the route validator
 			this.validator = new RouteValidator();
 
@@ -130,17 +120,10 @@ export class Server extends EventEmitter {
 	public addRoute(options: Options.Route.IRaw) {
 
 		// Validate the route options.
-		const validatedOptions = this.validator.validate(options);
+		const validatedRouteConfiguration = this.validator.validate(options);
 
-		// Now we know the options are valid, add the route.
-		const schema = validatedOptions.schema;
-		const fullSchemaName = schema.name as string;
-		const schemaNameParts = fullSchemaName.split('.');
-		const schemaNamespace = _.initial(schemaNameParts).join('.');
-		const schemaName = _.last(schemaNameParts) as string;
-		const apiEndpoint = validatedOptions.endpoint + validatedOptions.pathMapper(schemaNamespace);
+		const { apiEndpoint, middlewares, fullSchemaName, method } = validatedRouteConfiguration;
 
-		let routeConfiguration = this.routeConfiguration[apiEndpoint];
 		let router: any = this.routerConfiguration[apiEndpoint];
 
 		// If we don't have the router for this endpoint then we need to create one.
@@ -151,11 +134,6 @@ export class Server extends EventEmitter {
 			// Create router.
 			router = Router();
 
-			// Apply middlewares.
-			_.each(validatedOptions.middleware, (middleware) => {
-				router.use(middleware);
-			});
-
 			// Add the router to the server.
 			this.server.use(apiEndpoint, router);
 
@@ -164,18 +142,10 @@ export class Server extends EventEmitter {
 
 		}
 
-		if (!routeConfiguration) {
-			routeConfiguration = {};
-			this.routeConfiguration[apiEndpoint] = routeConfiguration;
-		}
-
-		// Update the route configuration.
-		routeConfiguration[schemaName] = schema;
-
-		this.info(`Adding route: ${fullSchemaName}.`);
+		this.info(`Adding route: ${fullSchemaName} (${method.toUpperCase()}).`);
 
 		// Add the router method.
-		router[validatedOptions.method](PARAMETER_API_SCHEMA_ENDPOINT, createRoute(this, routeConfiguration, validatedOptions));
+		router[method]('/', ...middlewares, createRoute(this, validatedRouteConfiguration.schema, validatedRouteConfiguration.responseWriter, validatedRouteConfiguration.publishOptions));
 
 		return this;
 

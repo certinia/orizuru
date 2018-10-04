@@ -30,6 +30,8 @@ import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 
+import { AvroSchema } from '../../../src';
+
 import { create } from '../../../src/index/server/route';
 
 chai.use(sinonChai);
@@ -48,13 +50,12 @@ describe('index/server/route', () => {
 
 			// Given
 			const server: any = sinon.stub();
-			const routeConfiguration: any = sinon.stub();
-			const options: any = {
-				responseWriter: sinon.stub()
-			};
+			const schema: any = sinon.stub();
+			const responseWriter: any = sinon.stub();
+			const publishOptions: any = sinon.stub();
 
 			// When
-			const routeFunction = create(server, routeConfiguration, options);
+			const routeFunction = create(server, schema, responseWriter, publishOptions);
 
 			// Then
 			expect(routeFunction).to.be.a('function');
@@ -63,7 +64,7 @@ describe('index/server/route', () => {
 
 		describe('should publish a message', () => {
 
-			it('if the request orizuru property is set (without publish options)', async () => {
+			it('if the request orizuru property is set', async () => {
 
 				// Given
 				const server: any = {
@@ -72,23 +73,23 @@ describe('index/server/route', () => {
 					})
 				};
 
-				const routeConfiguration = {
-					test: avsc.Type.forSchema({
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						],
-						name: 'FullName',
-						namespace: 'com.example',
-						type: 'record'
-					})
+				const publishOptions = {
+					eventName: 'com.example.FullName'
 				};
 
-				const options: any = {
-					responseWriter: sinon.stub().returns(sinon.stub())
-				};
+				const responseWriter = sinon.stub().returns(sinon.stub());
 
-				const routeFunction = create(server, routeConfiguration, options);
+				const schema = avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				}) as AvroSchema;
+
+				const routeFunction = create(server, schema, responseWriter, publishOptions);
 
 				const request: any = {
 					body: { something: 10 },
@@ -111,7 +112,7 @@ describe('index/server/route', () => {
 				await routeFunction(request, response);
 
 				// Then
-				expect(options.responseWriter).to.have.been.calledOnce;
+				expect(responseWriter).to.have.been.calledOnce;
 				expect(server.getPublisher().publish).to.have.been.calledWithExactly({
 					message: {
 						context: request.orizuru,
@@ -120,72 +121,7 @@ describe('index/server/route', () => {
 					publishOptions: {
 						eventName: 'com.example.FullName'
 					},
-					schema: routeConfiguration.test
-				});
-
-			});
-
-			it('if the request orizuru property is set (with publish options)', async () => {
-
-				// Given
-				const server: any = {
-					getPublisher: sinon.stub().returns({
-						publish: sinon.stub().resolves()
-					})
-				};
-
-				const routeConfiguration = {
-					test: avsc.Type.forSchema({
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						],
-						name: 'FullName',
-						namespace: 'com.example',
-						type: 'record'
-					})
-				};
-
-				const options: any = {
-					publishOptions: {
-						eventName: 'com.example.FullName'
-					},
-					responseWriter: sinon.stub().returns(sinon.stub())
-				};
-
-				const routeFunction = create(server, routeConfiguration, options);
-
-				const request: any = {
-					body: { something: 10 },
-					orizuru: {
-						user: {
-							username: 'test'
-						}
-					},
-					params: {
-						schemaName: 'test'
-					}
-				};
-
-				const response: any = {
-					send: sinon.stub().returnsThis(),
-					status: sinon.stub().returnsThis()
-				};
-
-				// When
-				await routeFunction(request, response);
-
-				// Then
-				expect(options.responseWriter).to.have.been.calledOnce;
-				expect(server.getPublisher().publish).to.have.been.calledWithExactly({
-					message: {
-						context: request.orizuru,
-						message: request.body
-					},
-					publishOptions: {
-						eventName: 'com.example.FullName'
-					},
-					schema: routeConfiguration.test
+					schema
 				});
 
 			});
@@ -199,28 +135,29 @@ describe('index/server/route', () => {
 					})
 				};
 
-				const routeConfiguration = {
-					test: avsc.Type.forSchema({
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						],
-						name: 'FullName',
-						namespace: 'com.example',
-						type: 'record'
-					})
+				const publishOptions = {
+					eventName: 'com.example.FullName'
 				};
 
-				const options: any = {
-					responseWriter: sinon.stub().returns(sinon.stub())
-				};
+				const responseWriter = sinon.stub().returns(sinon.stub());
 
-				const routeFunction = create(server, routeConfiguration, options);
+				const schema = avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				}) as AvroSchema;
+
+				const routeFunction = create(server, schema, responseWriter, publishOptions);
 
 				const request: any = {
+					baseUrl: '/com/example',
 					body: { something: 10 },
 					params: {
-						schemaName: 'test'
+						schemaName: 'FullName'
 					}
 				};
 
@@ -233,7 +170,7 @@ describe('index/server/route', () => {
 				await routeFunction(request, response);
 
 				// Then
-				expect(options.responseWriter).to.have.been.calledOnce;
+				expect(responseWriter).to.have.been.calledOnce;
 				expect(server.getPublisher().publish).to.have.been.calledWithExactly({
 					message: {
 						context: {},
@@ -242,7 +179,7 @@ describe('index/server/route', () => {
 					publishOptions: {
 						eventName: 'com.example.FullName'
 					},
-					schema: routeConfiguration.test
+					schema
 				});
 
 			});
@@ -250,41 +187,6 @@ describe('index/server/route', () => {
 		});
 
 		describe('should error', () => {
-
-			it('if a schema is not found for the request', () => {
-
-				// Given
-				const server: any = {
-					error: sinon.stub()
-				};
-
-				const routeConfiguration: any = sinon.stub();
-
-				const options: any = {
-					responseWriter: sinon.stub()
-				};
-
-				const routeFunction = create(server, routeConfiguration, options);
-
-				const request: any = {
-					params: {
-						schemaName: 'test'
-					}
-				};
-
-				const response: any = {
-					send: sinon.stub().returnsThis(),
-					status: sinon.stub().returnsThis()
-				};
-
-				// When
-				routeFunction(request, response);
-
-				// Then
-				expect(server.error).to.have.been.calledOnce;
-				expect(server.error).to.have.been.calledWithExactly('No schema for \'test\' found.');
-
-			});
 
 			it('if publishing the message rejects', async () => {
 
@@ -297,27 +199,28 @@ describe('index/server/route', () => {
 					})
 				};
 
-				const routeConfiguration = {
-					test: avsc.Type.forSchema({
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						],
-						name: 'FullName',
-						namespace: 'com.example',
-						type: 'record'
-					})
-				};
-
 				const responseFunction = sinon.stub();
 
-				const options: any = {
-					responseWriter: sinon.stub().returns(responseFunction)
+				const publishOptions = {
+					eventName: 'com.example.FullName'
 				};
 
-				const routeFunction = create(server, routeConfiguration, options);
+				const responseWriter = sinon.stub().returns(responseFunction);
+
+				const schema = avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				}) as AvroSchema;
+
+				const routeFunction = create(server, schema, responseWriter, publishOptions);
 
 				const request: any = {
+					baseUrl: '/',
 					params: {
 						schemaName: 'test'
 					}
@@ -332,7 +235,7 @@ describe('index/server/route', () => {
 				await routeFunction(request, response);
 
 				// Then
-				expect(options.responseWriter).to.have.been.calledOnce;
+				expect(responseWriter).to.have.been.calledOnce;
 				expect(responseFunction).to.have.been.calledOnce;
 				expect(responseFunction).to.have.been.calledWithExactly(expectedError, request, response);
 
@@ -349,27 +252,28 @@ describe('index/server/route', () => {
 					})
 				};
 
-				const routeConfiguration = {
-					test: avsc.Type.forSchema({
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						],
-						name: 'FullName',
-						namespace: 'com.example',
-						type: 'record'
-					})
-				};
-
 				const responseFunction = sinon.stub();
 
-				const options: any = {
-					responseWriter: sinon.stub().returns(responseFunction)
+				const publishOptions = {
+					eventName: 'com.example.FullName'
 				};
 
-				const routeFunction = create(server, routeConfiguration, options);
+				const responseWriter = sinon.stub().returns(responseFunction);
+
+				const schema = avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				}) as AvroSchema;
+
+				const routeFunction = create(server, schema, responseWriter, publishOptions);
 
 				const request: any = {
+					baseUrl: '/',
 					params: {
 						schemaName: 'test'
 					}
@@ -384,7 +288,7 @@ describe('index/server/route', () => {
 				await routeFunction(request, response);
 
 				// Then
-				expect(options.responseWriter).to.have.been.calledOnce;
+				expect(responseWriter).to.have.been.calledOnce;
 				expect(responseFunction).to.have.been.calledOnce;
 				expect(responseFunction).to.have.been.calledWithExactly(expectedError, request, response);
 

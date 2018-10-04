@@ -192,7 +192,7 @@ describe('index/server', () => {
 			// Given
 			sinon.spy(RouteValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			sinon.stub(Router, 'use');
+			sinon.stub(Router, 'post');
 
 			const route = {
 				endpoint: '/api/',
@@ -210,9 +210,10 @@ describe('index/server', () => {
 
 			// Then
 			expect(server.info).to.have.been.calledTwice;
-			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /api/com/example.');
-			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.FullName.');
-			expect(Router.use).to.have.been.calledWithExactly(route.middleware[0]);
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /api/com/example/FullName.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.FullName (POST).');
+			expect(Router.post).to.have.been.calledOnce;
+			expect(Router.post).to.have.been.calledWithExactly('/', ...route.middleware, sinon.match.func);
 			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
 		});
@@ -222,7 +223,7 @@ describe('index/server', () => {
 			// Given
 			sinon.spy(RouteValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			sinon.stub(Router, 'use');
+			sinon.stub(Router, 'post');
 
 			const route = {
 				endpoint: '/api/',
@@ -243,19 +244,20 @@ describe('index/server', () => {
 
 			// Then
 			expect(server.info).to.have.been.calledTwice;
-			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /api/com/example/v1.0.');
-			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.v1_0.Surname.');
-			expect(Router.use).to.have.been.calledWithExactly(route.middleware[0]);
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /api/com/example/v1.0/Surname.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.v1_0.Surname (POST).');
+			expect(Router.post).to.have.been.calledOnce;
+			expect(Router.post).to.have.been.calledWithExactly('/', ...route.middleware, sinon.match.func);
 			expect(RouteValidator.prototype.validate).to.have.been.calledOnce;
 
 		});
 
-		it('should multiple routes to the server (with different namespaces on different routers)', () => {
+		it('should add multiple routes to the server', () => {
 
 			// Given
 			sinon.spy(RouteValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			sinon.stub(Router, 'use');
+			sinon.stub(Router, 'post');
 
 			const route1 = {
 				endpoint: '/',
@@ -281,12 +283,13 @@ describe('index/server', () => {
 
 			// Then
 			expect(server.info).to.have.callCount(4);
-			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /com/example.');
-			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.FullName.');
-			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /com/example/two.');
-			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.two.FullName.');
-			expect(Router.use).to.have.been.calledWithExactly(route1.middleware[0]);
-			expect(Router.use).to.have.been.calledWithExactly(route2.middleware[0]);
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /com/example/FullName.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.FullName (POST).');
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /com/example/two/FullName.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.two.FullName (POST).');
+			expect(Router.post).to.have.been.calledTwice;
+			expect(Router.post).to.have.been.calledWithExactly('/', ...route1.middleware, sinon.match.func);
+			expect(Router.post).to.have.been.calledWithExactly('/', ...route2.middleware, sinon.match.func);
 			expect(RouteValidator.prototype.validate).to.have.been.calledTwice;
 
 		});
@@ -296,7 +299,7 @@ describe('index/server', () => {
 			// Given
 			sinon.spy(RouteValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			sinon.stub(Router, 'use');
+			sinon.stub(Router, 'post');
 
 			const route1 = {
 				endpoint: '/',
@@ -321,11 +324,57 @@ describe('index/server', () => {
 			server = server.addRoute(route2);
 
 			// Then
+			expect(server.info).to.have.callCount(4);
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /com/example/FullName.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.FullName (POST).');
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /com/example/Surname.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.Surname (POST).');
+			expect(Router.post).to.have.been.calledTwice;
+			expect(Router.post).to.have.been.calledWithExactly('/', ...route1.middleware, sinon.match.func);
+			expect(Router.post).to.have.been.calledWithExactly('/', ...route2.middleware, sinon.match.func);
+			expect(RouteValidator.prototype.validate).to.have.been.calledTwice;
+
+		});
+
+		it('should add different methods for the same schema onto the same router', () => {
+
+			// Given
+			sinon.spy(RouteValidator.prototype, 'validate');
+			sinon.spy(EventEmitter.prototype, 'emit');
+			sinon.stub(Router, 'get');
+			sinon.stub(Router, 'post');
+
+			const route1 = {
+				endpoint: '/',
+				method: 'get',
+				middleware: [sinon.stub()],
+				schema: schema1
+			};
+
+			const route2 = {
+				endpoint: '/',
+				method: 'post',
+				middleware: [sinon.stub()],
+				schema: schema1
+			};
+
+			let server = new Server(defaultOptions);
+
+			sinon.spy(server, 'info');
+
+			// When
+			server = server.addRoute(route1);
+			server = server.addRoute(route2);
+
+			// Then
 			expect(server.info).to.have.been.calledThrice;
-			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /com/example.');
-			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.FullName.');
-			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.Surname.');
-			expect(Router.use).to.have.been.calledWithExactly(route1.middleware[0]);
+			expect(server.info).to.have.been.calledWithExactly('Creating router for namespace: /com/example/FullName.');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.FullName (POST).');
+			expect(server.info).to.have.been.calledWithExactly('Adding route: com.example.FullName (GET).');
+			expect(Router.get).to.have.been.calledOnce;
+			expect(Router.get).to.have.been.calledWithExactly('/', ...route1.middleware, sinon.match.func);
+			expect(Router.post).to.have.been.calledOnce;
+			expect(Router.post).to.have.been.calledWithExactly('/', ...route2.middleware, sinon.match.func);
 			expect(RouteValidator.prototype.validate).to.have.been.calledTwice;
 
 		});
@@ -554,7 +603,7 @@ describe('index/server', () => {
 				listen: sinon.stub().returnsThis()
 			};
 
-			// express extends the http server so stub the createServer function, 
+			// express extends the http server so stub the createServer function,
 			// return a listen stub
 			sinon.stub(http, 'createServer').returns(httpServerStub);
 

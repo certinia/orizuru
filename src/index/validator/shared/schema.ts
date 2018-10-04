@@ -27,6 +27,8 @@
 import { Type } from 'avsc';
 import _ from 'lodash';
 
+import { AvroSchema } from '../../..';
+
 /**
  * Parses the schema from a JSON string.
  * @private
@@ -61,28 +63,28 @@ function compileSchema(uncompiledSchema: any) {
  */
 export class SchemaValidator {
 
-	public validate(config: any) {
+	public validate(schema: any): AvroSchema {
 
-		if (!config.schema) {
+		if (!schema) {
 			throw new Error('Missing required avro-schema parameter: schema.');
 		}
 
-		if (_.isString(config.schema)) {
-			const parsedSchema = parseSchema(config.schema);
-			config.schema = compileSchema(parsedSchema);
-		} else if (_.isPlainObject(config.schema)) {
-			config.schema = compileSchema(config.schema);
-		} else if (_.hasIn(config.schema, 'toJSON') && _.hasIn(config.schema, 'toBuffer')) {
+		if (_.isString(schema)) {
+			const parsedSchema = parseSchema(schema);
+			schema = compileSchema(parsedSchema);
+		} else if (_.isPlainObject(schema)) {
+			schema = compileSchema(schema);
+		} else if (_.hasIn(schema, 'toJSON') && _.hasIn(schema, 'toBuffer')) {
 			// Already have a compiled schema
 		} else {
-			throw new Error(`Invalid Avro Schema. Unexpected value type: ${typeof config.schema}.`);
+			throw new Error(`Invalid Avro Schema. Unexpected value type: ${typeof schema}.`);
 		}
 
-		if (!config.schema.name) {
+		if (!schema.name) {
 			throw new Error('Missing required string parameter: schema[name].');
 		}
 
-		return config;
+		return schema;
 
 	}
 

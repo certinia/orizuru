@@ -95,6 +95,19 @@ declare global {
 
 }
 
+/**
+ * An Apache Avro Schema
+ */
+export interface AvroSchema extends Type {
+
+	/**
+	 * The name of the Apache Avro schema.
+	 * This should always be set.
+	 */
+	readonly name: string;
+
+}
+
 export interface ITransport {
 
 	/**
@@ -120,7 +133,7 @@ export interface ITransport {
 }
 
 /**
- * The Orizuru messaage sent via the transport layer.
+ * The Orizuru message sent via the transport layer.
  */
 export interface IOrizuruMessage<C extends Orizuru.Context, M> {
 
@@ -135,15 +148,20 @@ export interface IOrizuruMessage<C extends Orizuru.Context, M> {
 	message: M;
 }
 
-export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMessage<C, M>) => Promise<void | Orizuru.IHandlerResponse>;
-
-export type ResponseWriterFunction = (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
-
+/**
+ * The server implementation.
+ * By default, we use [Express](https://expressjs.com/).
+ * This allows us to easily set up a mock implementation for testing.
+ */
 export interface IServerImpl {
 	listen(port: number, callback?: (app: this) => void): http.Server;
 	set(setting: string, val: any): this;
 	use(path: string, ...handlers: RequestHandler[]): this;
 }
+
+export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMessage<C, M>) => Promise<void | Orizuru.IHandlerResponse>;
+
+export type ResponseWriterFunction = (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
 
 export declare namespace Options {
 
@@ -183,16 +201,6 @@ export declare namespace Options {
 			publishOptions?: Options.Transport.IPublish;
 			responseWriter?: ResponseWriterFunction;
 			schema: string | object | Type;
-		}
-
-		export interface IValidated {
-			endpoint: string;
-			method: string;
-			middleware: RequestHandler[];
-			pathMapper: (schemaNamespace: string) => string;
-			publishOptions?: Options.Transport.IPublish;
-			responseWriter: ResponseWriterFunction;
-			schema: Type;
 		}
 
 	}

@@ -44,7 +44,7 @@ export class PublishFunctionValidator {
 		}
 
 		// Validate the schema
-		new SchemaValidator().validate(config);
+		config.schema = new SchemaValidator().validate(config.schema);
 
 		return config;
 

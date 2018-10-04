@@ -24,40 +24,23 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
-import * as  HTTP_STATUS_CODE from 'http-status-codes';
 import _ from 'lodash';
 
-import { Options, Request, Response, Server } from '../..';
+import { AvroSchema, Options, Request, Response, ResponseWriterFunction, Server } from '../..';
 
 /**
  * @private
  */
-export function create(server: Server, routeConfiguration: { [s: string]: Type }, { responseWriter, publishOptions }: Options.Route.IValidated) {
+export function create(server: Server, schema: AvroSchema, responseWriter: ResponseWriterFunction, publishOptions: Options.Transport.IPublish) {
 
 	return async (request: Request, response: Response) => {
-
-		const schemaName = request.params.schemaName;
-
-		const schema = routeConfiguration[schemaName];
-		if (!schema) {
-			const errorMsg = `No schema for '${schemaName}' found.`;
-			server.error(errorMsg);
-			response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(errorMsg);
-			return;
-		}
-
-		const messagePublishOptions = _.cloneDeep(publishOptions) || {};
-		if (!messagePublishOptions.eventName) {
-			messagePublishOptions.eventName = schema.name;
-		}
 
 		const message = {
 			message: {
 				context: request.orizuru || {},
 				message: request.body
 			},
-			publishOptions: messagePublishOptions,
+			publishOptions,
 			schema
 		};
 

@@ -24,13 +24,75 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
+import { RequestHandler } from 'express-serve-static-core';
 import { BAD_REQUEST, OK } from 'http-status-codes';
 import _ from 'lodash';
 
-import { Options } from '../..';
+import { AvroSchema, Options, Request, Response, ResponseWriterFunction } from '../..';
+import { Server } from '../server';
 import * as RouteMethod from '../server/routeMethod';
 import { SchemaValidator } from './shared/schema';
+
+interface RouteConfiguration {
+	apiEndpoint: string;
+	endpoint: string;
+	fullSchemaName: string;
+	method: string;
+	middlewares: RequestHandler[];
+	pathMapper: (schemaNamespace: string) => string;
+	publishOptions: Options.Transport.IPublish;
+	responseWriter: ResponseWriterFunction;
+	schema: AvroSchema;
+	schemaName: string;
+}
+
+function defaultResponseWriter(server: Server) {
+
+	return (error: Error | undefined, request: Request, response: Response) => {
+		if (error) {
+			server.error(error);
+			response.status(BAD_REQUEST).send({
+				error: error.message
+			});
+		} else {
+			response.sendStatus(OK);
+		}
+	};
+
+}
+
+function defaultPathMapper(namespace: string) {
+	return namespace.replace(/\./g, '/').replace('_', '.');
+}
+
+function getEndpoint(endpoint?: string) {
+
+	if (!endpoint) {
+		return '/';
+	}
+
+	if (endpoint.startsWith('/')) {
+		return endpoint;
+	}
+
+	return '/' + endpoint;
+
+}
+
+function getSchemaName(avroSchema: AvroSchema) {
+	const schemaNameParts = avroSchema.name.split('.');
+	return schemaNameParts.pop() as string;
+}
+
+function calculateApiEndpoint(validatedOptions: RouteConfiguration) {
+	const schemaNameParts = validatedOptions.schema.name.split('.');
+	const schemaNamespace = _.initial(schemaNameParts).join('.');
+	return validatedOptions.endpoint + validatedOptions.pathMapper(schemaNamespace) + '/' + validatedOptions.schemaName;
+}
+
+function calculateEventName(validatedOptions: RouteConfiguration) {
+	return validatedOptions.apiEndpoint.substring(1).replace(/\//g, '.');
+}
 
 /**
  * Validates the {@link Route} configuration.
@@ -38,7 +100,7 @@ import { SchemaValidator } from './shared/schema';
  */
 export class RouteValidator {
 
-	public validate(options: Options.Route.IRaw): Options.Route.IValidated {
+	public validate(options: Options.Route.IRaw): RouteConfiguration {
 
 		if (!options) {
 			throw new Error('Missing required object parameter.');
@@ -79,32 +141,26 @@ export class RouteValidator {
 		}
 
 		// Validate the schema
-		new SchemaValidator().validate(options);
+		const avroSchema = new SchemaValidator().validate(options.schema);
 
-		const validatedOptions: Options.Route.IValidated = {
-			endpoint: '/',
-			method: RouteMethod.POST,
-			middleware: [],
-			pathMapper: (namespace: string) => namespace.replace(/\./g, '/'),
-			publishOptions: options.publishOptions,
-			responseWriter: (server) => (error, request, response) => {
-				if (error) {
-					server.error(error);
-					response.status(BAD_REQUEST).send({
-						error: error.message
-					});
-				} else {
-					response.sendStatus(OK);
-				}
-			},
-			schema: options.schema as Type
+		const validatedOptions: RouteConfiguration = {
+			apiEndpoint: '/',
+			endpoint: getEndpoint(options.endpoint),
+			fullSchemaName: avroSchema.name,
+			method: options.method || RouteMethod.POST,
+			middlewares: options.middleware || [],
+			pathMapper: options.pathMapper || defaultPathMapper,
+			publishOptions: options.publishOptions || {},
+			responseWriter: options.responseWriter || defaultResponseWriter,
+			schema: avroSchema,
+			schemaName: getSchemaName(avroSchema)
 		};
 
-		validatedOptions.endpoint = options.endpoint || validatedOptions.endpoint;
-		validatedOptions.method = options.method || validatedOptions.method;
-		validatedOptions.middleware = options.middleware || validatedOptions.middleware;
-		validatedOptions.pathMapper = options.pathMapper || validatedOptions.pathMapper;
-		validatedOptions.responseWriter = options.responseWriter || validatedOptions.responseWriter;
+		validatedOptions.apiEndpoint = calculateApiEndpoint(validatedOptions);
+
+		if (!validatedOptions.publishOptions.eventName) {
+			validatedOptions.publishOptions.eventName = calculateEventName(validatedOptions);
+		}
 
 		return validatedOptions;
 	}
