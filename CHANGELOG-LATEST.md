@@ -13,6 +13,7 @@
 - Addition of helper methods for `listen`, `close`, `set` and `use` to the Orizuru `Server`.
 	- By default, `close` also closes the transport layer.
 	- By default, `listen` starts the server listening for connections specified in the `Options`.
+- All Orizuru `Handler` and `Publisher` instances must now be initialised by calling the `init()` function. This initialises the connection.
 
 - Events have now been converted to use symbols.
 - Add system tests to test core functionality.

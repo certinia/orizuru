@@ -25,32 +25,23 @@
  */
 
 import chai from 'chai';
-import sinon from 'sinon';
-import sinonChai from 'sinon-chai';
 import request from 'supertest';
-
-import axios from 'axios';
-import _ from 'lodash';
 
 import { Transport } from '@financialforcedev/orizuru-transport-rabbitmq';
 
 import { Handler, IOrizuruMessage, ITransport, json, Server } from '../src';
-
-chai.use(sinonChai);
 
 const expect = chai.expect;
 
 describe('RabbitMQ handler', () => {
 
 	let handlerTransport: ITransport;
-	let serverTransport: ITransport;
 	let server: Server;
 	let app: any;
-	let schema1: any;
 
-	before(async () => {
+	beforeEach(() => {
 
-		serverTransport = new Transport({
+		const serverTransport = new Transport({
 			url: 'amqp://localhost'
 		});
 
@@ -64,28 +55,31 @@ describe('RabbitMQ handler', () => {
 			transport: serverTransport
 		});
 
-		schema1 = {
-			fields: [{
-				name: 'id',
-				type: 'string'
-			}],
-			name: 'test',
-			namespace: 'api',
-			type: 'record'
-		};
+	});
 
-		server.addRoute({
-			middleware: [
-				json()
-			],
-			schema: schema1
-		});
+	afterEach(async () => {
+		await handlerTransport.close();
+		await server.close();
+	});
 
-		server.addRoute({
-			middleware: [
-				json()
-			],
-			schema: {
+	describe('API defined within Avro schema', () => {
+
+		let schema1: any;
+		let schema2: any;
+
+		beforeEach(async () => {
+
+			schema1 = {
+				fields: [{
+					name: 'id',
+					type: 'string'
+				}],
+				name: 'test',
+				namespace: 'api',
+				type: 'record'
+			};
+
+			schema2 = {
 				fields: [{
 					name: 'id',
 					type: 'string'
@@ -93,83 +87,145 @@ describe('RabbitMQ handler', () => {
 				name: 'test2',
 				namespace: 'api',
 				type: 'record'
-			}
-		});
+			};
 
-		app = server.listen();
-
-	});
-
-	afterEach(async () => {
-		await handlerTransport.close();
-	});
-
-	after(async () => {
-		await server.close();
-	});
-
-	it('should consume messages from the correct queue', async () => {
-
-		// Given
-		await request(app)
-			.post('/api/test')
-			.send({
-				id: 'testId'
-			})
-			.expect(200);
-
-		await request(app)
-			.post('/api/test2')
-			.send({
-				id: 'testId'
-			})
-			.expect(200);
-
-		const handler = new Handler({
-			transport: handlerTransport
-		});
-
-		let handlerSpy;
-
-		// When
-		const testMessage = await new Promise((resolve) => {
-
-			handlerSpy = sinon.spy(async (message: IOrizuruMessage<any, any>) => {
-				resolve(message);
+			server.addRoute({
+				middleware: [
+					json()
+				],
+				schema: schema1
 			});
 
+			server.addRoute({
+				middleware: [
+					json()
+				],
+				schema: schema2
+			});
+
+			app = await server.listen();
+
+		});
+
+		it('should consume messages from the correct queue', async () => {
+
+			// Given
+			await request(app)
+				.post('/api/test')
+				.send({
+					id: 'testId'
+				})
+				.expect(200);
+
+			const handler = new Handler({
+				transport: handlerTransport
+			});
+
+			await handler.init();
+
 			// When
-			handler.handle({
-				handler: handlerSpy,
-				schema: schema1,
-				subscribeOptions: {
-					eventName: 'api.test'
+			const testMessage = await new Promise((resolve) => {
+
+				const handlerFunc = async (message: IOrizuruMessage<any, any>) => {
+					resolve(message);
+				};
+
+				handler.handle({
+					handler: handlerFunc,
+					schema: schema1,
+					subscribeOptions: {
+						eventName: 'api.test'
+					}
+				});
+
+			});
+
+			// Then
+			expect(testMessage).to.eql({
+				context: {},
+				message: {
+					id: 'testId'
 				}
 			});
 
 		});
 
-		const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test2/get', {
-			ackmode: 'ack_requeue_false',
-			count: '1',
-			encoding: 'auto',
-			name: 'api.test',
-			requeue: false,
-			truncate: '50000',
-			vhost: '/'
-		});
+		it('should consume messages from the correct queues', async () => {
 
-		// Then
-		expect(testMessage).to.eql({
-			context: {},
-			message: {
-				id: 'testId'
-			}
+			// Given
+			await request(app)
+				.post('/api/test')
+				.send({
+					id: 'testId'
+				})
+				.expect(200);
+
+			await request(app)
+				.post('/api/test2')
+				.send({
+					id: 'testId2'
+				})
+				.expect(200);
+
+			const handler = new Handler({
+				transport: handlerTransport
+			});
+
+			await handler.init();
+
+			// When
+			const testMessages = await new Promise((resolve) => {
+
+				const messages: any = [];
+
+				const handlerFunc1 = async (message: IOrizuruMessage<any, any>) => {
+					messages.push(message);
+					if (messages.length === 2) {
+						resolve(messages);
+					}
+				};
+
+				const handlerFunc2 = async (message: IOrizuruMessage<any, any>) => {
+					messages.push(message);
+					if (messages.length === 2) {
+						resolve(messages);
+					}
+				};
+
+				return Promise.all([
+					handler.handle({
+						handler: handlerFunc1,
+						schema: schema1,
+						subscribeOptions: {
+							eventName: 'api.test'
+						}
+					}),
+					handler.handle({
+						handler: handlerFunc2,
+						schema: schema2,
+						subscribeOptions: {
+							eventName: 'api.test2'
+						}
+					})
+				]);
+
+			});
+
+			// Then
+			expect(testMessages).to.deep.include.members([{
+				context: {},
+				message: {
+					id: 'testId'
+				}
+			}]);
+			expect(testMessages).to.deep.include.members([{
+				context: {},
+				message: {
+					id: 'testId2'
+				}
+			}]);
+
 		});
-		expect(handlerSpy).to.have.been.calledOnce;
-		expect(response.data.length).to.eql(1);
-		expect(response.data[0].message_count).to.eql(0);
-		expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJoBeyJuYW1lIjoiYXBpLnRlc3QyIiwidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W3sibmFtZSI6ImlkIiwidHlwZSI6InN0cmluZyJ9XX0ODHRlc3RJZA==');
 
 	});
 

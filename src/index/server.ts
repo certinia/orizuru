@@ -153,8 +153,12 @@ export class Server extends EventEmitter {
 
 	/**
 	 * Starts the server listening for connections.
+	 * This also initialises the transport connection.
 	 */
-	public listen(callback?: (app: Server) => void) {
+	public async listen(callback?: (app: Server) => void) {
+
+		await this.options.transport.connect();
+
 		this.httpServer = this.server.listen(this.options.port, () => {
 			this.info(`Listening to new connections on port: ${this.options.port}.`);
 			if (callback) {
@@ -162,6 +166,7 @@ export class Server extends EventEmitter {
 			}
 		});
 		return this.httpServer;
+
 	}
 
 	/**

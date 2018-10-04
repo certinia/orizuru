@@ -79,6 +79,13 @@ export class Handler extends EventEmitter {
 	}
 
 	/**
+	 * Initialise the handler.
+	 */
+	public async init() {
+		await this.transport.connect();
+	}
+
+	/**
 	 * Sets the handler function for a schema type.
 	 *
 	 * @example
@@ -106,8 +113,6 @@ export class Handler extends EventEmitter {
 		};
 
 		this.info(`Installing handler for ${eventName} events.`);
-
-		await this.transport.connect();
 
 		return this.transport.subscribe(handler, subscribeOptions);
 

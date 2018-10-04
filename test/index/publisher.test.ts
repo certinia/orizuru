@@ -53,7 +53,7 @@ describe('index/publisher', () => {
 
 		transport = {
 			close: sinon.stub(),
-			connect: sinon.stub(),
+			connect: sinon.stub().resolves(),
 			publish: sinon.stub(),
 			subscribe: sinon.stub()
 		};
@@ -95,6 +95,24 @@ describe('index/publisher', () => {
 
 			// Then
 			expect(publisher).to.be.an.instanceof(EventEmitter);
+
+		});
+
+	});
+
+	describe('init', () => {
+
+		it('should connect to the transport', async () => {
+
+			// Given
+			const publisher = new Publisher(options);
+
+			// When
+			await publisher.init();
+
+			// Then
+			expect(options.transport.connect).to.have.been.calledOnce;
+			expect(options.transport.connect).to.have.been.calledWithExactly();
 
 		});
 

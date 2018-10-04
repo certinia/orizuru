@@ -60,7 +60,7 @@ describe('RabbitMQ server', () => {
 
 	describe('API defined within Avro schema', () => {
 
-		beforeEach(() => {
+		beforeEach(async () => {
 
 			server.addRoute({
 				middleware: [
@@ -92,7 +92,7 @@ describe('RabbitMQ server', () => {
 				}
 			});
 
-			app = server.listen();
+			app = await server.listen();
 
 		});
 
@@ -198,7 +198,7 @@ describe('RabbitMQ server', () => {
 
 	describe('API defined via endpoint with path mapper', () => {
 
-		beforeEach(() => {
+		beforeEach(async () => {
 
 			server.addRoute({
 				middleware: [
@@ -242,7 +242,7 @@ describe('RabbitMQ server', () => {
 				}
 			});
 
-			app = server.listen();
+			app = await server.listen();
 
 		});
 
@@ -348,7 +348,7 @@ describe('RabbitMQ server', () => {
 
 	describe('API defined via endpoint and Avro schema', () => {
 
-		beforeEach(() => {
+		beforeEach(async () => {
 
 			server.addRoute({
 				endpoint: '/api/v1.0',
@@ -380,7 +380,7 @@ describe('RabbitMQ server', () => {
 				}
 			});
 
-			app = server.listen();
+			app = await server.listen();
 
 		});
 
@@ -486,7 +486,7 @@ describe('RabbitMQ server', () => {
 
 	describe('API defined via endpoint and Avro schema that publishes to a queue specified in publish options', () => {
 
-		beforeEach(() => {
+		beforeEach(async () => {
 
 			server.addRoute({
 				endpoint: '/api/v1.0',
@@ -524,7 +524,7 @@ describe('RabbitMQ server', () => {
 				}
 			});
 
-			app = server.listen();
+			app = await server.listen();
 
 		});
 
@@ -630,7 +630,7 @@ describe('RabbitMQ server', () => {
 
 	describe('different methods with the same endpoint', () => {
 
-		beforeEach(() => {
+		beforeEach(async () => {
 
 			server.addRoute({
 				endpoint: '/api/v1.0',
@@ -670,7 +670,7 @@ describe('RabbitMQ server', () => {
 				}
 			});
 
-			app = server.listen();
+			app = await server.listen();
 
 		});
 

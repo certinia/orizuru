@@ -98,6 +98,24 @@ describe('index/handler', () => {
 
 	});
 
+	describe('init', () => {
+
+		it('should connect to the transport', async () => {
+
+			// Given
+			const handler = new Handler(options);
+
+			// When
+			await handler.init();
+
+			// Then
+			expect(options.transport.connect).to.have.been.calledOnce;
+			expect(options.transport.connect).to.have.been.calledWithExactly();
+
+		});
+
+	});
+
 	describe('handle', () => {
 
 		it('should install the handler for a schema', async () => {

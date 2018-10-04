@@ -418,7 +418,7 @@ describe('index/server', () => {
 
 	describe('listen', () => {
 
-		it('should start the http server listening on the port specified in the options', () => {
+		it('should start the http server listening on the port specified in the options', async () => {
 
 			// Given
 			const httpServerStub = {
@@ -432,15 +432,17 @@ describe('index/server', () => {
 			const server = new Server(defaultOptions);
 
 			// When
-			server.listen();
+			await server.listen();
 
 			// Then
+			expect(defaultOptions.transport.connect).to.have.been.calledOnce;
+			expect(defaultOptions.transport.connect).to.have.been.calledWithExactly();
 			expect(httpServerStub.listen).to.have.been.calledOnce;
 			expect(httpServerStub.listen).to.have.been.calledWithExactly(8080, sinon.match.func);
 
 		});
 
-		it('should emit an info event stating that the server is listening', () => {
+		it('should emit an info event stating that the server is listening', async () => {
 
 			// Given
 			const httpServerStub = {
@@ -455,9 +457,11 @@ describe('index/server', () => {
 			sinon.spy(server, 'info');
 
 			// When
-			server.listen();
+			await server.listen();
 
 			// Then
+			expect(defaultOptions.transport.connect).to.have.been.calledOnce;
+			expect(defaultOptions.transport.connect).to.have.been.calledWithExactly();
 			expect(httpServerStub.listen).to.have.been.calledOnce;
 			expect(httpServerStub.listen).to.have.been.calledWithExactly(8080, sinon.match.func);
 			expect(server.info).to.have.been.calledOnce;
@@ -465,7 +469,7 @@ describe('index/server', () => {
 
 		});
 
-		it('should invoke the callback if specified after the server has started listening', () => {
+		it('should invoke the callback if specified after the server has started listening', async () => {
 
 			// Given
 			const httpServerStub = {
@@ -482,9 +486,11 @@ describe('index/server', () => {
 			const callbackStub = sinon.stub();
 
 			// When
-			server.listen(callbackStub);
+			await server.listen(callbackStub);
 
 			// Then
+			expect(defaultOptions.transport.connect).to.have.been.calledOnce;
+			expect(defaultOptions.transport.connect).to.have.been.calledWithExactly();
 			expect(httpServerStub.listen).to.have.been.calledOnce;
 			expect(httpServerStub.listen).to.have.been.calledWithExactly(8080, sinon.match.func);
 			expect(server.info).to.have.been.calledOnce;
@@ -522,7 +528,7 @@ describe('index/server', () => {
 			sinon.stub(http, 'createServer').returns(httpServerStub);
 
 			const server = new Server(defaultOptions);
-			server.listen();
+			await server.listen();
 
 			// When
 			await server.close();
@@ -549,7 +555,7 @@ describe('index/server', () => {
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
-			server.listen();
+			await server.listen();
 
 			// When
 			await server.close();
@@ -578,7 +584,7 @@ describe('index/server', () => {
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
-			server.listen();
+			await server.listen();
 
 			// When
 			await server.close();
@@ -609,7 +615,7 @@ describe('index/server', () => {
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
-			server.listen();
+			await server.listen();
 
 			const callbackStub = sinon.stub();
 

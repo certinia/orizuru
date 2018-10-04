@@ -81,6 +81,13 @@ export class Publisher extends EventEmitter {
 	}
 
 	/**
+	 * Initialise the publisher.
+	 */
+	public async init() {
+		await this.transportImpl.connect();
+	}
+
+	/**
 	 * Publishes a message.
 	 *
 	 * @example
@@ -131,8 +138,6 @@ export class Publisher extends EventEmitter {
 			throw new Error(errors.join('\n'));
 
 		}
-
-		await this.transportImpl.connect();
 
 		// publish buffer on transport
 		return this.transportImpl.publish(buffer, publishOptions)

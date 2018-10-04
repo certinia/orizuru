@@ -37,7 +37,6 @@ const expect = chai.expect;
 
 describe('RabbitMQ publisher', () => {
 
-	let schema: any;
 	let transport: ITransport;
 
 	before(async () => {
@@ -46,55 +45,295 @@ describe('RabbitMQ publisher', () => {
 			url: 'amqp://localhost'
 		});
 
-		schema = {
-			fields: [{
-				name: 'id',
-				type: 'string'
-			}],
-			name: 'test',
-			namespace: 'api',
-			type: 'record'
-		};
-
 	});
 
 	after(async () => {
 		await transport.close();
 	});
 
-	it('should publish messages to the correct queue', async () => {
+	describe('should publish messages to the correct queue', () => {
 
-		// Given
-		const publisher = new Publisher({
-			transport
-		});
+		it('schema using only name', async () => {
 
-		// When
-		await publisher.publish({
-			message: {
-				context: {},
-				message: {
-					id: 'testId'
-				}
-			},
-			schema
-		});
+			// Given
+			const schema = {
+				fields: [{
+					name: 'id',
+					type: 'string'
+				}],
+				name: 'test',
+				type: 'record'
+			};
 
-		const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test/get',
-			{
-				ackmode: 'ack_requeue_false',
-				count: '1',
-				encoding: 'auto',
-				name: 'api.test',
-				requeue: false,
-				truncate: '50000',
-				vhost: '/'
+			const publisher = new Publisher({
+				transport
 			});
 
-		// Then
-		expect(response.data.length).to.eql(1);
-		expect(response.data[0].message_count).to.eql(0);
-		expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJgBeyJuYW1lIjoiYXBpLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfQ4MdGVzdElk');
+			await publisher.init();
+
+			// When
+			await publisher.publish({
+				message: {
+					context: {},
+					message: {
+						id: 'testId'
+					}
+				},
+				schema
+			});
+
+			// Then
+			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/test/get',
+				{
+					ackmode: 'ack_requeue_false',
+					count: '1',
+					encoding: 'auto',
+					name: 'api.test',
+					requeue: false,
+					truncate: '50000',
+					vhost: '/'
+				});
+
+			expect(response.data.length).to.eql(1);
+			expect(response.data[0].message_count).to.eql(0);
+			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJABeyJuYW1lIjoidGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19Dgx0ZXN0SWQ=');
+
+		});
+
+		it('schema using name and namespace', async () => {
+
+			// Given
+			const schema = {
+				fields: [{
+					name: 'id',
+					type: 'string'
+				}],
+				name: 'test',
+				namespace: 'api',
+				type: 'record'
+			};
+
+			const publisher = new Publisher({
+				transport
+			});
+
+			await publisher.init();
+
+			// When
+			await publisher.publish({
+				message: {
+					context: {},
+					message: {
+						id: 'testId'
+					}
+				},
+				schema
+			});
+
+			// Then
+			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test/get',
+				{
+					ackmode: 'ack_requeue_false',
+					count: '1',
+					encoding: 'auto',
+					name: 'api.test',
+					requeue: false,
+					truncate: '50000',
+					vhost: '/'
+				});
+
+			expect(response.data.length).to.eql(1);
+			expect(response.data[0].message_count).to.eql(0);
+			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJgBeyJuYW1lIjoiYXBpLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfQ4MdGVzdElk');
+
+		});
+
+		it('schema using v1.0 within the namespace', async () => {
+
+			// Given
+			const schema = {
+				fields: [{
+					name: 'id',
+					type: 'string'
+				}],
+				name: 'test',
+				namespace: 'api.v1_0',
+				type: 'record'
+			};
+
+			const publisher = new Publisher({
+				transport
+			});
+
+			await publisher.init();
+
+			// When
+			await publisher.publish({
+				message: {
+					context: {},
+					message: {
+						id: 'testId'
+					}
+				},
+				schema
+			});
+
+			// Then
+			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1_0.test/get',
+				{
+					ackmode: 'ack_requeue_false',
+					count: '1',
+					encoding: 'auto',
+					name: 'api.test',
+					requeue: false,
+					truncate: '50000',
+					vhost: '/'
+				});
+
+			expect(response.data.length).to.eql(1);
+			expect(response.data[0].message_count).to.eql(0);
+			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AKIBeyJuYW1lIjoiYXBpLnYxXzAudGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19Dgx0ZXN0SWQ=');
+
+		});
+
+		it('using publish options', async () => {
+
+			// Given
+			const schema = {
+				fields: [{
+					name: 'id',
+					type: 'string'
+				}],
+				name: 'test',
+				namespace: 'api.v1_0',
+				type: 'record'
+			};
+
+			const publisher = new Publisher({
+				transport
+			});
+
+			await publisher.init();
+
+			// When
+			await publisher.publish({
+				message: {
+					context: {},
+					message: {
+						id: 'testId'
+					}
+				},
+				publishOptions: {
+					eventName: 'internal.api.v1.0.test'
+				},
+				schema
+			});
+
+			// Then
+			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/internal.api.v1.0.test/get',
+				{
+					ackmode: 'ack_requeue_false',
+					count: '1',
+					encoding: 'auto',
+					name: 'api.test',
+					requeue: false,
+					truncate: '50000',
+					vhost: '/'
+				});
+
+			expect(response.data.length).to.eql(1);
+			expect(response.data[0].message_count).to.eql(0);
+			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AKIBeyJuYW1lIjoiYXBpLnYxXzAudGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19Dgx0ZXN0SWQ=');
+
+		});
+
+	});
+
+	describe('should publish messages to the correct queues', () => {
+
+		it('with multiple publishers', async () => {
+
+			// Given
+			const schema1 = {
+				fields: [{
+					name: 'id',
+					type: 'string'
+				}],
+				name: 'test',
+				namespace: 'api',
+				type: 'record'
+			};
+
+			const schema2 = {
+				fields: [{
+					name: 'id',
+					type: 'string'
+				}],
+				name: 'test2',
+				namespace: 'api',
+				type: 'record'
+			};
+
+			const publisher = new Publisher({
+				transport
+			});
+
+			await publisher.init();
+
+			// When
+			await Promise.all([
+				publisher.publish({
+					message: {
+						context: {},
+						message: {
+							id: 'testId'
+						}
+					},
+					schema: schema1
+				}),
+				publisher.publish({
+					message: {
+						context: {},
+						message: {
+							id: 'testId2'
+						}
+					},
+					schema: schema2
+				})
+			]);
+
+			// Then
+			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test/get',
+				{
+					ackmode: 'ack_requeue_false',
+					count: '1',
+					encoding: 'auto',
+					name: 'api.test',
+					requeue: false,
+					truncate: '50000',
+					vhost: '/'
+				});
+
+			expect(response.data.length).to.eql(1);
+			expect(response.data[0].message_count).to.eql(0);
+			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJgBeyJuYW1lIjoiYXBpLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfQ4MdGVzdElk');
+
+			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test2/get',
+				{
+					ackmode: 'ack_requeue_false',
+					count: '1',
+					encoding: 'auto',
+					name: 'api.test',
+					requeue: false,
+					truncate: '50000',
+					vhost: '/'
+				});
+
+			expect(response.data.length).to.eql(1);
+			expect(response.data[0].message_count).to.eql(0);
+			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJoBeyJuYW1lIjoiYXBpLnRlc3QyIiwidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W3sibmFtZSI6ImlkIiwidHlwZSI6InN0cmluZyJ9XX0QDnRlc3RJZDI=');
+
+		});
 
 	});
 
