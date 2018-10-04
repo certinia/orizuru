@@ -628,4 +628,101 @@ describe('RabbitMQ server', () => {
 
 	});
 
+	describe('different methods with the same endpoint', () => {
+
+		beforeEach(() => {
+
+			server.addRoute({
+				endpoint: '/api/v1.0',
+				method: 'get',
+				middleware: [
+					json()
+				],
+				publishOptions: {
+					eventName: 'internal.api.v1.0.exists'
+				},
+				schema: {
+					fields: [{
+						name: 'id',
+						type: 'string'
+					}],
+					name: 'test',
+					type: 'record'
+				}
+			});
+
+			server.addRoute({
+				endpoint: '/api/v1.0',
+				method: 'post',
+				middleware: [
+					json()
+				],
+				publishOptions: {
+					eventName: 'internal.api.v1.0.create'
+				},
+				schema: {
+					fields: [{
+						name: 'id',
+						type: 'string'
+					}],
+					name: 'test',
+					type: 'record'
+				}
+			});
+
+			app = server.listen();
+
+		});
+
+		it('should publish messages to the correct queues', async () => {
+
+			// Given
+			// When
+			await request(app)
+				.get('/api/v1.0/test')
+				.send({
+					id: '​​​​​0B00EBC1AD8BCB0795​​​​​'
+				})
+				.expect(200);
+
+			await request(app)
+				.post('/api/v1.0/test')
+				.send({
+					id: '​​​​​6ED92D1932CDDDF0DB​​​​​'
+				})
+				.expect(200);
+
+			// Then
+			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/internal.api.v1.0.exists/get',
+				{
+					ackmode: 'ack_requeue_false',
+					count: '1',
+					encoding: 'auto',
+					requeue: false,
+					truncate: '50000',
+					vhost: '/'
+				});
+
+			expect(response.data.length).to.eql(1);
+			expect(response.data[0].message_count).to.eql(0);
+			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJABeyJuYW1lIjoidGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigIswQjAwRUJDMUFEOEJDQjA3OTXigIvigIvigIvigIvigIs=');
+
+			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/internal.api.v1.0.create/get',
+				{
+					ackmode: 'ack_requeue_false',
+					count: '1',
+					encoding: 'auto',
+					requeue: false,
+					truncate: '50000',
+					vhost: '/'
+				});
+
+			expect(response.data.length).to.eql(1);
+			expect(response.data[0].message_count).to.eql(0);
+			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJABeyJuYW1lIjoidGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigIs2RUQ5MkQxOTMyQ0REREYwRELigIvigIvigIvigIvigIs=');
+
+		});
+
+	});
+
 });
