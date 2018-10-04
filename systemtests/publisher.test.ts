@@ -281,26 +281,25 @@ describe('RabbitMQ publisher', () => {
 			await publisher.init();
 
 			// When
-			await Promise.all([
-				publisher.publish({
+			await publisher.publish({
+				message: {
+					context: {},
 					message: {
-						context: {},
-						message: {
-							id: 'testId'
-						}
-					},
-					schema: schema1
-				}),
-				publisher.publish({
+						id: 'testId'
+					}
+				},
+				schema: schema1
+			});
+
+			await publisher.publish({
+				message: {
+					context: {},
 					message: {
-						context: {},
-						message: {
-							id: 'testId2'
-						}
-					},
-					schema: schema2
-				})
-			]);
+						id: 'testId2'
+					}
+				},
+				schema: schema2
+			});
 
 			// Then
 			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test/get',
