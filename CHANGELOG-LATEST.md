@@ -1,3 +1,21 @@
 # @financialforcedev/orizuru
 
 ## Latest changes (not yet released)
+
+## 9.0.0-0 PREMAJOR
+
+- The routing mechanism for Orizuru has been updated so that each endpoint now uses a different express router.
+- Orizuru now expects a class for the transport layer.
+	- Each server, publisher and handler should have a different transport instance.
+	- The configuration for the transport can be provided in the constructor.
+	- Updated ITransport interface.
+	- Removed Orizuru.Transport.IConnect interface.
+- Addition of helper methods for `listen`, `close`, `set` and `use` to the Orizuru `Server`.
+	- By default, `close` also closes the transport layer.
+	- By default, `listen` starts the server listening for connections specified in the `Options`.
+
+- Events have now been converted to use symbols.
+- Add system tests to test core functionality.
+	- Addition of RabbitMQ docker image using the same version as Travis CI.
+	- System test coverage is now included in Travis builds.
+- Add nyc.opts file to clean up the package.json.
