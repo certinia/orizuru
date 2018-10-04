@@ -2,6 +2,7 @@
 .vscode
 
 coverage
+coverage-systemtests
 doc
 docker
 src
