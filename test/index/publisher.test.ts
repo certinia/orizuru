@@ -144,21 +144,21 @@ describe('index/publisher', () => {
 			sinon.spy(publisher, 'error');
 
 			// When
-			expect(() => publisher.validate(schema, message)).to.throw('Error encoding message for schema (com.example.FullName):\ninvalid value (undefined) for path (first) it should be of type (string)\ninvalid value (undefined) for path (last) it should be of type (string)\nencoding error');
+			expect(() => publisher.validate(schema, message)).to.throw('Error validating message for schema (com.example.FullName)\nInvalid value (undefined) for path (first) it should be of type (string)\nInvalid value (undefined) for path (last) it should be of type (string)');
 
 			// Then
 			expect(publisher.error).to.have.been.calledOnce;
 
 		});
 
-		it('should return the transport buffer if the message is valid', () => {
+		it('should not throw an error if the message is valid', () => {
 
 			// Given
 			sinon.stub(Transport.prototype, 'encode').returns('encoded message');
 
 			const message: any = {
-				context: {},
-				message: 'test'
+				first: 'Test',
+				last: 'Tester'
 			};
 
 			const schema = avsc.Type.forSchema({
@@ -176,11 +176,9 @@ describe('index/publisher', () => {
 			sinon.spy(publisher, 'error');
 
 			// When
-			const buffer = publisher.validate(schema, message);
+			publisher.validate(schema, message);
 
 			// Then
-			expect(buffer).to.eql('encoded message');
-
 			expect(publisher.error).to.not.have.been.called;
 
 		});
@@ -318,6 +316,44 @@ describe('index/publisher', () => {
 
 				// Then
 				expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
+
+			});
+
+			it('if the transport cannot be encoded', async () => {
+
+				// Given
+				sinon.stub(PublishFunctionValidator.prototype, 'validate');
+				sinon.stub(Transport.prototype, 'encode').throws(new Error('encoding error'));
+
+				const publishMessage = {
+					message: {
+						context: {},
+						message: {
+							first: 'Test',
+							last: 'Tester'
+						}
+					},
+					schema: avsc.Type.forSchema({
+						fields: [
+							{ name: 'first', type: 'string' },
+							{ name: 'last', type: 'string' }
+						],
+						name: 'FullName',
+						namespace: 'com.example',
+						type: 'record'
+					})
+				};
+
+				const publisher = new Publisher(options);
+
+				sinon.spy(publisher, 'error');
+
+				// When
+				await expect(publisher.publish(publishMessage)).to.eventually.be.rejectedWith('Error encoding message for schema (com.example.FullName): encoding error');
+
+				// Then
+				expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
+				expect(publisher.error).to.have.been.calledOnce;
 
 			});
 

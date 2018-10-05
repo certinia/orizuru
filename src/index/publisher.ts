@@ -92,24 +92,23 @@ export class Publisher extends EventEmitter {
 	 */
 	public validate(schema: AvroSchema, message: any) {
 
-		try {
-			return this.transport.encode(schema, message);
-		} catch (err) {
+		const schemaErrors = new Array<string>();
 
-			const errors = new Array<string>();
+		const valid = schema.isValid(message, {
+			errorHook: (path: any, value: any, type: any) => {
+				schemaErrors.push(`Invalid value (${value}) for path (${path.join()}) it should be of type (${type.typeName})`);
+			}
+		});
 
-			errors.push(`Error encoding message for schema (${schema.name}):`);
+		if (!valid) {
 
-			schema.isValid(message, {
-				errorHook: (path: any, value: any, type: any) => {
-					errors.push(`invalid value (${value}) for path (${path.join()}) it should be of type (${type.typeName})`);
-				}
-			});
+			let errors = new Array<string>();
+			errors.push(`Error validating message for schema (${schema.name})`);
+			errors = errors.concat(schemaErrors);
 
-			errors.push(err.message);
-
-			this.error(errors.join('\n'));
-			throw new Error(errors.join('\n'));
+			const errorMessage = errors.join('\n');
+			this.error(errorMessage);
+			throw new Error(errorMessage);
 
 		}
 
@@ -141,7 +140,17 @@ export class Publisher extends EventEmitter {
 			eventName
 		};
 
-		const buffer = this.validate(schema, message);
+		this.validate(schema, message.message);
+
+		let buffer: Buffer;
+
+		try {
+			buffer = this.transport.encode(schema, message);
+		} catch (error) {
+			const errorMessage = `Error encoding message for schema (${schema.name}): ${error.message}`;
+			this.error(errorMessage);
+			throw new Error(errorMessage);
+		}
 
 		// publish buffer on transport
 		return this.transportImpl.publish(buffer, publishOptions)
