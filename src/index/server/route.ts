@@ -24,16 +24,20 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { AvroSchema, Options, Request, Response, ResponseWriterFunction, Server } from '../..';
+import { Options, Request, Response, Server } from '../..';
+
+import { RouteConfiguration } from '../validator/route';
 
 /**
  * @private
  */
-export function create(server: Server, schema: AvroSchema, responseWriter: ResponseWriterFunction, publishOptions: Options.Transport.IPublish) {
+export function create(server: Server, routeConfiguration: RouteConfiguration) {
 
-	const writeResponse = responseWriter(server);
+	const writeResponse = routeConfiguration.responseWriter(server);
 
 	return async (request: Request, response: Response) => {
+
+		const { publishOptions, schema, synchronous } = routeConfiguration;
 
 		const options: Options.IPublishFunction<Orizuru.Context, any> = {
 			message: {
@@ -45,8 +49,15 @@ export function create(server: Server, schema: AvroSchema, responseWriter: Respo
 		};
 
 		try {
-			await server.getPublisher().publish(options);
+
+			if (synchronous) {
+				server.getPublisher().validate(schema, request.body);
+			} else {
+				await server.getPublisher().publish(options);
+			}
+
 			writeResponse(undefined, request, response);
+
 		} catch (error) {
 			writeResponse(error, request, response);
 		}
