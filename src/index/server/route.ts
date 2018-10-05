@@ -24,8 +24,6 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import _ from 'lodash';
-
 import { AvroSchema, Options, Request, Response, ResponseWriterFunction, Server } from '../..';
 
 /**
@@ -33,9 +31,11 @@ import { AvroSchema, Options, Request, Response, ResponseWriterFunction, Server 
  */
 export function create(server: Server, schema: AvroSchema, responseWriter: ResponseWriterFunction, publishOptions: Options.Transport.IPublish) {
 
+	const writeResponse = responseWriter(server);
+
 	return async (request: Request, response: Response) => {
 
-		const message = {
+		const options: Options.IPublishFunction<Orizuru.Context, any> = {
 			message: {
 				context: request.orizuru || {},
 				message: request.body
@@ -44,10 +44,12 @@ export function create(server: Server, schema: AvroSchema, responseWriter: Respo
 			schema
 		};
 
-		return Promise.resolve(message)
-			.then(server.getPublisher().publish.bind(server.getPublisher()))
-			.then(() => responseWriter(server)(undefined, request, response))
-			.catch((error) => responseWriter(server)(error, request, response));
+		try {
+			await server.getPublisher().publish(options);
+			writeResponse(undefined, request, response);
+		} catch (error) {
+			writeResponse(error, request, response);
+		}
 
 	};
 
