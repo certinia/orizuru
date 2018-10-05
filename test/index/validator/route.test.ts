@@ -77,7 +77,6 @@ describe('index/validator/route', () => {
 
 				// Then
 				expect(validated.apiEndpoint).to.eql('/com/example/FullName');
-				expect(validated.endpoint).to.eql('/');
 				expect(validated.fullSchemaName).to.eql('com.example.FullName');
 				expect(validated.method).to.eql('post');
 				expect(validated.middlewares).to.eql([]);
@@ -114,7 +113,6 @@ describe('index/validator/route', () => {
 
 				// Then
 				expect(validated.apiEndpoint).to.eql('/api/com/example/FullName');
-				expect(validated.endpoint).to.eql('/api/');
 				expect(validated.fullSchemaName).to.eql('com.example.FullName');
 				expect(validated.method).to.eql('post');
 				expect(validated.middlewares).to.eql([]);
@@ -151,7 +149,6 @@ describe('index/validator/route', () => {
 
 				// Then
 				expect(validated.apiEndpoint).to.eql('/api/com/example/FullName');
-				expect(validated.endpoint).to.eql('/api/');
 				expect(validated.fullSchemaName).to.eql('com.example.FullName');
 				expect(validated.method).to.eql('post');
 				expect(validated.middlewares).to.eql([]);
@@ -187,7 +184,6 @@ describe('index/validator/route', () => {
 
 				// Then
 				expect(validated.apiEndpoint).to.eql('/api/v1.0/com/example/FullName');
-				expect(validated.endpoint).to.eql('/');
 				expect(validated.fullSchemaName).to.eql('api.v1_0.com.example.FullName');
 				expect(validated.method).to.eql('post');
 				expect(validated.middlewares).to.eql([]);
@@ -226,7 +222,6 @@ describe('index/validator/route', () => {
 
 				// Then
 				expect(validated.apiEndpoint).to.eql('/com/example/FullName');
-				expect(validated.endpoint).to.eql('/');
 				expect(validated.fullSchemaName).to.eql('com.example.FullName');
 				expect(validated.method).to.eql('post');
 				expect(validated.middlewares).to.eql([]);
@@ -266,7 +261,6 @@ describe('index/validator/route', () => {
 
 				// Then
 				expect(validated.apiEndpoint).to.eql('/com/example/FullName');
-				expect(validated.endpoint).to.eql('/');
 				expect(validated.fullSchemaName).to.eql('com.example.FullName');
 				expect(validated.method).to.eql('post');
 				expect(validated.middlewares).to.eql([]);

@@ -35,7 +35,6 @@ import { SchemaValidator } from './shared/schema';
 
 export interface RouteConfiguration<T extends Server> {
 	apiEndpoint: string;
-	endpoint: string;
 	fullSchemaName: string;
 	method: string;
 	middlewares: RequestHandler[];
@@ -156,7 +155,6 @@ export class RouteValidator {
 
 		const validatedOptions: RouteConfiguration<T> = {
 			apiEndpoint,
-			endpoint,
 			fullSchemaName: avroSchema.name,
 			method: options.method || RouteMethod.POST,
 			middlewares: options.middleware || [],
