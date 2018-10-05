@@ -60,7 +60,7 @@ export class Server extends EventEmitter {
 	 */
 	public static readonly INFO = Symbol();
 
-	private readonly options: Options.IServer;
+	public readonly options: Options.IServer;
 	private readonly publisher: Publisher;
 	private readonly server: IServerImpl;
 	private readonly validator: RouteValidator;
