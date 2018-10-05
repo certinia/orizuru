@@ -24,10 +24,9 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
 import { EventEmitter } from 'events';
 
-import { ITransport, Options } from '..';
+import { AvroSchema, ITransport, Options } from '..';
 import { Transport } from './transport/transport';
 import { PublisherValidator } from './validator/publisher';
 import { PublishFunctionValidator } from './validator/publishFunction';
@@ -89,6 +88,34 @@ export class Publisher extends EventEmitter {
 	}
 
 	/**
+	 * Validates a message.
+	 */
+	public validate(schema: AvroSchema, message: any) {
+
+		try {
+			return this.transport.encode(schema, message);
+		} catch (err) {
+
+			const errors = new Array<string>();
+
+			errors.push(`Error encoding message for schema (${schema.name}):`);
+
+			schema.isValid(message, {
+				errorHook: (path: any, value: any, type: any) => {
+					errors.push(`invalid value (${value}) for path (${path.join()}) it should be of type (${type.typeName})`);
+				}
+			});
+
+			errors.push(err.message);
+
+			this.error(errors.join('\n'));
+			throw new Error(errors.join('\n'));
+
+		}
+
+	}
+
+	/**
 	 * Publishes a message.
 	 *
 	 * @example
@@ -106,7 +133,7 @@ export class Publisher extends EventEmitter {
 		}
 
 		// Generate transport buffer.
-		const schema = options.schema as Type;
+		const schema = options.schema as AvroSchema;
 		const message = options.message;
 		const eventName = schema.name as string;
 
@@ -114,28 +141,7 @@ export class Publisher extends EventEmitter {
 			eventName
 		};
 
-		let buffer;
-
-		try {
-			buffer = this.transport.encode(schema, message);
-		} catch (err) {
-
-			const errors = new Array<string>();
-
-			errors.push(`Error encoding message for schema (${eventName}):`);
-
-			schema.isValid(options.message, {
-				errorHook: (path: any, value: any, type: any) => {
-					errors.push(`invalid value (${value}) for path (${path.join()}) it should be of type (${type.typeName})`);
-				}
-			});
-
-			errors.push(err.message);
-
-			this.error(errors.join('\n'));
-			throw new Error(errors.join('\n'));
-
-		}
+		const buffer = this.validate(schema, message);
 
 		// publish buffer on transport
 		return this.transportImpl.publish(buffer, publishOptions)

@@ -33,7 +33,7 @@ import avsc from 'avsc';
 import { EventEmitter } from 'events';
 import _ from 'lodash';
 
-import { ITransport, Options } from '../../src';
+import { AvroSchema, ITransport, Options } from '../../src';
 import { Transport } from '../../src/index/transport/transport';
 import { PublishFunctionValidator } from '../../src/index/validator/publishFunction';
 
@@ -116,6 +116,76 @@ describe('index/publisher', () => {
 		});
 
 	});
+
+	describe('validate', () => {
+
+		it('should throw an error if the transport cannot be encoded', () => {
+
+			// Given
+			sinon.stub(Transport.prototype, 'encode').throws(new Error('encoding error'));
+
+			const message: any = {
+				context: {},
+				message: 'test'
+			};
+
+			const schema = avsc.Type.forSchema({
+				fields: [
+					{ name: 'first', type: 'string' },
+					{ name: 'last', type: 'string' }
+				],
+				name: 'FullName',
+				namespace: 'com.example',
+				type: 'record'
+			}) as AvroSchema;
+
+			const publisher = new Publisher(options);
+
+			sinon.spy(publisher, 'error');
+
+			// When
+			expect(() => publisher.validate(schema, message)).to.throw('Error encoding message for schema (com.example.FullName):\ninvalid value (undefined) for path (first) it should be of type (string)\ninvalid value (undefined) for path (last) it should be of type (string)\nencoding error');
+
+			// Then
+			expect(publisher.error).to.have.been.calledOnce;
+
+		});
+
+		it('should return the transport buffer if the message is valid', () => {
+
+			// Given
+			sinon.stub(Transport.prototype, 'encode').returns('encoded message');
+
+			const message: any = {
+				context: {},
+				message: 'test'
+			};
+
+			const schema = avsc.Type.forSchema({
+				fields: [
+					{ name: 'first', type: 'string' },
+					{ name: 'last', type: 'string' }
+				],
+				name: 'FullName',
+				namespace: 'com.example',
+				type: 'record'
+			}) as AvroSchema;
+
+			const publisher = new Publisher(options);
+
+			sinon.spy(publisher, 'error');
+
+			// When
+			const buffer = publisher.validate(schema, message);
+
+			// Then
+			expect(buffer).to.eql('encoded message');
+
+			expect(publisher.error).to.not.have.been.called;
+
+		});
+
+	})
 
 	describe('publish', () => {
 
@@ -248,41 +318,6 @@ describe('index/publisher', () => {
 
 				// Then
 				expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
-
-			});
-
-			it('if the transport cannot be encoded', async () => {
-
-				// Given
-				sinon.stub(PublishFunctionValidator.prototype, 'validate');
-				sinon.stub(Transport.prototype, 'encode').throws(new Error('encoding error'));
-
-				const publishMessage = {
-					message: {
-						context: {},
-						message: 'test'
-					},
-					schema: avsc.Type.forSchema({
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						],
-						name: 'FullName',
-						namespace: 'com.example',
-						type: 'record'
-					})
-				};
-
-				const publisher = new Publisher(options);
-
-				sinon.spy(publisher, 'error');
-
-				// When
-				await expect(publisher.publish(publishMessage)).to.eventually.be.rejectedWith('Error encoding message for schema (com.example.FullName):\ninvalid value (undefined) for path (first) it should be of type (string)\ninvalid value (undefined) for path (last) it should be of type (string)');
-
-				// Then
-				expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
-				expect(publisher.error).to.have.been.calledOnce;
 
 			});
 
