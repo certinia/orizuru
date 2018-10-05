@@ -33,7 +33,7 @@ import { Server } from '../server';
 import * as RouteMethod from '../server/routeMethod';
 import { SchemaValidator } from './shared/schema';
 
-interface RouteConfiguration {
+export interface RouteConfiguration {
 	apiEndpoint: string;
 	endpoint: string;
 	fullSchemaName: string;
@@ -44,6 +44,7 @@ interface RouteConfiguration {
 	responseWriter: ResponseWriterFunction;
 	schema: AvroSchema;
 	schemaName: string;
+	synchronous?: boolean;
 }
 
 function defaultResponseWriter(server: Server) {
@@ -141,6 +142,10 @@ export class RouteValidator {
 			throw new Error('Invalid parameter: pathMapper is not a function.');
 		}
 
+		if (options.synchronous !== undefined && !_.isBoolean(options.synchronous)) {
+			throw new Error('Invalid parameter: synchronous is not a boolean.');
+		}
+
 		// Validate the schema
 		const avroSchema = new SchemaValidator().validate(options.schema);
 
@@ -161,7 +166,8 @@ export class RouteValidator {
 			},
 			responseWriter: options.responseWriter || defaultResponseWriter,
 			schema: avroSchema,
-			schemaName: getSchemaName(avroSchema)
+			schemaName: getSchemaName(avroSchema),
+			synchronous: options.synchronous || false
 		};
 
 		return validatedOptions;

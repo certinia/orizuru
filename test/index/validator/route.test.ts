@@ -88,6 +88,7 @@ describe('index/validator/route', () => {
 				expect(validated.responseWriter).to.be.a('function');
 				expect(validated.schema).to.eql(schema);
 				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.false;
 
 			});
 
@@ -124,6 +125,7 @@ describe('index/validator/route', () => {
 				expect(validated.responseWriter).to.be.a('function');
 				expect(validated.schema).to.eql(schema);
 				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.false;
 
 			});
 
@@ -160,6 +162,7 @@ describe('index/validator/route', () => {
 				expect(validated.responseWriter).to.be.a('function');
 				expect(validated.schema).to.eql(schema);
 				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.false;
 
 			});
 
@@ -195,6 +198,7 @@ describe('index/validator/route', () => {
 				expect(validated.responseWriter).to.be.a('function');
 				expect(validated.schema).to.eql(schema);
 				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.false;
 
 			});
 
@@ -233,6 +237,47 @@ describe('index/validator/route', () => {
 				expect(validated.responseWriter).to.be.a('function');
 				expect(validated.schema).to.eql(schema);
 				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.false;
+
+			});
+
+			it('for a sycnhronous callout', () => {
+
+				// Given
+				const schema = avsc.Type.forSchema({
+					fields: [],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				});
+
+				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
+
+				const input: Options.Route.IRaw = {
+					publishOptions: {
+						eventName: 'internal.com.example.fullname'
+					},
+					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}',
+					synchronous: true
+				};
+
+				// When
+				const validated = routeValidator.validate(input);
+
+				// Then
+				expect(validated.apiEndpoint).to.eql('/com/example/FullName');
+				expect(validated.endpoint).to.eql('/');
+				expect(validated.fullSchemaName).to.eql('com.example.FullName');
+				expect(validated.method).to.eql('post');
+				expect(validated.middlewares).to.eql([]);
+				expect(validated.pathMapper).to.be.a('function');
+				expect(validated.publishOptions).to.eql({
+					eventName: 'internal.com.example.fullname'
+				});
+				expect(validated.responseWriter).to.be.a('function');
+				expect(validated.schema).to.eql(schema);
+				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.true;
 
 			});
 
@@ -366,6 +411,19 @@ describe('index/validator/route', () => {
 				// When
 				// Then
 				expect(() => routeValidator.validate(options)).to.throw(/^invalid schema$/);
+
+			});
+
+			it('if synchronous is not a boolean', () => {
+
+				// Given
+				const options: any = {
+					synchronous: 2
+				};
+
+				// When
+				// Then
+				expect(() => routeValidator.validate(options)).to.throw(/^Invalid parameter: synchronous is not a boolean\.$/);
 
 			});
 
