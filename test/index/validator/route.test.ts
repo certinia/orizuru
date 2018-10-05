@@ -31,7 +31,7 @@ import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 
-import { Options } from '../../../src';
+import { Options, Server } from '../../../src';
 import { SchemaValidator } from '../../../src/index/validator/shared/schema';
 
 import { RouteValidator } from '../../../src/index/validator/route';
@@ -68,7 +68,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw = {
+				const input: Options.Route.IRaw<Server> = {
 					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}'
 				};
 
@@ -104,7 +104,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw = {
+				const input: Options.Route.IRaw<Server> = {
 					endpoint: 'api/',
 					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}'
 				};
@@ -141,7 +141,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw = {
+				const input: Options.Route.IRaw<Server> = {
 					endpoint: '/api/',
 					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}'
 				};
@@ -178,7 +178,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw = {
+				const input: Options.Route.IRaw<Server> = {
 					schema: '{"namespace":"api.v1_0.com.example","name":"FullName","type":"record","fields":[]}'
 				};
 
@@ -214,7 +214,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw = {
+				const input: Options.Route.IRaw<Server> = {
 					publishOptions: {
 						eventName: 'internal.com.example.fullname'
 					},
@@ -253,7 +253,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw = {
+				const input: Options.Route.IRaw<Server> = {
 					publishOptions: {
 						eventName: 'internal.com.example.fullname'
 					},
