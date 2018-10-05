@@ -195,13 +195,43 @@ export declare namespace Options {
 	export namespace Route {
 
 		export interface IRaw {
+
+			/**
+			 * The base endpoint for this route.
+			 *
+			 * By default, the endpoint is constructed using the namepace and name of the Avro schema.
+			 * This parameter adds a prefix to that endpoint.
+			 */
 			endpoint?: string;
+
+			/**
+			 * The HTTP method for this route.
+			 */
 			method?: string;
+
+			/**
+			 * The middlewares for this route.
+			 */
 			middleware?: RequestHandler[];
 			pathMapper?: (schemaNamespace: string) => string;
 			publishOptions?: Options.Transport.IPublish;
+
+			/**
+			 * Function to determine how the response is written to the server.
+			 */
 			responseWriter?: ResponseWriterFunction;
+
+			/**
+			 * The Apache Avro schema that messages for this route should be validated against.
+			 */
 			schema: string | object | Type;
+
+			/**
+			 * Determines whether this process is dealt with synchronously.
+			 * By default, false.
+			 */
+			synchronous?: boolean;
+
 		}
 
 	}
