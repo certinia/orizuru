@@ -54,7 +54,7 @@ describe('index/validator/publisher', () => {
 		it('should return the schema if it is valid (string format)', () => {
 
 			// Given
-			const config = {
+			const config: any = {
 				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 			};
 
@@ -70,9 +70,11 @@ describe('index/validator/publisher', () => {
 			it('if no config is provided', () => {
 
 				// Given
+				const config: any = undefined;
+
 				// When
 				// Then
-				expect(() => publishFunctionValidator.validate(undefined)).to.throw(/^Missing required object parameter\.$/);
+				expect(() => publishFunctionValidator.validate(config)).to.throw(/^Missing required object parameter\.$/);
 				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
 
 			});
@@ -80,9 +82,11 @@ describe('index/validator/publisher', () => {
 			it('if config is not an object', () => {
 
 				// Given
+				const config: any = 2;
+
 				// When
 				// Then
-				expect(() => publishFunctionValidator.validate(2)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
+				expect(() => publishFunctionValidator.validate(config)).to.throw(/^Invalid parameter: 2 is not an object\.$/);
 				expect(SchemaValidator.prototype.validate).to.not.have.been.called;
 
 			});
@@ -92,7 +96,7 @@ describe('index/validator/publisher', () => {
 				// Given
 				(SchemaValidator.prototype.validate as SinonStub).throws(new Error('invalid schema'));
 
-				const config = {
+				const config: any = {
 					schema: 2
 				};
 
