@@ -30,6 +30,8 @@ import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 
+import { MessageValidator } from '../../../src/index/validator/message';
+
 import { create } from '../../../src/index/server/route';
 
 chai.use(sinonChai);
@@ -85,14 +87,9 @@ describe('index/server/route', () => {
 		it('should validate a message for a synchronous route', async () => {
 
 			// Given
-			const publisherStub = {
-				publish: sinon.stub().resolves(),
-				validate: sinon.stub()
-			};
+			sinon.stub(MessageValidator.prototype, 'validate');
 
-			const server: any = {
-				getPublisher: sinon.stub().returns(publisherStub)
-			};
+			const server: any = sinon.stub();
 
 			const request: any = {
 				body: { something: 10 },
@@ -120,12 +117,10 @@ describe('index/server/route', () => {
 
 			// Then
 			expect(routeConfiguration.responseWriter).to.have.been.calledOnce;
-			expect(publisherStub.validate).to.have.been.calledOnce;
-			expect(publisherStub.validate).to.have.been.calledWithExactly(routeConfiguration.schema, {
+			expect(MessageValidator.prototype.validate).to.have.been.calledOnce;
+			expect(MessageValidator.prototype.validate).to.have.been.calledWithExactly(routeConfiguration.schema, {
 				something: 10
 			});
-
-			expect(publisherStub.publish).to.not.have.been.called;
 
 		});
 
