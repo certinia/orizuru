@@ -28,7 +28,6 @@ import { EventEmitter } from 'events';
 import express from 'express';
 import { RequestHandler } from 'express-serve-static-core';
 import http from 'http';
-import _ from 'lodash';
 
 import { IServerImpl, Options, Publisher } from '..';
 import { create as createRoute } from './server/route';
