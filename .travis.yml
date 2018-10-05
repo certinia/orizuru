@@ -3,5 +3,3 @@ node_js:
   - "lts/*"
 services:
   - rabbitmq
-before_script:
-  - sudo lsof -i :15672 && sudo lsof -i :5672
