@@ -58,6 +58,123 @@ describe('RabbitMQ server', () => {
 		await server.close();
 	});
 
+	describe('Synchronous API', () => {
+
+		describe('get request', () => {
+
+			beforeEach(async () => {
+
+				server.addRoute({
+					method: 'get',
+					middleware: [
+						json()
+					],
+					schema: {
+						fields: [{
+							name: 'id',
+							type: 'string'
+						}],
+						name: 'test',
+						namespace: 'api',
+						type: 'record'
+					},
+					synchronous: true
+				});
+
+				app = await server.listen();
+
+			});
+
+			it('should return a 400 if the message is invalid', async () => {
+
+				// Given
+				// When
+				const response = await request(app)
+					.get('/api/test')
+					.send({})
+					.expect(400);
+
+				// Then
+				expect(response.body).to.eql({
+					error: 'Error validating message for schema (api.test)\nInvalid value (undefined) for path (id) it should be of type (string)'
+				});
+
+			});
+
+			it('should return 200 if the message is valid', async () => {
+
+				// Given
+				// When
+				// Then
+				await request(app)
+					.get('/api/test')
+					.send({
+						id: 'testId'
+					})
+					.expect(200);
+
+			});
+
+		});
+
+		describe('post request', () => {
+
+			beforeEach(async () => {
+
+				server.addRoute({
+					middleware: [
+						json()
+					],
+					schema: {
+						fields: [{
+							name: 'id',
+							type: 'string'
+						}],
+						name: 'test',
+						namespace: 'api',
+						type: 'record'
+					},
+					synchronous: true
+				});
+
+				app = await server.listen();
+
+			});
+
+			it('should return a 400 if the message is invalid', async () => {
+
+				// Given
+				// When
+				const response = await request(app)
+					.post('/api/test')
+					.send({})
+					.expect(400);
+
+				// Then
+				expect(response.body).to.eql({
+					error: 'Error validating message for schema (api.test)\nInvalid value (undefined) for path (id) it should be of type (string)'
+				});
+
+			});
+
+			it('should return 200 if the message is valid', async () => {
+
+				// Given
+				// When
+				// Then
+				await request(app)
+					.post('/api/test')
+					.send({
+						id: 'testId'
+					})
+					.expect(200);
+
+			});
+
+		});
+
+	});
+
 	describe('API defined within Avro schema', () => {
 
 		beforeEach(async () => {
@@ -107,7 +224,7 @@ describe('RabbitMQ server', () => {
 
 			// Then
 			expect(response.body).to.eql({
-				error: 'Error encoding message for schema (api.test):\ninvalid value (undefined) for path (id) it should be of type (string)\ninvalid \"string\": undefined'
+				error: 'Error validating message for schema (api.test)\nInvalid value (undefined) for path (id) it should be of type (string)'
 			});
 
 		});
@@ -257,7 +374,7 @@ describe('RabbitMQ server', () => {
 
 			// Then
 			expect(response.body).to.eql({
-				error: 'Error encoding message for schema (api.v1_0.test):\ninvalid value (undefined) for path (id) it should be of type (string)\ninvalid \"string\": undefined'
+				error: 'Error validating message for schema (api.v1_0.test)\nInvalid value (undefined) for path (id) it should be of type (string)'
 			});
 
 		});
@@ -395,7 +512,7 @@ describe('RabbitMQ server', () => {
 
 			// Then
 			expect(response.body).to.eql({
-				error: 'Error encoding message for schema (test):\ninvalid value (undefined) for path (id) it should be of type (string)\ninvalid \"string\": undefined'
+				error: 'Error validating message for schema (test)\nInvalid value (undefined) for path (id) it should be of type (string)'
 			});
 
 		});
@@ -539,7 +656,7 @@ describe('RabbitMQ server', () => {
 
 			// Then
 			expect(response.body).to.eql({
-				error: 'Error encoding message for schema (test):\ninvalid value (undefined) for path (id) it should be of type (string)\ninvalid \"string\": undefined'
+				error: 'Error validating message for schema (test)\nInvalid value (undefined) for path (id) it should be of type (string)'
 			});
 
 		});

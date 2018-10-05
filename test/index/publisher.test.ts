@@ -183,7 +183,7 @@ describe('index/publisher', () => {
 
 		});
 
-	})
+	});
 
 	describe('publish', () => {
 
