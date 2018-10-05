@@ -116,7 +116,7 @@ export class Server extends EventEmitter {
 	/**
 	 * Adds a 'route' to the server.
 	 */
-	public addRoute(options: Options.Route.IRaw) {
+	public addRoute(options: Options.Route.IRaw<this>) {
 
 		// Validate the route options.
 		const validatedRouteConfiguration = this.validator.validate(options);

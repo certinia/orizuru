@@ -33,7 +33,7 @@ import { Server } from '../server';
 import * as RouteMethod from '../server/routeMethod';
 import { SchemaValidator } from './shared/schema';
 
-export interface RouteConfiguration {
+export interface RouteConfiguration<T extends Server> {
 	apiEndpoint: string;
 	endpoint: string;
 	fullSchemaName: string;
@@ -41,7 +41,7 @@ export interface RouteConfiguration {
 	middlewares: RequestHandler[];
 	pathMapper: (schemaNamespace: string) => string;
 	publishOptions: Options.Transport.IPublish;
-	responseWriter: ResponseWriterFunction;
+	responseWriter: ResponseWriterFunction<T>;
 	schema: AvroSchema;
 	schemaName: string;
 	synchronous?: boolean;
@@ -102,7 +102,7 @@ function calculateEventName(apiEndpoint: string) {
  */
 export class RouteValidator {
 
-	public validate(options: Options.Route.IRaw): RouteConfiguration {
+	public validate<T extends Server>(options: Options.Route.IRaw<T>): RouteConfiguration<T> {
 
 		if (!options) {
 			throw new Error('Missing required object parameter.');
@@ -154,7 +154,7 @@ export class RouteValidator {
 		const apiEndpoint = calculateApiEndpoint(avroSchema, endpoint, pathMapper);
 		const defaultEventName = calculateEventName(apiEndpoint);
 
-		const validatedOptions: RouteConfiguration = {
+		const validatedOptions: RouteConfiguration<T> = {
 			apiEndpoint,
 			endpoint,
 			fullSchemaName: avroSchema.name,

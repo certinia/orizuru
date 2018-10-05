@@ -162,7 +162,12 @@ export interface IServerImpl {
 
 export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMessage<C, M>) => Promise<void | Orizuru.IHandlerResponse>;
 
-export type ResponseWriterFunction = (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
+/**
+ * A function to write a response to the client.
+ *
+ * This function should always handle errors.
+ */
+export type ResponseWriterFunction<T extends Server> = (server: T) => (error: Error | undefined, request: Request, response: Response) => void | Promise<void>;
 
 export declare namespace Options {
 
@@ -194,7 +199,7 @@ export declare namespace Options {
 
 	export namespace Route {
 
-		export interface IRaw {
+		export interface IRaw<T extends Server> {
 
 			/**
 			 * The base endpoint for this route.
@@ -219,7 +224,7 @@ export declare namespace Options {
 			/**
 			 * Function to determine how the response is written to the server.
 			 */
-			responseWriter?: ResponseWriterFunction;
+			responseWriter?: ResponseWriterFunction<T>;
 
 			/**
 			 * The Apache Avro schema that messages for this route should be validated against.

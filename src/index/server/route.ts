@@ -31,7 +31,7 @@ import { RouteConfiguration } from '../validator/route';
 /**
  * @private
  */
-export function create(server: Server, routeConfiguration: RouteConfiguration) {
+export function create<T extends Server>(server: T, routeConfiguration: RouteConfiguration<T>) {
 
 	const writeResponse = routeConfiguration.responseWriter(server);
 
