@@ -154,7 +154,7 @@ export interface IOrizuruMessage<C extends Orizuru.Context, M> {
  * This allows us to easily set up a mock implementation for testing.
  */
 export interface IServerImpl {
-	(req: Request | http.IncomingMessage, res: Response | http.ServerResponse): this;
+	(req: Request | http.IncomingMessage, res: Response | http.ServerResponse): void;
 	listen(port: number, callback?: (app: this) => void): http.Server;
 	set(setting: string, val: any): this;
 	use(path: string, ...handlers: RequestHandler[]): this;
@@ -209,9 +209,7 @@ export declare namespace Options {
 	export namespace Transport {
 
 		export interface IPublish extends Orizuru.Transport.IPublish {
-			eventName?: string;
-			message?: any;
-			schema?: Type;
+			eventName: string;
 		}
 
 		export interface ISubscribe extends Orizuru.Transport.ISubscribe {
