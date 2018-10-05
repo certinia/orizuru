@@ -48,6 +48,7 @@ export class Publisher extends EventEmitter {
 	 */
 	public static readonly INFO = Symbol();
 
+	public readonly options: Options.IPublisher;
 	private readonly transport: Transport;
 	private readonly transportImpl: ITransport;
 	private readonly validator: PublishFunctionValidator;
@@ -59,7 +60,7 @@ export class Publisher extends EventEmitter {
 
 		super();
 
-		this.info('Creating publisher.');
+		this.options = options;
 
 		try {
 
@@ -109,12 +110,9 @@ export class Publisher extends EventEmitter {
 		const message = options.message;
 		const eventName = schema.name as string;
 
-		const publishOptions = options.publishOptions || {};
-		if (!publishOptions.eventName) {
-			publishOptions.eventName = eventName;
-		}
-		publishOptions.message = options.message;
-		publishOptions.schema = schema;
+		const publishOptions = options.publishOptions || {
+			eventName
+		};
 
 		let buffer;
 

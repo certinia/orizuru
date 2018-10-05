@@ -90,8 +90,7 @@ describe('index/handler', () => {
 			// Then
 			expect(() => new Handler(options)).to.throw(/^Missing required object parameter: transport\.$/g);
 
-			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Handler.INFO, 'Creating handler.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith(Handler.ERROR);
 
 		});
@@ -149,8 +148,7 @@ describe('index/handler', () => {
 
 			// Then
 			expect(HandlerFunctionValidator.prototype.validate).to.have.been.calledOnce;
-			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Handler.INFO, 'Creating handler.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Handler.INFO, 'Installing handler for com.example.FullName events.');
 
 		});

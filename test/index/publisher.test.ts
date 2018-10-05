@@ -81,8 +81,7 @@ describe('index/publisher', () => {
 			// Then
 			expect(() => new Publisher(options)).to.throw(/^Missing required object parameter: transport\.$/g);
 
-			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Publisher.INFO, 'Creating publisher.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWith(Publisher.ERROR);
 
 		});
@@ -166,17 +165,11 @@ describe('index/publisher', () => {
 			expect(Transport.prototype.encode).to.have.been.calledWithExactly(publishOptions.schema, publishOptions.message);
 			expect(transport.publish).to.have.been.calledOnce;
 			expect(transport.publish).to.have.been.calledWithExactly('encodedMessage', {
-				eventName: 'com.example.FullName',
-				message: {
-					context: { user: { username: 'test@test.com' } },
-					message: { first: 'First', last: 'Last' }
-				},
-				schema
+				eventName: 'com.example.FullName'
 			});
 			expect(publisher.info).to.have.been.calledOnce;
 			expect(publisher.info).to.have.been.calledWithExactly('Published com.example.FullName event.');
-			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Publisher.INFO, 'Creating publisher.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Publisher.INFO, 'Published com.example.FullName event.');
 
 		});
@@ -230,17 +223,11 @@ describe('index/publisher', () => {
 			expect(Transport.prototype.encode).to.have.been.calledWithExactly(messagePublishOptions.schema, messagePublishOptions.message);
 			expect(transport.publish).to.have.been.calledOnce;
 			expect(transport.publish).to.have.been.calledWithExactly('encodedMessage', {
-				eventName: 'test',
-				message: {
-					context: { user: { username: 'test@test.com' } },
-					message: { first: 'First', last: 'Last' }
-				},
-				schema
+				eventName: 'test'
 			});
 			expect(publisher.info).to.have.been.calledOnce;
 			expect(publisher.info).to.have.been.calledWithExactly('Published com.example.FullName event.');
-			expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Publisher.INFO, 'Creating publisher.');
+			expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
 			expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Publisher.INFO, 'Published com.example.FullName event.');
 
 		});
@@ -339,8 +326,7 @@ describe('index/publisher', () => {
 				expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
 				expect(publisher.error).to.have.been.calledOnce;
 				expect(publisher.error).to.have.been.calledWithExactly('Error publishing message on transport.');
-				expect(EventEmitter.prototype.emit).to.have.been.calledTwice;
-				expect(EventEmitter.prototype.emit).to.have.been.calledWithExactly(Publisher.INFO, 'Creating publisher.');
+				expect(EventEmitter.prototype.emit).to.have.been.calledOnce;
 				expect(EventEmitter.prototype.emit).to.have.been.calledWith(Publisher.ERROR);
 
 			});

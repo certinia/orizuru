@@ -48,6 +48,7 @@ export class Handler extends EventEmitter {
 	 */
 	public static readonly INFO = Symbol();
 
+	public readonly options: Options.IHandler;
 	private readonly transport: ITransport;
 	private readonly validator: HandlerFunctionValidator;
 
@@ -58,7 +59,7 @@ export class Handler extends EventEmitter {
 
 		super();
 
-		this.info('Creating handler.');
+		this.options = options;
 
 		try {
 
