@@ -4,6 +4,10 @@
 
 ## 9.0.0-0 PREMAJOR
 
+- The `addRoute` method can now add synchronous APIs.
+	- Set the `synchronous` property to `true` in the route options to do this.
+	- All incoming messages are still validated against the Apache Avro schema but are not published to a message queue.
+	- Synchronous request logic should be added to the `responseWriter` property.
 - The routing mechanism for Orizuru has been updated so that each endpoint now uses a different express router.
 - Orizuru now expects a class for the transport layer.
 	- Each server, publisher and handler should have a different transport instance.
