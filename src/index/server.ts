@@ -144,7 +144,7 @@ export class Server extends EventEmitter {
 		this.info(`Adding route: ${fullSchemaName} (${method.toUpperCase()}).`);
 
 		// Add the router method.
-		router[method]('/', ...middlewares, createRoute(this, validatedRouteConfiguration.schema, validatedRouteConfiguration.responseWriter, validatedRouteConfiguration.publishOptions));
+		router[method]('/', ...middlewares, createRoute(this, validatedRouteConfiguration));
 
 		return this;
 
