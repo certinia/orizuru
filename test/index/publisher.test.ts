@@ -233,7 +233,17 @@ describe('index/publisher', () => {
 			expect(Transport.prototype.encode).to.have.been.calledWithExactly(publishOptions.schema, publishOptions.message);
 			expect(transport.publish).to.have.been.calledOnce;
 			expect(transport.publish).to.have.been.calledWithExactly('encodedMessage', {
-				eventName: 'com.example.FullName'
+				context: {
+					user: {
+						username: 'test@test.com'
+					}
+				},
+				eventName: 'com.example.FullName',
+				message: {
+					first: 'First',
+					last: 'Last'
+				},
+				schema
 			});
 			expect(publisher.info).to.have.been.calledOnce;
 			expect(publisher.info).to.have.been.calledWithExactly('Published com.example.FullName event.');
@@ -291,7 +301,17 @@ describe('index/publisher', () => {
 			expect(Transport.prototype.encode).to.have.been.calledWithExactly(messagePublishOptions.schema, messagePublishOptions.message);
 			expect(transport.publish).to.have.been.calledOnce;
 			expect(transport.publish).to.have.been.calledWithExactly('encodedMessage', {
-				eventName: 'test'
+				context: {
+					user: {
+						username: 'test@test.com'
+					}
+				},
+				eventName: 'test',
+				message: {
+					first: 'First',
+					last: 'Last'
+				},
+				schema
 			});
 			expect(publisher.info).to.have.been.calledOnce;
 			expect(publisher.info).to.have.been.calledWithExactly('Published com.example.FullName event.');

@@ -139,6 +139,9 @@ export class Publisher extends EventEmitter {
 		const publishOptions = options.publishOptions || {
 			eventName
 		};
+		publishOptions.context = options.message.context;
+		publishOptions.message = options.message.message;
+		publishOptions.schema = schema;
 
 		this.validate(schema, message.message);
 

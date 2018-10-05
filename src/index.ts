@@ -239,11 +239,42 @@ export declare namespace Options {
 	export namespace Transport {
 
 		export interface IPublish extends Orizuru.Transport.IPublish {
+
+			/**
+			 * The name of the queue to which messages are published.
+			 */
 			eventName: string;
+
+			/**
+			 * The context for this message.
+			 *
+			 * In some cases, the transport layer determines where to publish the message from a context property.
+			 * The context is here for convenience so that the transport layer does not need to decode the supplied buffer.
+			 */
+			context?: Orizuru.Context;
+
+			/**
+			 * The raw message to be published.
+			 *
+			 * In some cases, the transport layer determines where to publish the message from a message property.
+			 * The message is here for convenience so that the transport layer does not need to decode the supplied buffer.
+			 */
+			message?: any;
+
+			/**
+			 * The Avro schema for this message.
+			 */
+			schema?: AvroSchema;
+
 		}
 
 		export interface ISubscribe extends Orizuru.Transport.ISubscribe {
+
+			/**
+			 * The name of the queue from which messages are consumed.
+			 */
 			eventName: string;
+
 		}
 
 	}
