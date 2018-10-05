@@ -154,6 +154,7 @@ export interface IOrizuruMessage<C extends Orizuru.Context, M> {
  * This allows us to easily set up a mock implementation for testing.
  */
 export interface IServerImpl {
+	(req: Request | http.IncomingMessage, res: Response | http.ServerResponse): this;
 	listen(port: number, callback?: (app: this) => void): http.Server;
 	set(setting: string, val: any): this;
 	use(path: string, ...handlers: RequestHandler[]): this;
