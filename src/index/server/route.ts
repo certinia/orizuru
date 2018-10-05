@@ -26,6 +26,7 @@
 
 import { Options, Request, Response, Server } from '../..';
 
+import { MessageValidator } from '../validator/message';
 import { RouteConfiguration } from '../validator/route';
 
 /**
@@ -33,27 +34,32 @@ import { RouteConfiguration } from '../validator/route';
  */
 export function create<T extends Server>(server: T, routeConfiguration: RouteConfiguration<T>) {
 
+	const messageValidator = new MessageValidator();
 	const writeResponse = routeConfiguration.responseWriter(server);
 
 	return async (request: Request, response: Response) => {
 
 		const { publishOptions, schema, synchronous } = routeConfiguration;
 
-		const options: Options.IPublishFunction<Orizuru.Context, any> = {
-			message: {
-				context: request.orizuru || {},
-				message: request.body
-			},
-			publishOptions,
-			schema
-		};
-
 		try {
 
+			// For a synchronous call, validate the message and then call the response writer.
+			// Otherwise, we are async and need to publish the message before calling the response writer.
 			if (synchronous) {
-				server.getPublisher().validate(schema, request.body);
+				messageValidator.validate(schema, request.body);
 			} else {
+
+				const options: Options.IPublishFunction<Orizuru.Context, any> = {
+					message: {
+						context: request.orizuru || {},
+						message: request.body
+					},
+					publishOptions,
+					schema
+				};
+
 				await server.getPublisher().publish(options);
+
 			}
 
 			writeResponse(undefined, request, response);
