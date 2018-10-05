@@ -28,8 +28,9 @@ import { EventEmitter } from 'events';
 
 import { AvroSchema, ITransport, Options } from '..';
 import { Transport } from './transport/transport';
+import { MessageValidator } from './validator/message';
 import { PublisherValidator } from './validator/publisher';
-import { PublishFunctionValidator } from './validator/publishFunction';
+import { PublishFunctionValidator, ValidatedPublishFunctionOptions } from './validator/publishFunction';
 
 /**
  * The Publisher for publishing messages based on Avro schemas.
@@ -51,6 +52,7 @@ export class Publisher extends EventEmitter {
 	private readonly transport: Transport;
 	private readonly transportImpl: ITransport;
 	private readonly validator: PublishFunctionValidator;
+	private readonly messageValidator: MessageValidator;
 
 	/**
 	 * Constructs a new 'Publisher'.
@@ -73,6 +75,9 @@ export class Publisher extends EventEmitter {
 			// Define the publish function validator
 			this.validator = new PublishFunctionValidator();
 
+			// Define the message validator
+			this.messageValidator = new MessageValidator();
+
 		} catch (err) {
 			this.error(err);
 			throw err;
@@ -88,33 +93,6 @@ export class Publisher extends EventEmitter {
 	}
 
 	/**
-	 * Validates a message.
-	 */
-	public validate(schema: AvroSchema, message: any) {
-
-		const schemaErrors = new Array<string>();
-
-		const valid = schema.isValid(message, {
-			errorHook: (path: any, value: any, type: any) => {
-				schemaErrors.push(`Invalid value (${value}) for path (${path.join()}) it should be of type (${type.typeName})`);
-			}
-		});
-
-		if (!valid) {
-
-			let errors = new Array<string>();
-			errors.push(`Error validating message for schema (${schema.name})`);
-			errors = errors.concat(schemaErrors);
-
-			const errorMessage = errors.join('\n');
-			this.error(errorMessage);
-			throw new Error(errorMessage);
-
-		}
-
-	}
-
-	/**
 	 * Publishes a message.
 	 *
 	 * @example
@@ -123,9 +101,19 @@ export class Publisher extends EventEmitter {
 	 */
 	public async publish<C extends Orizuru.Context, M>(options: Options.IPublishFunction<C, M>) {
 
+		let validatedOptions: ValidatedPublishFunctionOptions<C, M>;
+
 		// Validate the arguments.
 		try {
-			this.validator.validate(options);
+			validatedOptions = this.validator.validate(options);
+		} catch (err) {
+			this.error(err);
+			throw err;
+		}
+
+		// Validate the message
+		try {
+			this.messageValidator.validate(validatedOptions.schema, validatedOptions.message.message);
 		} catch (err) {
 			this.error(err);
 			throw err;
@@ -142,8 +130,6 @@ export class Publisher extends EventEmitter {
 		publishOptions.context = options.message.context;
 		publishOptions.message = options.message.message;
 		publishOptions.schema = schema;
-
-		this.validate(schema, message.message);
 
 		let buffer: Buffer;
 
