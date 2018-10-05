@@ -84,14 +84,15 @@ function getSchemaName(avroSchema: AvroSchema) {
 	return schemaNameParts.pop() as string;
 }
 
-function calculateApiEndpoint(validatedOptions: RouteConfiguration) {
-	const schemaNameParts = validatedOptions.schema.name.split('.');
+function calculateApiEndpoint(schema: AvroSchema, endpoint: string, pathMapper: (schemaNamespace: string) => string) {
+	const schemaName = getSchemaName(schema);
+	const schemaNameParts = schema.name.split('.');
 	const schemaNamespace = _.initial(schemaNameParts).join('.');
-	return validatedOptions.endpoint + validatedOptions.pathMapper(schemaNamespace) + '/' + validatedOptions.schemaName;
+	return endpoint + pathMapper(schemaNamespace) + '/' + schemaName;
 }
 
-function calculateEventName(validatedOptions: RouteConfiguration) {
-	return validatedOptions.apiEndpoint.substring(1).replace(/\//g, '.');
+function calculateEventName(apiEndpoint: string) {
+	return apiEndpoint.substring(1).replace(/\//g, '.');
 }
 
 /**
@@ -143,24 +144,25 @@ export class RouteValidator {
 		// Validate the schema
 		const avroSchema = new SchemaValidator().validate(options.schema);
 
+		const endpoint = getEndpoint(options.endpoint);
+		const pathMapper = options.pathMapper || defaultPathMapper;
+		const apiEndpoint = calculateApiEndpoint(avroSchema, endpoint, pathMapper);
+		const defaultEventName = calculateEventName(apiEndpoint);
+
 		const validatedOptions: RouteConfiguration = {
-			apiEndpoint: '/',
-			endpoint: getEndpoint(options.endpoint),
+			apiEndpoint,
+			endpoint,
 			fullSchemaName: avroSchema.name,
 			method: options.method || RouteMethod.POST,
 			middlewares: options.middleware || [],
 			pathMapper: options.pathMapper || defaultPathMapper,
-			publishOptions: options.publishOptions || {},
+			publishOptions: options.publishOptions || {
+				eventName: defaultEventName
+			},
 			responseWriter: options.responseWriter || defaultResponseWriter,
 			schema: avroSchema,
 			schemaName: getSchemaName(avroSchema)
 		};
-
-		validatedOptions.apiEndpoint = calculateApiEndpoint(validatedOptions);
-
-		if (!validatedOptions.publishOptions.eventName) {
-			validatedOptions.publishOptions.eventName = calculateEventName(validatedOptions);
-		}
 
 		return validatedOptions;
 	}
