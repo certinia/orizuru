@@ -31,7 +31,7 @@ import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 
-import { Options, Server } from '../../../src';
+import { Options } from '../../../src';
 import { SchemaValidator } from '../../../src/index/validator/shared/schema';
 
 import { RouteValidator } from '../../../src/index/validator/route';
