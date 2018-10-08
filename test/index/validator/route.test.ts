@@ -68,7 +68,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw<Server> = {
+				const input: Options.IRouteConfiguration = {
 					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}'
 				};
 
@@ -103,7 +103,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw<Server> = {
+				const input: Options.IRouteConfiguration = {
 					endpoint: 'api/',
 					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}'
 				};
@@ -139,7 +139,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw<Server> = {
+				const input: Options.IRouteConfiguration = {
 					endpoint: '/api/',
 					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}'
 				};
@@ -175,7 +175,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw<Server> = {
+				const input: Options.IRouteConfiguration = {
 					schema: '{"namespace":"api.v1_0.com.example","name":"FullName","type":"record","fields":[]}'
 				};
 
@@ -210,7 +210,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw<Server> = {
+				const input: Options.IRouteConfiguration = {
 					publishOptions: {
 						eventName: 'internal.com.example.fullname'
 					},
@@ -248,7 +248,7 @@ describe('index/validator/route', () => {
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-				const input: Options.Route.IRaw<Server> = {
+				const input: Options.IRouteConfiguration = {
 					publishOptions: {
 						eventName: 'internal.com.example.fullname'
 					},
