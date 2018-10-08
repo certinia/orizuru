@@ -24,46 +24,49 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
-import * as  HTTP_STATUS_CODE from 'http-status-codes';
+import { Options, Request, Response } from '../..';
 
-import { Options, Request, Response, Server } from '../..';
+import { MessageValidator } from '../validator/message';
+import { RouteConfiguration } from '../validator/route';
 
 /**
  * @private
  */
-export function create(server: Server, routeConfiguration: { [s: string]: Type }, { responseWriter, publishOptions }: Options.Route.IValidated) {
+export function create(server: Orizuru.IServer, routeConfiguration: RouteConfiguration) {
+
+	const messageValidator = new MessageValidator();
+	const writeResponse = routeConfiguration.responseWriter(server);
 
 	return async (request: Request, response: Response) => {
 
-		const schemaName = request.params.schemaName;
+		const { publishOptions, schema, synchronous } = routeConfiguration;
 
-		const schema = routeConfiguration[schemaName];
-		if (!schema) {
-			const errorMsg = `No schema for '${schemaName}' found.`;
-			server.error(errorMsg);
-			response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(errorMsg);
-			return;
+		try {
+
+			// For a synchronous call, validate the message and then call the response writer.
+			// Otherwise, we are async and need to publish the message before calling the response writer.
+			if (synchronous) {
+				messageValidator.validate(schema, request.body);
+			} else {
+
+				const options: Options.IPublishFunction<Orizuru.Context, Orizuru.Message> = {
+					message: {
+						context: request.orizuru || {},
+						message: request.body
+					},
+					publishOptions,
+					schema
+				};
+
+				await server.publisher.publish(options);
+
+			}
+
+			writeResponse(undefined, request, response);
+
+		} catch (error) {
+			writeResponse(error, request, response);
 		}
-
-		publishOptions = publishOptions || {};
-		if (!publishOptions.eventName) {
-			publishOptions.eventName = schema.name;
-		}
-
-		const message = {
-			message: {
-				context: request.orizuru || {},
-				message: request.body
-			},
-			publishOptions,
-			schema
-		};
-
-		return Promise.resolve(message)
-			.then(server.getPublisher().publish.bind(server.getPublisher()))
-			.then(() => responseWriter(server)(undefined, request, response))
-			.catch((error) => responseWriter(server)(error, request, response));
 
 	};
 

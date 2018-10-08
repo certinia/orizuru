@@ -13,6 +13,21 @@
 				"999999"
 			],
 			"internalConsoleOptions": "openOnSessionStart"
-		}
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Debug System Tests",
+			"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+			"args": [
+				"-u",
+				"tdd",
+				"--timeout",
+				"999999",
+				"--opts",
+				"systemtests/mocha.opts"
+			],
+			"internalConsoleOptions": "openOnSessionStart"
+		},
 	]
 }

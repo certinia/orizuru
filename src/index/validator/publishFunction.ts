@@ -25,7 +25,14 @@
  */
 
 import _ from 'lodash';
+
+import { AvroSchema, Options } from '../..';
+
 import { SchemaValidator } from './shared/schema';
+
+export interface ValidatedPublishFunctionOptions<C extends Orizuru.Context, M extends Orizuru.Message> extends Options.IPublishFunction<C, M> {
+	schema: AvroSchema;
+}
 
 /**
  * Validates {@link Publisher} function configurations.
@@ -33,20 +40,20 @@ import { SchemaValidator } from './shared/schema';
  */
 export class PublishFunctionValidator {
 
-	public validate(config: any) {
+	public validate<C extends Orizuru.Context, M extends Orizuru.Message>(options: Options.IPublishFunction<C, M>) {
 
-		if (!config) {
+		if (!options) {
 			throw new Error('Missing required object parameter.');
 		}
 
-		if (!_.isPlainObject(config)) {
-			throw new Error(`Invalid parameter: ${config} is not an object.`);
+		if (!_.isPlainObject(options)) {
+			throw new Error(`Invalid parameter: ${options} is not an object.`);
 		}
 
 		// Validate the schema
-		new SchemaValidator().validate(config);
+		options.schema = new SchemaValidator().validate(options.schema);
 
-		return config;
+		return options as ValidatedPublishFunctionOptions<C, M>;
 
 	}
 

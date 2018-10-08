@@ -24,13 +24,12 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
 import { EventEmitter } from 'events';
 import express from 'express';
-import { Application, ApplicationRequestHandler } from 'express-serve-static-core';
-import _ from 'lodash';
+import { RequestHandler } from 'express-serve-static-core';
+import http from 'http';
 
-import { Options, Publisher } from '..';
+import { IServerImpl, Options, Publisher } from '..';
 import { create as createRoute } from './server/route';
 import * as ROUTE_METHOD from './server/routeMethod';
 import { RouteValidator } from './validator/route';
@@ -42,14 +41,10 @@ import { ServerValidator } from './validator/server';
 const Router = express.Router;
 
 /**
- * @private
- */
-const PARAMETER_API_SCHEMA_ENDPOINT = '/:schemaName';
-
-/**
  * The Server for creating routes in a web dyno based on Avro schemas.
  *
  * Messages are consumed by {@link Handler}.
+ * @extends EventEmitter
  */
 export class Server extends EventEmitter {
 
@@ -58,21 +53,20 @@ export class Server extends EventEmitter {
 	/**
 	 * The error event name.
 	 */
-	public static readonly ERROR: string = 'error_event';
+	public static readonly ERROR = Symbol();
 
 	/**
 	 * The info event name.
 	 */
-	public static readonly INFO: string = 'info_event';
+	public static readonly INFO = Symbol();
 
-	public set: (setting: string, val: any) => Application;
-	public use: ApplicationRequestHandler<Application>;
-
-	private readonly publisher: Publisher;
-	private readonly server: express.Express;
+	public readonly options: Options.IServer;
+	private readonly publisherImpl: Publisher;
+	private readonly server: IServerImpl;
 	private readonly validator: RouteValidator;
 	private readonly routerConfiguration: { [s: string]: express.Router };
-	private readonly routeConfiguration: { [s: string]: { [s: string]: Type } };
+
+	private httpServer?: http.Server;
 
 	/**
 	 * Constructs a new 'Server'.
@@ -84,28 +78,31 @@ export class Server extends EventEmitter {
 
 		super();
 
-		this.info('Creating server.');
-
 		try {
 
 			// Validate the server options
 			new ServerValidator(options);
 
-			// Add the server
-			this.server = express();
+			this.options = options;
 
-			// Add commonly used express functions
-			this.set = this.server.set.bind(this.server);
-			this.use = this.server.use.bind(this.server);
+			// Add the server
+			this.server = options.server || express();
 
 			// Add the publisher
-			this.publisher = new Publisher(options);
+			this.publisherImpl = new Publisher(options);
+
+			// Make sure that  the publisher emits server error events
+			this.publisher.on(Publisher.ERROR, (...args: any[]) => {
+				this.emit(Server.ERROR, ...args);
+			});
+
+			// Make sure that  the publisher emits server info events
+			this.publisher.on(Publisher.INFO, (...args: any[]) => {
+				this.emit(Server.INFO, ...args);
+			});
 
 			// Define the router configuration for the server
 			this.routerConfiguration = {};
-
-			// Define the route configuration for the server
-			this.routeConfiguration = {};
 
 			// Define the route validator
 			this.validator = new RouteValidator();
@@ -120,20 +117,13 @@ export class Server extends EventEmitter {
 	/**
 	 * Adds a 'route' to the server.
 	 */
-	public addRoute(options: Options.Route.IRaw) {
+	public addRoute(options: Options.IRouteConfiguration) {
 
 		// Validate the route options.
-		const validatedOptions = this.validator.validate(options);
+		const validatedRouteConfiguration = this.validator.validate(options);
 
-		// Now we know the options are valid, add the route.
-		const schema = validatedOptions.schema;
-		const fullSchemaName = schema.name as string;
-		const schemaNameParts = fullSchemaName.split('.');
-		const schemaNamespace = _.initial(schemaNameParts).join('.');
-		const schemaName = _.last(schemaNameParts) as string;
-		const apiEndpoint = validatedOptions.endpoint + validatedOptions.pathMapper(schemaNamespace);
+		const { apiEndpoint, middlewares, fullSchemaName, method } = validatedRouteConfiguration;
 
-		let routeConfiguration = this.routeConfiguration[apiEndpoint];
 		let router: any = this.routerConfiguration[apiEndpoint];
 
 		// If we don't have the router for this endpoint then we need to create one.
@@ -144,11 +134,6 @@ export class Server extends EventEmitter {
 			// Create router.
 			router = Router();
 
-			// Apply middlewares.
-			_.each(validatedOptions.middleware, (middleware) => {
-				router.use(middleware);
-			});
-
 			// Add the router to the server.
 			this.server.use(apiEndpoint, router);
 
@@ -157,47 +142,92 @@ export class Server extends EventEmitter {
 
 		}
 
-		if (!routeConfiguration) {
-			routeConfiguration = {};
-			this.routeConfiguration[apiEndpoint] = routeConfiguration;
-		}
-
-		// Update the route configuration.
-		routeConfiguration[schemaName] = schema;
-
-		this.info(`Adding route: ${fullSchemaName}.`);
+		this.info(`Adding route: ${fullSchemaName} (${method.toUpperCase()}).`);
 
 		// Add the router method.
-		router[validatedOptions.method](PARAMETER_API_SCHEMA_ENDPOINT, createRoute(this, routeConfiguration, validatedOptions));
+		router[method]('/', ...middlewares, createRoute(this, validatedRouteConfiguration));
 
 		return this;
 
 	}
 
 	/**
-	 * Returns the express server.
+	 * Starts the server listening for connections.
+	 * This also initialises the transport connection.
+	 */
+	public async listen(callback?: (app: Orizuru.IServer) => void) {
+
+		await this.options.transport.connect();
+
+		this.httpServer = this.server.listen(this.options.port, () => {
+			this.info(`Listening to new connections on port: ${this.options.port}.`);
+			if (callback) {
+				callback(this);
+			}
+		});
+		return this.httpServer;
+
+	}
+
+	/**
+	 * Stops the server from accepting new connections.
+	 */
+	public async close(callback?: (app: Orizuru.IServer) => void) {
+		if (this.httpServer) {
+			await this.httpServer.close(async () => {
+				this.info(`Stopped listening to connections on port: ${this.options.port}.`);
+				await this.options.transport.close();
+				if (callback) {
+					callback(this);
+				}
+			});
+		} else {
+			throw Error('The server has not started listening to connections.');
+		}
+	}
+
+	/**
+	 * Assigns setting `name` to `value`.
+	 */
+	public set(setting: string, val: any) {
+		this.server.set(setting, val);
+		return this;
+	}
+
+	/**
+	 * Use the given request handlers for the specified paths.
+	 */
+	public use(path: string, ...handlers: RequestHandler[]) {
+		this.server.use(path, ...handlers);
+		return this;
+	}
+
+	/**
+	 * Returns the server implementation.
+	 *
+	 * Defaults to express.
 	 *
 	 * @example
-	 * // returns the express server
-	 * server.getServer().listen('8080');
-	 * @returns {express} The express server.
+	 * // returns the server implementation
+	 * server.serverImpl.listen('8080');
+	 * @returns The server implementation.
 	 */
-	public getServer() {
+	public get serverImpl() {
 		return this.server;
 	}
 
 	/**
 	 * Returns the message publisher.
 	 *
-	 * @returns {Publisher} The message publisher.
+	 * @returns The message publisher.
 	 */
-	public getPublisher() {
-		return this.publisher;
+	public get publisher() {
+		return this.publisherImpl;
 	}
 
 	/**
 	 * Emit an error event.
-	 * @param {Object} event - The error event.
+	 * @param event - The error event.
 	 */
 	public error(event: any) {
 		this.emit(Server.ERROR, event);
@@ -205,7 +235,7 @@ export class Server extends EventEmitter {
 
 	/**
 	 * Emit an info event.
-	 * @param {Object} event - The info event.
+	 * @param event - The info event.
 	 */
 	public info(event: any) {
 		this.emit(Server.INFO, event);

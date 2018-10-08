@@ -2,9 +2,12 @@
 .vscode
 
 coverage
+coverage-systemtests
 doc
+docker
 src
 test
+systemtests
 
 .travis.yml
 

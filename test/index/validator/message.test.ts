@@ -24,68 +24,71 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
-import _ from 'lodash';
+import chai from 'chai';
 
-import { AvroSchema } from '../../..';
+import avsc from 'avsc';
 
-/**
- * Parses the schema from a JSON string.
- * @private
- */
-function parseSchema(schema: string) {
+import { AvroSchema } from '../../../src';
+import { MessageValidator } from '../../../src/index/validator/message';
 
-	try {
-		return JSON.parse(schema);
-	} catch (error) {
-		throw new Error(`Invalid Avro Schema. Failed to parse JSON string: ${schema}.`);
-	}
+const expect = chai.expect;
 
-}
+describe('index/validator/message', () => {
 
-/**
- * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc library}.
- * @private
- */
-function compileSchema(uncompiledSchema: any) {
+	describe('validate', () => {
 
-	try {
-		return Type.forSchema(uncompiledSchema);
-	} catch (error) {
-		throw new Error(`Invalid Avro Schema. Schema error: ${error.message}.`);
-	}
+		it('should throw an error if the message is invalid', () => {
 
-}
+			// Given
+			const message: any = {
+				context: {},
+				message: 'test'
+			};
 
-/**
- * Validates the Apache Avro schema.
- * @private
- */
-export class SchemaValidator {
+			const schema = avsc.Type.forSchema({
+				fields: [
+					{ name: 'first', type: 'string' },
+					{ name: 'last', type: 'string' }
+				],
+				name: 'FullName',
+				namespace: 'com.example',
+				type: 'record'
+			}) as AvroSchema;
 
-	public validate(schema: any): AvroSchema {
+			const validator = new MessageValidator();
 
-		if (!schema) {
-			throw new Error('Missing required avro-schema parameter: schema.');
-		}
+			// When
+			// Then
+			expect(() => validator.validate(schema, message)).to.throw('Error validating message for schema (com.example.FullName)\nInvalid value (undefined) for path (first) it should be of type (string)\nInvalid value (undefined) for path (last) it should be of type (string)');
 
-		if (_.isString(schema)) {
-			const parsedSchema = parseSchema(schema);
-			schema = compileSchema(parsedSchema);
-		} else if (_.isPlainObject(schema)) {
-			schema = compileSchema(schema);
-		} else if (_.hasIn(schema, 'toJSON') && _.hasIn(schema, 'toBuffer')) {
-			// Already have a compiled schema
-		} else {
-			throw new Error(`Invalid Avro Schema. Unexpected value type: ${typeof schema}.`);
-		}
+		});
 
-		if (!schema.name) {
-			throw new Error('Missing required string parameter: schema[name].');
-		}
+		it('should not throw an error if the message is valid', () => {
 
-		return schema;
+			// Given
+			const message: any = {
+				first: 'Test',
+				last: 'Tester'
+			};
 
-	}
+			const schema = avsc.Type.forSchema({
+				fields: [
+					{ name: 'first', type: 'string' },
+					{ name: 'last', type: 'string' }
+				],
+				name: 'FullName',
+				namespace: 'com.example',
+				type: 'record'
+			}) as AvroSchema;
 
-}
+			const validator = new MessageValidator();
+
+			// When
+			// Then
+			expect(() => validator.validate(schema, message)).to.not.throw();
+
+		});
+
+	});
+
+});

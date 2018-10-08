@@ -24,13 +24,13 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
 import { EventEmitter } from 'events';
 
-import { ITransport, Options } from '..';
+import { AvroSchema, ITransport, Options } from '..';
 import { Transport } from './transport/transport';
+import { MessageValidator } from './validator/message';
 import { PublisherValidator } from './validator/publisher';
-import { PublishFunctionValidator } from './validator/publishFunction';
+import { PublishFunctionValidator, ValidatedPublishFunctionOptions } from './validator/publishFunction';
 
 /**
  * The Publisher for publishing messages based on Avro schemas.
@@ -41,17 +41,18 @@ export class Publisher extends EventEmitter {
 	/**
 	 * The error event name.
 	 */
-	public static readonly ERROR: string = 'error_event';
+	public static readonly ERROR = Symbol();
 
 	/**
 	 * The info event name.
 	 */
-	public static readonly INFO: string = 'info_event';
+	public static readonly INFO = Symbol();
 
+	public readonly options: Options.IPublisher;
 	private readonly transport: Transport;
-	private readonly transportConfig: Options.Transport.IConnect;
 	private readonly transportImpl: ITransport;
 	private readonly validator: PublishFunctionValidator;
+	private readonly messageValidator: MessageValidator;
 
 	/**
 	 * Constructs a new 'Publisher'.
@@ -60,7 +61,7 @@ export class Publisher extends EventEmitter {
 
 		super();
 
-		this.info('Creating publisher.');
+		this.options = options;
 
 		try {
 
@@ -69,11 +70,13 @@ export class Publisher extends EventEmitter {
 
 			// Define the transport
 			this.transport = new Transport();
-			this.transportConfig = options.transportConfig;
 			this.transportImpl = options.transport;
 
 			// Define the publish function validator
 			this.validator = new PublishFunctionValidator();
+
+			// Define the message validator
+			this.messageValidator = new MessageValidator();
 
 		} catch (err) {
 			this.error(err);
@@ -83,55 +86,60 @@ export class Publisher extends EventEmitter {
 	}
 
 	/**
+	 * Initialise the publisher.
+	 */
+	public async init() {
+		await this.transportImpl.connect();
+	}
+
+	/**
 	 * Publishes a message.
 	 *
 	 * @example
 	 * // publishes a message
 	 * publisher.publish({ schema, message });
 	 */
-	public async publish<C extends Orizuru.Context, M>(options: Options.IPublishFunction<C, M>) {
+	public async publish<C extends Orizuru.Context, M extends Orizuru.Message>(options: Options.IPublishFunction<C, M>) {
+
+		let validatedOptions: ValidatedPublishFunctionOptions<C, M>;
 
 		// Validate the arguments.
 		try {
-			this.validator.validate(options);
+			validatedOptions = this.validator.validate(options);
+		} catch (err) {
+			this.error(err);
+			throw err;
+		}
+
+		// Validate the message
+		try {
+			this.messageValidator.validate(validatedOptions.schema, validatedOptions.message.message);
 		} catch (err) {
 			this.error(err);
 			throw err;
 		}
 
 		// Generate transport buffer.
-		const schema = options.schema as Type;
+		const schema = options.schema as AvroSchema;
 		const message = options.message;
 		const eventName = schema.name as string;
 
-		const publishOptions = options.publishOptions || {};
-		publishOptions.message = options.message;
+		const publishOptions = options.publishOptions || {
+			eventName
+		};
+		publishOptions.context = options.message.context;
+		publishOptions.message = options.message.message;
 		publishOptions.schema = schema;
 
-		let buffer;
+		let buffer: Buffer;
 
 		try {
 			buffer = this.transport.encode(schema, message);
-		} catch (err) {
-
-			const errors = new Array<string>();
-
-			errors.push(`Error encoding message for schema (${eventName}):`);
-
-			schema.isValid(options.message, {
-				errorHook: (path: any, value: any, type: any) => {
-					errors.push(`invalid value (${value}) for path (${path.join()}) it should be of type (${type.typeName})`);
-				}
-			});
-
-			errors.push(err.message);
-
-			this.error(errors.join('\n'));
-			throw new Error(errors.join('\n'));
-
+		} catch (error) {
+			const errorMessage = `Error encoding message for schema (${schema.name}): ${error.message}`;
+			this.error(errorMessage);
+			throw new Error(errorMessage);
 		}
-
-		await this.transportImpl.connect(this.transportConfig);
 
 		// publish buffer on transport
 		return this.transportImpl.publish(buffer, publishOptions)
@@ -148,7 +156,7 @@ export class Publisher extends EventEmitter {
 
 	/**
 	 * Emit an error event.
-	 * @param {Object} event - The error event.
+	 * @param event - The error event.
 	 */
 	public error(event: any) {
 		this.emit(Publisher.ERROR, event);
@@ -156,7 +164,7 @@ export class Publisher extends EventEmitter {
 
 	/**
 	 * Emit an info event.
-	 * @param {Object} event - The info event.
+	 * @param event - The info event.
 	 */
 	public info(event: any) {
 		this.emit(Publisher.INFO, event);

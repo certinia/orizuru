@@ -24,13 +24,75 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
-import * as HTTP_STATUS_CODE from 'http-status-codes';
+import { RequestHandler } from 'express-serve-static-core';
+import { BAD_REQUEST, OK } from 'http-status-codes';
 import _ from 'lodash';
 
-import { Options } from '../..';
+import { AvroSchema, Options, Request, Response, ResponseWriterFunction } from '../..';
 import * as RouteMethod from '../server/routeMethod';
 import { SchemaValidator } from './shared/schema';
+
+export interface RouteConfiguration {
+	apiEndpoint: string;
+	fullSchemaName: string;
+	method: string;
+	middlewares: RequestHandler[];
+	pathMapper: (schemaNamespace: string) => string;
+	publishOptions: Options.Transport.IPublish;
+	responseWriter: ResponseWriterFunction;
+	schema: AvroSchema;
+	schemaName: string;
+	synchronous?: boolean;
+}
+
+function defaultResponseWriter(server: Orizuru.IServer) {
+
+	return (error: Error | undefined, request: Request, response: Response) => {
+		if (error) {
+			server.error(error);
+			response.status(BAD_REQUEST).send({
+				error: error.message
+			});
+		} else {
+			response.sendStatus(OK);
+		}
+	};
+
+}
+
+function defaultPathMapper(namespace: string) {
+	return namespace.replace(/\./g, '/').replace('_', '.');
+}
+
+function getEndpoint(endpoint?: string) {
+
+	if (!endpoint) {
+		return '/';
+	}
+
+	if (endpoint.startsWith('/')) {
+		return endpoint;
+	}
+
+	return '/' + endpoint;
+
+}
+
+function getSchemaName(avroSchema: AvroSchema) {
+	const schemaNameParts = avroSchema.name.split('.');
+	return schemaNameParts.pop() as string;
+}
+
+function calculateApiEndpoint(schema: AvroSchema, endpoint: string, pathMapper: (schemaNamespace: string) => string) {
+	const schemaName = getSchemaName(schema);
+	const schemaNameParts = schema.name.split('.');
+	const schemaNamespace = _.initial(schemaNameParts).join('.');
+	return endpoint + pathMapper(schemaNamespace) + '/' + schemaName;
+}
+
+function calculateEventName(apiEndpoint: string) {
+	return apiEndpoint.substring(1).replace(/\//g, '.');
+}
 
 /**
  * Validates the {@link Route} configuration.
@@ -38,7 +100,7 @@ import { SchemaValidator } from './shared/schema';
  */
 export class RouteValidator {
 
-	public validate(options: Options.Route.IRaw): Options.Route.IValidated {
+	public validate(options: Options.IRouteConfiguration): RouteConfiguration {
 
 		if (!options) {
 			throw new Error('Missing required object parameter.');
@@ -78,31 +140,32 @@ export class RouteValidator {
 			throw new Error('Invalid parameter: pathMapper is not a function.');
 		}
 
+		if (options.synchronous !== undefined && !_.isBoolean(options.synchronous)) {
+			throw new Error('Invalid parameter: synchronous is not a boolean.');
+		}
+
 		// Validate the schema
-		new SchemaValidator().validate(options);
+		const avroSchema = new SchemaValidator().validate(options.schema);
 
-		const validatedOptions: Options.Route.IValidated = {
-			endpoint: '/',
-			method: RouteMethod.POST,
-			middleware: [],
-			pathMapper: (namespace: string) => namespace.replace(/\./g, '/'),
-			publishOptions: options.publishOptions,
-			responseWriter: (server) => (error, request, response) => {
-				if (error) {
-					server.error(error);
-					response.status(HTTP_STATUS_CODE.BAD_REQUEST).send(error);
-				} else {
-					response.status(HTTP_STATUS_CODE.OK).send('Ok.');
-				}
+		const endpoint = getEndpoint(options.endpoint);
+		const pathMapper = options.pathMapper || defaultPathMapper;
+		const apiEndpoint = calculateApiEndpoint(avroSchema, endpoint, pathMapper);
+		const defaultEventName = calculateEventName(apiEndpoint);
+
+		const validatedOptions: RouteConfiguration = {
+			apiEndpoint,
+			fullSchemaName: avroSchema.name,
+			method: options.method || RouteMethod.POST,
+			middlewares: options.middleware || [],
+			pathMapper: options.pathMapper || defaultPathMapper,
+			publishOptions: options.publishOptions || {
+				eventName: defaultEventName
 			},
-			schema: options.schema as Type
+			responseWriter: options.responseWriter || defaultResponseWriter,
+			schema: avroSchema,
+			schemaName: getSchemaName(avroSchema),
+			synchronous: options.synchronous || false
 		};
-
-		validatedOptions.endpoint = options.endpoint || validatedOptions.endpoint;
-		validatedOptions.method = options.method || validatedOptions.method;
-		validatedOptions.middleware = options.middleware || validatedOptions.middleware;
-		validatedOptions.pathMapper = options.pathMapper || validatedOptions.pathMapper;
-		validatedOptions.responseWriter = options.responseWriter || validatedOptions.responseWriter;
 
 		return validatedOptions;
 	}

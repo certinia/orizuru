@@ -29,6 +29,8 @@ import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
+import avsc from 'avsc';
+
 import { Options } from '../../../src';
 import { SchemaValidator } from '../../../src/index/validator/shared/schema';
 
@@ -52,25 +54,226 @@ describe('index/validator/route', () => {
 
 	describe('validate', () => {
 
-		it('should return the schema if it is valid', () => {
+		describe('should return the route configuration', () => {
 
-			// Given
-			sinon.stub(SchemaValidator.prototype, 'validate');
+			it('with no publish options', () => {
 
-			const input: Options.Route.IRaw = {
-				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
-			};
+				// Given
+				const schema = avsc.Type.forSchema({
+					fields: [],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				});
 
-			// When
-			const validated = routeValidator.validate(input);
+				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
-			// Then
-			expect(validated.endpoint).to.eql('/');
-			expect(validated.method).to.eql('post');
-			expect(validated.middleware).to.eql([]);
-			expect(validated.pathMapper).to.be.a('function');
-			expect(validated.responseWriter).to.be.a('function');
-			expect(validated.schema).to.eql('{"name":"com.example.FullName","type":"record","fields":[]}');
+				const input: Options.IRouteConfiguration = {
+					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}'
+				};
+
+				// When
+				const validated = routeValidator.validate(input);
+
+				// Then
+				expect(validated.apiEndpoint).to.eql('/com/example/FullName');
+				expect(validated.fullSchemaName).to.eql('com.example.FullName');
+				expect(validated.method).to.eql('post');
+				expect(validated.middlewares).to.eql([]);
+				expect(validated.pathMapper).to.be.a('function');
+				expect(validated.publishOptions).to.eql({
+					eventName: 'com.example.FullName'
+				});
+				expect(validated.responseWriter).to.be.a('function');
+				expect(validated.schema).to.eql(schema);
+				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.false;
+
+			});
+
+			it('when the endpoint doesn\'t start with a forward slash', () => {
+
+				// Given
+				const schema = avsc.Type.forSchema({
+					fields: [],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				});
+
+				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
+
+				const input: Options.IRouteConfiguration = {
+					endpoint: 'api/',
+					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}'
+				};
+
+				// When
+				const validated = routeValidator.validate(input);
+
+				// Then
+				expect(validated.apiEndpoint).to.eql('/api/com/example/FullName');
+				expect(validated.fullSchemaName).to.eql('com.example.FullName');
+				expect(validated.method).to.eql('post');
+				expect(validated.middlewares).to.eql([]);
+				expect(validated.pathMapper).to.be.a('function');
+				expect(validated.publishOptions).to.eql({
+					eventName: 'api.com.example.FullName'
+				});
+				expect(validated.responseWriter).to.be.a('function');
+				expect(validated.schema).to.eql(schema);
+				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.false;
+
+			});
+
+			it('when the endpoint ends with a forward slash', () => {
+
+				// Given
+				const schema = avsc.Type.forSchema({
+					fields: [],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				});
+
+				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
+
+				const input: Options.IRouteConfiguration = {
+					endpoint: '/api/',
+					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}'
+				};
+
+				// When
+				const validated = routeValidator.validate(input);
+
+				// Then
+				expect(validated.apiEndpoint).to.eql('/api/com/example/FullName');
+				expect(validated.fullSchemaName).to.eql('com.example.FullName');
+				expect(validated.method).to.eql('post');
+				expect(validated.middlewares).to.eql([]);
+				expect(validated.pathMapper).to.be.a('function');
+				expect(validated.publishOptions).to.eql({
+					eventName: 'api.com.example.FullName'
+				});
+				expect(validated.responseWriter).to.be.a('function');
+				expect(validated.schema).to.eql(schema);
+				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.false;
+
+			});
+
+			it('when the namespace contains v1_0', () => {
+
+				// Given
+				const schema = avsc.Type.forSchema({
+					fields: [],
+					name: 'FullName',
+					namespace: 'api.v1_0.com.example',
+					type: 'record'
+				});
+
+				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
+
+				const input: Options.IRouteConfiguration = {
+					schema: '{"namespace":"api.v1_0.com.example","name":"FullName","type":"record","fields":[]}'
+				};
+
+				// When
+				const validated = routeValidator.validate(input);
+
+				// Then
+				expect(validated.apiEndpoint).to.eql('/api/v1.0/com/example/FullName');
+				expect(validated.fullSchemaName).to.eql('api.v1_0.com.example.FullName');
+				expect(validated.method).to.eql('post');
+				expect(validated.middlewares).to.eql([]);
+				expect(validated.pathMapper).to.be.a('function');
+				expect(validated.publishOptions).to.eql({
+					eventName: 'api.v1.0.com.example.FullName'
+				});
+				expect(validated.responseWriter).to.be.a('function');
+				expect(validated.schema).to.eql(schema);
+				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.false;
+
+			});
+
+			it('with publish options', () => {
+
+				// Given
+				const schema = avsc.Type.forSchema({
+					fields: [],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				});
+
+				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
+
+				const input: Options.IRouteConfiguration = {
+					publishOptions: {
+						eventName: 'internal.com.example.fullname'
+					},
+					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}'
+				};
+
+				// When
+				const validated = routeValidator.validate(input);
+
+				// Then
+				expect(validated.apiEndpoint).to.eql('/com/example/FullName');
+				expect(validated.fullSchemaName).to.eql('com.example.FullName');
+				expect(validated.method).to.eql('post');
+				expect(validated.middlewares).to.eql([]);
+				expect(validated.pathMapper).to.be.a('function');
+				expect(validated.publishOptions).to.eql({
+					eventName: 'internal.com.example.fullname'
+				});
+				expect(validated.responseWriter).to.be.a('function');
+				expect(validated.schema).to.eql(schema);
+				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.false;
+
+			});
+
+			it('for a sycnhronous callout', () => {
+
+				// Given
+				const schema = avsc.Type.forSchema({
+					fields: [],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				});
+
+				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
+
+				const input: Options.IRouteConfiguration = {
+					publishOptions: {
+						eventName: 'internal.com.example.fullname'
+					},
+					schema: '{"namespace":"com.example","name":"FullName","type":"record","fields":[]}',
+					synchronous: true
+				};
+
+				// When
+				const validated = routeValidator.validate(input);
+
+				// Then
+				expect(validated.apiEndpoint).to.eql('/com/example/FullName');
+				expect(validated.fullSchemaName).to.eql('com.example.FullName');
+				expect(validated.method).to.eql('post');
+				expect(validated.middlewares).to.eql([]);
+				expect(validated.pathMapper).to.be.a('function');
+				expect(validated.publishOptions).to.eql({
+					eventName: 'internal.com.example.fullname'
+				});
+				expect(validated.responseWriter).to.be.a('function');
+				expect(validated.schema).to.eql(schema);
+				expect(validated.schemaName).to.eql('FullName');
+				expect(validated.synchronous).to.be.true;
+
+			});
 
 		});
 
@@ -205,6 +408,19 @@ describe('index/validator/route', () => {
 
 			});
 
+			it('if synchronous is not a boolean', () => {
+
+				// Given
+				const options: any = {
+					synchronous: 2
+				};
+
+				// When
+				// Then
+				expect(() => routeValidator.validate(options)).to.throw(/^Invalid parameter: synchronous is not a boolean\.$/);
+
+			});
+
 		});
 
 	});
@@ -241,7 +457,9 @@ describe('index/validator/route', () => {
 			expect(response.status).to.have.been.calledOnce;
 			expect(response.status).to.have.been.calledWithExactly(400);
 			expect(response.send).to.have.been.calledOnce;
-			expect(response.send).to.have.been.calledWithExactly(expectedError);
+			expect(response.send).to.have.been.calledWithExactly({
+				error: 'error'
+			});
 
 		});
 
@@ -261,18 +479,15 @@ describe('index/validator/route', () => {
 			const request: any = sinon.stub();
 
 			const response: any = {
-				send: sinon.stub().returnsThis(),
-				status: sinon.stub().returnsThis()
+				sendStatus: sinon.stub()
 			};
 
 			// When
 			validatedoptions.responseWriter(server)(undefined, request, response);
 
 			// Then
-			expect(response.status).to.have.been.calledOnce;
-			expect(response.status).to.have.been.calledWithExactly(200);
-			expect(response.send).to.have.been.calledOnce;
-			expect(response.send).to.have.been.calledWithExactly('Ok.');
+			expect(response.sendStatus).to.have.been.calledOnce;
+			expect(response.sendStatus).to.have.been.calledWithExactly(200);
 
 		});
 

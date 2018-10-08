@@ -35,8 +35,7 @@
 
 import { Type } from 'avsc';
 import { Request, RequestHandler, Response } from 'express';
-
-import { Server } from './index/server';
+import http from 'http';
 
 /**
  * Handler
@@ -68,13 +67,50 @@ declare global {
 	namespace Orizuru {
 
 		// These open interfaces may be extended in an application-specific manner via declaration merging.
-		interface IHandler { }
 
-		interface IPublisher { }
+		/**
+		 * The Handler interface for consuming messages in a worker dyno created by {@link Server}.
+		 */
+		interface IHandler {
 
-		interface IServer { }
+			options: Options.IHandler;
+
+			handle(options: IHandlerFunction): Promise<void>;
+
+		}
+
+		/**
+		 * The Publisher interface for publishing messages based on Avro schemas.
+		 */
+		interface IPublisher {
+
+			options: Options.IPublisher;
+
+			publish(options: IPublishFunction): Promise<boolean>;
+
+		}
+
+		/**
+		 * The Server interface for creating routes in a web dyno based on Avro schemas.
+		 */
+		interface IServer {
+
+			options: Options.IServer;
+			publisher: Orizuru.IPublisher;
+			serverImpl: IServerImpl;
+
+			addRoute(options: IRouteConfiguration): this;
+			set(setting: string, val: any): this;
+			use(path: string, ...handlers: RequestHandler[]): this;
+
+			error(event: any): void;
+			info(event: any): void;
+
+		}
 
 		interface Context { }
+
+		interface Message { }
 
 		interface IHandlerFunction { }
 
@@ -82,10 +118,20 @@ declare global {
 
 		interface IPublishFunction { }
 
+		interface IRouteConfiguration { }
+
+		namespace Options {
+
+			interface IHandler { }
+
+			interface IPublisher { }
+
+			interface IServer { }
+
+		}
+
 		// These open interfaces may be extended in an application-specific manner via declaration merging.
 		namespace Transport {
-
-			interface IConnect { }
 
 			interface IPublish { }
 
@@ -96,34 +142,47 @@ declare global {
 
 }
 
+/**
+ * An Apache Avro Schema
+ */
+export interface AvroSchema extends Type {
+
+	/**
+	 * The name of the Apache Avro schema.
+	 * This should always be set.
+	 */
+	readonly name: string;
+
+}
+
 export interface ITransport {
 
 	/**
 	 * Connects to the transport layer.
 	 */
-	connect: (options: Options.Transport.IConnect) => Promise<boolean>;
+	connect: () => Promise<void>;
 
 	/**
 	 * Publishes a message.
 	 */
-	publish: (buffer: Buffer, options: Options.Transport.IPublish) => Promise<boolean>;
+	publish: (buffer: Buffer, options: Orizuru.Transport.IPublish) => Promise<boolean>;
 
 	/**
 	 * Subscribes to a message queue.
 	 */
-	subscribe: (handler: (content: Buffer) => Promise<void | Orizuru.IHandlerResponse>, options: Options.Transport.ISubscribe) => Promise<void>;
+	subscribe: (handler: (content: Buffer) => Promise<void | Orizuru.IHandlerResponse>, options: Orizuru.Transport.ISubscribe) => Promise<void>;
 
 	/**
 	 * Closes the transport gracefully.
 	 */
-	close: () => Promise<any>;
+	close: () => Promise<void>;
 
 }
 
 /**
- * The Orizuru messaage sent via the transport layer.
+ * The Orizuru message sent via the transport layer.
  */
-export interface IOrizuruMessage<C extends Orizuru.Context, M> {
+export interface IOrizuruMessage<C extends Orizuru.Context, M extends Orizuru.Message> {
 
 	/**
 	 * The context for the message.
@@ -134,26 +193,43 @@ export interface IOrizuruMessage<C extends Orizuru.Context, M> {
 	 * The message.
 	 */
 	message: M;
+
+}
+
+/**
+ * The server implementation.
+ * By default, we use [Express](https://expressjs.com/).
+ * This allows us to easily set up a mock implementation for testing.
+ */
+export interface IServerImpl {
+	(req: Request | http.IncomingMessage, res: Response | http.ServerResponse): void;
+	listen(port: number, callback?: (app: this) => void): http.Server;
+	set(setting: string, val: any): this;
+	use(path: string, ...handlers: RequestHandler[]): this;
 }
 
 export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMessage<C, M>) => Promise<void | Orizuru.IHandlerResponse>;
 
-export type ResponseWriterFunction = (server: Server) => (error: Error | undefined, request: Request, response: Response) => void;
+/**
+ * A function to write a response to the client.
+ *
+ * This function should always handle errors.
+ */
+export type ResponseWriterFunction = (server: Orizuru.IServer) => (error: Error | undefined, request: Request, response: Response) => void | Promise<void>;
 
 export declare namespace Options {
 
-	export interface IHandler extends Orizuru.IHandler {
-		transportConfig: Options.Transport.IConnect;
+	export interface IHandler extends Orizuru.Options.IHandler {
 		transport: ITransport;
 	}
 
-	export interface IPublisher extends Orizuru.IPublisher {
-		transportConfig: Options.Transport.IConnect;
+	export interface IPublisher extends Orizuru.Options.IPublisher {
 		transport: ITransport;
 	}
 
-	export interface IServer extends Orizuru.IServer {
-		transportConfig: Options.Transport.IConnect;
+	export interface IServer extends Orizuru.Options.IServer {
+		port: number;
+		server?: IServerImpl;
 		transport: ITransport;
 	}
 
@@ -169,44 +245,85 @@ export declare namespace Options {
 		subscribeOptions?: Options.Transport.ISubscribe;
 	}
 
-	export namespace Route {
+	export interface IRouteConfiguration extends Orizuru.IRouteConfiguration {
 
-		export interface IRaw {
-			endpoint?: string;
-			method?: string;
-			middleware?: RequestHandler[];
-			pathMapper?: (schemaNamespace: string) => string;
-			publishOptions?: Options.Transport.IPublish;
-			responseWriter?: ResponseWriterFunction;
-			schema: string | object | Type;
-		}
+		/**
+		 * The base endpoint for this route.
+		 *
+		 * By default, the endpoint is constructed using the namepace and name of the Avro schema.
+		 * This parameter adds a prefix to that endpoint.
+		 */
+		endpoint?: string;
 
-		export interface IValidated {
-			endpoint: string;
-			method: string;
-			middleware: RequestHandler[];
-			pathMapper: (schemaNamespace: string) => string;
-			publishOptions?: Options.Transport.IPublish;
-			responseWriter: ResponseWriterFunction;
-			schema: Type;
-		}
+		/**
+		 * The HTTP method for this route.
+		 */
+		method?: string;
+
+		/**
+		 * The middlewares for this route.
+		 */
+		middleware?: RequestHandler[];
+		pathMapper?: (schemaNamespace: string) => string;
+		publishOptions?: Options.Transport.IPublish;
+
+		/**
+		 * Function to determine how the response is written to the server.
+		 */
+		responseWriter?: ResponseWriterFunction;
+
+		/**
+		 * The Apache Avro schema that messages for this route should be validated against.
+		 */
+		schema: string | object | Type;
+
+		/**
+		 * Determines whether this process is dealt with synchronously.
+		 * By default, false.
+		 */
+		synchronous?: boolean;
 
 	}
 
 	export namespace Transport {
 
-		export interface IConnect extends Orizuru.Transport.IConnect {
-			url: string;
-		}
-
 		export interface IPublish extends Orizuru.Transport.IPublish {
-			eventName?: string;
+
+			/**
+			 * The name of the queue to which messages are published.
+			 */
+			eventName: string;
+
+			/**
+			 * The context for this message.
+			 *
+			 * In some cases, the transport layer determines where to publish the message from a context property.
+			 * The context is here for convenience so that the transport layer does not need to decode the supplied buffer.
+			 */
+			context?: Orizuru.Context;
+
+			/**
+			 * The raw message to be published.
+			 *
+			 * In some cases, the transport layer determines where to publish the message from a message property.
+			 * The message is here for convenience so that the transport layer does not need to decode the supplied buffer.
+			 */
 			message?: any;
-			schema?: Type;
+
+			/**
+			 * The Avro schema for this message.
+			 */
+			schema?: AvroSchema;
+
 		}
 
 		export interface ISubscribe extends Orizuru.Transport.ISubscribe {
+
+			/**
+			 * The name of the queue from which messages are consumed.
+			 */
 			eventName: string;
+
 		}
 
 	}

@@ -53,7 +53,7 @@ export class Transport {
 	/**
 	 * Decode a message using the transport schema.
 	 */
-	public decode<C extends Orizuru.Context, M>(schema: Type, content: Buffer): IOrizuruMessage<C, M> {
+	public decode<C extends Orizuru.Context, M extends Orizuru.Message>(schema: Type, content: Buffer): IOrizuruMessage<C, M> {
 
 		const decompiledTransportObject: any = this.compiledSchema.fromBuffer(content);
 
@@ -73,7 +73,7 @@ export class Transport {
 	/**
 	 * Encode a message using the transport schema.
 	 */
-	public encode<C extends Orizuru.Context, M>(schema: Type, { context, message }: IOrizuruMessage<C, M>) {
+	public encode<C extends Orizuru.Context, M extends Orizuru.Message>(schema: Type, { context, message }: IOrizuruMessage<C, M>) {
 
 		const compiledContextSchema = Type.forValue(context);
 		const transport = {

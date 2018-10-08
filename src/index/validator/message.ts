@@ -24,67 +24,37 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
-import _ from 'lodash';
-
-import { AvroSchema } from '../../..';
+import { AvroSchema } from '../..';
 
 /**
- * Parses the schema from a JSON string.
+ * Validates a message against the Apache Avro schema.
  * @private
  */
-function parseSchema(schema: string) {
+export class MessageValidator {
 
-	try {
-		return JSON.parse(schema);
-	} catch (error) {
-		throw new Error(`Invalid Avro Schema. Failed to parse JSON string: ${schema}.`);
-	}
+	/**
+	 * Validates a message.
+	 */
+	public validate(schema: AvroSchema, message: any) {
 
-}
+		const schemaErrors = new Array<string>();
 
-/**
- * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc library}.
- * @private
- */
-function compileSchema(uncompiledSchema: any) {
+		const valid = schema.isValid(message, {
+			errorHook: (path: any, value: any, type: any) => {
+				schemaErrors.push(`Invalid value (${value}) for path (${path.join()}) it should be of type (${type.typeName})`);
+			}
+		});
 
-	try {
-		return Type.forSchema(uncompiledSchema);
-	} catch (error) {
-		throw new Error(`Invalid Avro Schema. Schema error: ${error.message}.`);
-	}
+		if (!valid) {
 
-}
+			let errors = new Array<string>();
+			errors.push(`Error validating message for schema (${schema.name})`);
+			errors = errors.concat(schemaErrors);
 
-/**
- * Validates the Apache Avro schema.
- * @private
- */
-export class SchemaValidator {
+			const errorMessage = errors.join('\n');
+			throw new Error(errorMessage);
 
-	public validate(schema: any): AvroSchema {
-
-		if (!schema) {
-			throw new Error('Missing required avro-schema parameter: schema.');
 		}
-
-		if (_.isString(schema)) {
-			const parsedSchema = parseSchema(schema);
-			schema = compileSchema(parsedSchema);
-		} else if (_.isPlainObject(schema)) {
-			schema = compileSchema(schema);
-		} else if (_.hasIn(schema, 'toJSON') && _.hasIn(schema, 'toBuffer')) {
-			// Already have a compiled schema
-		} else {
-			throw new Error(`Invalid Avro Schema. Unexpected value type: ${typeof schema}.`);
-		}
-
-		if (!schema.name) {
-			throw new Error('Missing required string parameter: schema[name].');
-		}
-
-		return schema;
 
 	}
 

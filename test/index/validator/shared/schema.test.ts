@@ -44,53 +44,47 @@ describe('index/validator/shared/schema', () => {
 		it('should return the schema if it is valid (string format)', () => {
 
 			// Given
-			const config = {
-				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
-			};
+			const schema: string = '{"name":"com.example.FullName","type":"record","fields":[]}';
 
 			// When
-			const validatedConfig = schemaValidator.validate(config);
+			const validatedSchema = schemaValidator.validate(schema);
 
 			// Then
-			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
+			expect(validatedSchema).to.be.an.instanceof(avsc.Type);
 
 		});
 
 		it('should return the schema if it is valid (JSON format)', () => {
 
 			// Given
-			const config = {
-				schema: {
-					fields: [],
-					name: 'com.example.FullName',
-					type: 'record'
-				}
+			const schema: any = {
+				fields: [],
+				name: 'com.example.FullName',
+				type: 'record'
 			};
 
 			// When
-			const validatedConfig = schemaValidator.validate(config);
+			const validatedSchema = schemaValidator.validate(schema);
 
 			// Then
-			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
+			expect(validatedSchema).to.be.an.instanceof(avsc.Type);
 
 		});
 
 		it('should return the schema if it is valid (Compiled format)', () => {
 
 			// Given
-			const config = {
-				schema: avsc.Type.forSchema({
-					fields: [],
-					name: 'com.example.FullName',
-					type: 'record'
-				})
-			};
+			const schema = avsc.Type.forSchema({
+				fields: [],
+				name: 'com.example.FullName',
+				type: 'record'
+			});
 
 			// When
-			const validatedConfig = schemaValidator.validate(config);
+			const validatedSchema = schemaValidator.validate(schema);
 
 			// Then
-			expect(validatedConfig.schema).to.be.an.instanceof(avsc.Type);
+			expect(validatedSchema).to.be.an.instanceof(avsc.Type);
 
 		});
 
@@ -99,65 +93,55 @@ describe('index/validator/shared/schema', () => {
 			it('if no schema is provided', () => {
 
 				// Given
-				const config = {};
-
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
+				expect(() => schemaValidator.validate(undefined)).to.throw(/^Missing required avro-schema parameter: schema\.$/);
 
 			});
 
 			it('if the avro schema is invalid', () => {
 
 				// Given
-				const config = {
-					schema: 2
-				};
+				const schema: number = 2;
 
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
+				expect(() => schemaValidator.validate(schema)).to.throw(/^Invalid Avro Schema\. Unexpected value type: number\.$/);
 
 			});
 
 			it('if the avro schema JSON is invalid', () => {
 
 				// Given
-				const config = {
-					schema: '{"type":record","fields":[]}'
-				};
+				const schema: string = '{"type":record","fields":[]}';
 
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
+				expect(() => schemaValidator.validate(schema)).to.throw(/^Invalid Avro Schema\. Failed to parse JSON string: {"type":record","fields":\[]\}\.$/);
 
 			});
 
 			it('if the avro schema is invalid', () => {
 
 				// Given
-				const config = {
-					schema: {
-						name: 'com.example.FullName'
-					}
+				const schema: any = {
+					name: 'com.example.FullName'
 				};
 
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
+				expect(() => schemaValidator.validate(schema)).to.throw(/^Invalid Avro Schema\. Schema error: unknown type: undefined\.$/);
 
 			});
 
 			it('if the avro schema does not have a name property', () => {
 
 				// Given
-				const config = {
-					schema: '{"type":"record","fields":[]}'
-				};
+				const schema: string = '{"type":"record","fields":[]}';
 
 				// When
 				// Then
-				expect(() => schemaValidator.validate(config)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
+				expect(() => schemaValidator.validate(schema)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
 
 			});
 
