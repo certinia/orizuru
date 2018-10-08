@@ -73,7 +73,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="__global.orizuru.iserver.html" class="tsd-signature-type">IServer</a>
+						<a href="__global.orizuru.options.iserver.html" class="tsd-signature-type">IServer</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">IServer</span>
@@ -89,8 +89,9 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.iserver.html#port" class="tsd-kind-icon">port</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.iserver.html#server" class="tsd-kind-icon">server</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.iserver.html#transport" class="tsd-kind-icon">transport</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.iserver.html#transportconfig" class="tsd-kind-icon">transport<wbr>Config</a></li>
 							</ul>
 						</section>
 					</div>
@@ -99,22 +100,32 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="port" class="tsd-anchor"></a>
+					<h3>port</h3>
+					<div class="tsd-signature tsd-kind-icon">port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index.ts#L231">index.ts:231</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="server" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> server</h3>
+					<div class="tsd-signature tsd-kind-icon">server<span class="tsd-signature-symbol">:</span> <a href="iserverimpl.html" class="tsd-signature-type">IServerImpl</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index.ts#L232">index.ts:232</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="transport" class="tsd-anchor"></a>
 					<h3>transport</h3>
 					<div class="tsd-signature tsd-kind-icon">transport<span class="tsd-signature-symbol">:</span> <a href="itransport.html" class="tsd-signature-type">ITransport</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index.ts#L157">index.ts:157</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="transportconfig" class="tsd-anchor"></a>
-					<h3>transport<wbr>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">transport<wbr>Config<span class="tsd-signature-symbol">:</span> <a href="options.transport.iconnect.html" class="tsd-signature-type">IConnect</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index.ts#L156">index.ts:156</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index.ts#L233">index.ts:233</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -133,9 +144,6 @@
 						<a href="../modules/options.html">Options</a>
 					</li>
 					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external">
-						<a href="../modules/options.route.html">Options.<wbr>Route</a>
-					</li>
-					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external">
 						<a href="../modules/options.transport.html">Options.<wbr>Transport</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external tsd-is-not-exported">
@@ -146,6 +154,9 @@
 					</li>
 					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external tsd-is-not-exported">
 						<a href="../modules/__global.orizuru.html">__global.<wbr>Orizuru</a>
+					</li>
+					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external tsd-is-not-exported">
+						<a href="../modules/__global.orizuru.options.html">__global.<wbr>Orizuru.<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external tsd-is-not-exported">
 						<a href="../modules/__global.orizuru.transport.html">__global.<wbr>Orizuru.<wbr>Transport</a>
@@ -166,16 +177,22 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
 						<a href="options.ipublisher.html" class="tsd-kind-icon">IPublisher</a>
 					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+						<a href="options.irouteconfiguration.html" class="tsd-kind-icon">IRoute<wbr>Configuration</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-is-external">
 						<a href="options.iserver.html" class="tsd-kind-icon">IServer</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.iserver.html#transport" class="tsd-kind-icon">transport</a>
+								<a href="options.iserver.html#port" class="tsd-kind-icon">port</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.iserver.html#transportconfig" class="tsd-kind-icon">transport<wbr>Config</a>
+								<a href="options.iserver.html#server" class="tsd-kind-icon">server</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="options.iserver.html#transport" class="tsd-kind-icon">transport</a>
 							</li>
 						</ul>
 					</li>

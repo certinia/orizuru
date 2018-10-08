@@ -72,6 +72,11 @@
 						<p>The Server for creating routes in a web dyno based on Avro schemas.</p>
 					</div>
 					<p>Messages are consumed by <a href="handler.html">Handler</a>.</p>
+					<dl class="tsd-comment-tags">
+						<dt>extends</dt>
+						<dd><p>EventEmitter</p>
+						</dd>
+					</dl>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -100,12 +105,11 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server.html#publisher" class="tsd-kind-icon">publisher</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server.html#routeconfiguration" class="tsd-kind-icon">route<wbr>Configuration</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server.html#httpserver" class="tsd-kind-icon">http<wbr>Server</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#options" class="tsd-kind-icon">options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server.html#publisherimpl" class="tsd-kind-icon">publisher<wbr>Impl</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server.html#routerconfiguration" class="tsd-kind-icon">router<wbr>Configuration</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server.html#server-1" class="tsd-kind-icon">server</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#set" class="tsd-kind-icon">set</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#use" class="tsd-kind-icon">use</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server.html#validator" class="tsd-kind-icon">validator</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="server.html#error" class="tsd-kind-icon">ERROR</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="server.html#info" class="tsd-kind-icon">INFO</a></li>
@@ -114,17 +118,24 @@
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="server.html#publisher" class="tsd-kind-icon">publisher</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="server.html#serverimpl" class="tsd-kind-icon">server<wbr>Impl</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="server.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="server.html#addroute" class="tsd-kind-icon">add<wbr>Route</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="server.html#close" class="tsd-kind-icon">close</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="server.html#emit" class="tsd-kind-icon">emit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="server.html#error-1" class="tsd-kind-icon">error</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="server.html#eventnames" class="tsd-kind-icon">event<wbr>Names</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="server.html#getmaxlisteners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="server.html#getpublisher" class="tsd-kind-icon">get<wbr>Publisher</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="server.html#getserver" class="tsd-kind-icon">get<wbr>Server</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="server.html#info-1" class="tsd-kind-icon">info</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="server.html#listen" class="tsd-kind-icon">listen</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="server.html#listenercount" class="tsd-kind-icon">listener<wbr>Count</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="server.html#listeners" class="tsd-kind-icon">listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="server.html#off" class="tsd-kind-icon">off</a></li>
@@ -135,7 +146,9 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="server.html#rawlisteners" class="tsd-kind-icon">raw<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="server.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="server.html#removelistener" class="tsd-kind-icon">remove<wbr>Listener</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="server.html#set" class="tsd-kind-icon">set</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="server.html#setmaxlisteners" class="tsd-kind-icon">set<wbr>Max<wbr>Listeners</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="server.html#use" class="tsd-kind-icon">use</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="server.html#listenercount-1" class="tsd-kind-icon">listener<wbr>Count</a></li>
 							</ul>
 						</section>
@@ -154,7 +167,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L75">index/server.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L69">index/server.ts:69</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -181,37 +194,34 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="publisher" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> publisher</h3>
-					<div class="tsd-signature tsd-kind-icon">publisher<span class="tsd-signature-symbol">:</span> <a href="publisher.html" class="tsd-signature-type">Publisher</a></div>
+					<a name="httpserver" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagOptional">Optional</span> http<wbr>Server</h3>
+					<div class="tsd-signature tsd-kind-icon">http<wbr>Server<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">http.Server</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L71">index/server.ts:71</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L69">index/server.ts:69</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="options" class="tsd-anchor"></a>
+					<h3>options</h3>
+					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/options.iserver.html" class="tsd-signature-type">IServer</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L63">index/server.ts:63</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="routeconfiguration" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> route<wbr>Configuration</h3>
-					<div class="tsd-signature tsd-kind-icon">route<wbr>Configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<a name="publisherimpl" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> publisher<wbr>Impl</h3>
+					<div class="tsd-signature tsd-kind-icon">publisher<wbr>Impl<span class="tsd-signature-symbol">:</span> <a href="publisher.html" class="tsd-signature-type">Publisher</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L75">index/server.ts:75</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L64">index/server.ts:64</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-index-signature">
-								<h5><span class="tsd-signature-symbol">[</span>s: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">object</span></h5>
-								<ul class="tsd-parameters">
-									<li class="tsd-parameter-index-signature">
-										<h5><span class="tsd-signature-symbol">[</span>s: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">Type</span></h5>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="routerconfiguration" class="tsd-anchor"></a>
@@ -219,7 +229,7 @@
 					<div class="tsd-signature tsd-kind-icon">router<wbr>Configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L74">index/server.ts:74</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L67">index/server.ts:67</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -234,54 +244,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="server-1" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> server</h3>
-					<div class="tsd-signature tsd-kind-icon">server<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">express.Express</span></div>
+					<div class="tsd-signature tsd-kind-icon">server<span class="tsd-signature-symbol">:</span> <a href="../interfaces/iserverimpl.html" class="tsd-signature-type">IServerImpl</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L72">index/server.ts:72</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="set" class="tsd-anchor"></a>
-					<h3>set</h3>
-					<div class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L68">index/server.ts:68</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>setting<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Application</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>setting: <span class="tsd-signature-type">string</span></h5>
-											</li>
-											<li>
-												<h5>val: <span class="tsd-signature-type">any</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Application</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="use" class="tsd-anchor"></a>
-					<h3>use</h3>
-					<div class="tsd-signature tsd-kind-icon">use<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ApplicationRequestHandler</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Application</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L69">index/server.ts:69</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L65">index/server.ts:65</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -291,17 +257,17 @@
 					<div class="tsd-signature tsd-kind-icon">validator<span class="tsd-signature-symbol">:</span> <a href="routevalidator.html" class="tsd-signature-type">RouteValidator</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L73">index/server.ts:73</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L66">index/server.ts:66</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
 					<a name="error" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> ERROR</h3>
-					<div class="tsd-signature tsd-kind-icon">ERROR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;error_event&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">ERROR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unique symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L61">index/server.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L56">index/server.ts:56</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -313,10 +279,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
 					<a name="info" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> INFO</h3>
-					<div class="tsd-signature tsd-kind-icon">INFO<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;info_event&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">INFO<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unique symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L66">index/server.ts:66</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L61">index/server.ts:61</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -331,7 +297,7 @@
 					<div class="tsd-signature tsd-kind-icon">ROUTE_<wbr>METHOD<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;/Users/Matthew/GIT/financialforcedev/orizuru/src/index/server/routeMethod&quot;</span><span class="tsd-signature-symbol"> =&nbsp;ROUTE_METHOD</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L56">index/server.ts:56</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L51">index/server.ts:51</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -345,6 +311,62 @@
 							<li>Defined in /Users/Matthew/GIT/financialforcedev/orizuru/node_modules/@types/node/index.d.ts:1048</li>
 						</ul>
 					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="publisher" class="tsd-anchor"></a>
+					<h3>publisher</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> publisher<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="publisher.html" class="tsd-signature-type">Publisher</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L224">index/server.ts:224</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the message publisher.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="publisher.html" class="tsd-signature-type">Publisher</a></h4>
+							<p>The message publisher.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="serverimpl" class="tsd-anchor"></a>
+					<h3>server<wbr>Impl</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> serverImpl<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/iserverimpl.html" class="tsd-signature-type">IServerImpl</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L215">index/server.ts:215</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the server implementation.</p>
+								</div>
+								<p>Defaults to express.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><p>// returns the server implementation
+										server.serverImpl.listen(&#39;8080&#39;);</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/iserverimpl.html" class="tsd-signature-type">IServerImpl</a></h4>
+							<p>The server implementation.</p>
+						</li>
+					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -399,13 +421,13 @@
 					<a name="addroute" class="tsd-anchor"></a>
 					<h3>add<wbr>Route</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Route<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/options.route.iraw.html" class="tsd-signature-type">IRaw</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Route<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/options.irouteconfiguration.html" class="tsd-signature-type">IRouteConfiguration</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L123">index/server.ts:123</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L120">index/server.ts:120</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -416,10 +438,38 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>options: <a href="../interfaces/options.route.iraw.html" class="tsd-signature-type">IRaw</a></h5>
+									<h5>options: <a href="../interfaces/options.irouteconfiguration.html" class="tsd-signature-type">IRouteConfiguration</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="close" class="tsd-anchor"></a>
+					<h3>close</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">close<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L175">index/server.ts:175</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Stops the server from accepting new connections.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -461,7 +511,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L202">index/server.ts:202</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L232">index/server.ts:232</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -521,58 +571,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="getpublisher" class="tsd-anchor"></a>
-					<h3>get<wbr>Publisher</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Publisher<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="publisher.html" class="tsd-signature-type">Publisher</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L194">index/server.ts:194</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Returns the message publisher.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <a href="publisher.html" class="tsd-signature-type">Publisher</a></h4>
-							<p>The message publisher.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="getserver" class="tsd-anchor"></a>
-					<h3>get<wbr>Server</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Server<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Express</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L185">index/server.ts:185</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Returns the express server.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>example</dt>
-									<dd><p>// returns the express server
-										server.getServer().listen(&#39;8080&#39;);</p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Express</span></h4>
-							<p>The express server.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="info-1" class="tsd-anchor"></a>
 					<h3>info</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -582,7 +580,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/server.ts#L210">index/server.ts:210</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L240">index/server.ts:240</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -600,6 +598,35 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="listen" class="tsd-anchor"></a>
+					<h3>listen</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">listen<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Server</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L158">index/server.ts:158</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Starts the server listening for connections.
+									This also initialises the transport connection.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Server</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -979,6 +1006,37 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="set" class="tsd-anchor"></a>
+					<h3>set</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>setting<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L192">index/server.ts:192</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Assigns setting <code>name</code> to <code>value</code>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>setting: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>val: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 					<a name="setmaxlisteners" class="tsd-anchor"></a>
 					<h3>set<wbr>Max<wbr>Listeners</h3>
@@ -998,6 +1056,37 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>n: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="use" class="tsd-anchor"></a>
+					<h3>use</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">use<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, <span class="tsd-signature-symbol">...</span>handlers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RequestHandler</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index/server.ts#L200">index/server.ts:200</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Use the given request handlers for the specified paths.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>path: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>handlers: <span class="tsd-signature-type">RequestHandler</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
@@ -1050,33 +1139,6 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="commonvalidator.html" class="tsd-kind-icon">Common<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="handler.html" class="tsd-kind-icon">Handler</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="handlerfunctionvalidator.html" class="tsd-kind-icon">Handler<wbr>Function<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="handlervalidator.html" class="tsd-kind-icon">Handler<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="publishfunctionvalidator.html" class="tsd-kind-icon">Publish<wbr>Function<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="publisher.html" class="tsd-kind-icon">Publisher</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="publishervalidator.html" class="tsd-kind-icon">Publisher<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="routevalidator.html" class="tsd-kind-icon">Route<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="schemavalidator.html" class="tsd-kind-icon">Schema<wbr>Validator</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
@@ -1086,22 +1148,19 @@
 								<a href="server.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="server.html#publisher" class="tsd-kind-icon">publisher</a>
+								<a href="server.html#httpserver" class="tsd-kind-icon">http<wbr>Server</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="server.html#options" class="tsd-kind-icon">options</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="server.html#routeconfiguration" class="tsd-kind-icon">route<wbr>Configuration</a>
+								<a href="server.html#publisherimpl" class="tsd-kind-icon">publisher<wbr>Impl</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="server.html#routerconfiguration" class="tsd-kind-icon">router<wbr>Configuration</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="server.html#server-1" class="tsd-kind-icon">server</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="server.html#set" class="tsd-kind-icon">set</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="server.html#use" class="tsd-kind-icon">use</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="server.html#validator" class="tsd-kind-icon">validator</a>
@@ -1118,11 +1177,20 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
 								<a href="server.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a>
 							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="server.html#publisher" class="tsd-kind-icon">publisher</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="server.html#serverimpl" class="tsd-kind-icon">server<wbr>Impl</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 								<a href="server.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="server.html#addroute" class="tsd-kind-icon">add<wbr>Route</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="server.html#close" class="tsd-kind-icon">close</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 								<a href="server.html#emit" class="tsd-kind-icon">emit</a>
@@ -1137,13 +1205,10 @@
 								<a href="server.html#getmaxlisteners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="server.html#getpublisher" class="tsd-kind-icon">get<wbr>Publisher</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="server.html#getserver" class="tsd-kind-icon">get<wbr>Server</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="server.html#info-1" class="tsd-kind-icon">info</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="server.html#listen" class="tsd-kind-icon">listen</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 								<a href="server.html#listenercount" class="tsd-kind-icon">listener<wbr>Count</a>
@@ -1175,8 +1240,14 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 								<a href="server.html#removelistener" class="tsd-kind-icon">remove<wbr>Listener</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="server.html#set" class="tsd-kind-icon">set</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 								<a href="server.html#setmaxlisteners" class="tsd-kind-icon">set<wbr>Max<wbr>Listeners</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="server.html#use" class="tsd-kind-icon">use</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
 								<a href="server.html#listenercount-1" class="tsd-kind-icon">listener<wbr>Count</a>
@@ -1185,66 +1256,6 @@
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="servervalidator.html" class="tsd-kind-icon">Server<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="transport.html" class="tsd-kind-icon">Transport</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-has-type-parameter tsd-is-external">
-						<a href="../interfaces/iorizurumessage.html" class="tsd-kind-icon">IOrizuru<wbr>Message</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="../interfaces/itransport.html" class="tsd-kind-icon">ITransport</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-external">
-						<a href="../globals.html#handlerfunction" class="tsd-kind-icon">Handler<wbr>Function</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-is-external">
-						<a href="../globals.html#responsewriterfunction" class="tsd-kind-icon">Response<wbr>Writer<wbr>Function</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#delete" class="tsd-kind-icon">DELETE</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#get" class="tsd-kind-icon">GET</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#head" class="tsd-kind-icon">HEAD</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#options" class="tsd-kind-icon">OPTIONS</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-private tsd-is-not-exported">
-						<a href="../globals.html#parameter_api_schema_endpoint" class="tsd-kind-icon">PARAMETER_<wbr>API_<wbr>SCHEMA_<wbr>ENDPOINT</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#patch" class="tsd-kind-icon">PATCH</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#post" class="tsd-kind-icon">POST</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#put" class="tsd-kind-icon">PUT</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-private tsd-is-not-exported">
-						<a href="../globals.html#router" class="tsd-kind-icon">Router</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#trace" class="tsd-kind-icon">TRACE</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
-						<a href="../globals.html#compileschema" class="tsd-kind-icon">compile<wbr>Schema</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="../globals.html#create" class="tsd-kind-icon">create</a>
-					</li>
-					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-private">
-						<a href="../globals.html#messagehandler" class="tsd-kind-icon">message<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
-						<a href="../globals.html#parseschema" class="tsd-kind-icon">parse<wbr>Schema</a>
-					</li>
 				</ul>
 			</nav>
 		</div>
