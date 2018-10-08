@@ -189,7 +189,7 @@ describe('index/validator/route', () => {
 				expect(validated.middlewares).to.eql([]);
 				expect(validated.pathMapper).to.be.a('function');
 				expect(validated.publishOptions).to.eql({
-					eventName: 'api.v1.0.com.example.FullName'
+					eventName: 'api.v1_0.com.example.FullName'
 				});
 				expect(validated.responseWriter).to.be.a('function');
 				expect(validated.schema).to.eql(schema);

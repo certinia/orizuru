@@ -391,7 +391,7 @@ describe('RabbitMQ server', () => {
 				.expect(200);
 
 			// Then
-			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test/get',
+			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1_0.test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -431,7 +431,7 @@ describe('RabbitMQ server', () => {
 				.expect(200);
 
 			// Then
-			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test/get',
+			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1_0.test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -445,7 +445,7 @@ describe('RabbitMQ server', () => {
 			expect(response.data[0].message_count).to.eql(0);
 			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AKIBeyJuYW1lIjoiYXBpLnYxXzAudGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigItBQTgwMzQwNkRERjUzRkE3NTjigIvigIvigIvigIvigIs=');
 
-			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test2/get',
+			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1_0.test2/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -529,7 +529,7 @@ describe('RabbitMQ server', () => {
 				.expect(200);
 
 			// Then
-			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test/get',
+			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1_0.test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -569,7 +569,7 @@ describe('RabbitMQ server', () => {
 				.expect(200);
 
 			// Then
-			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test/get',
+			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1_0.test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -583,7 +583,7 @@ describe('RabbitMQ server', () => {
 			expect(response.data[0].message_count).to.eql(0);
 			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJABeyJuYW1lIjoidGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigIs1RTQ1REVDNkFCODA5M0JDQTbigIvigIvigIvigIvigIs=');
 
-			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test2/get',
+			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1_0.test2/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
