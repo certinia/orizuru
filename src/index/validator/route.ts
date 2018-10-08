@@ -91,7 +91,7 @@ function calculateApiEndpoint(schema: AvroSchema, endpoint: string, pathMapper: 
 }
 
 function calculateEventName(apiEndpoint: string) {
-	return apiEndpoint.substring(1).replace(/\//g, '.');
+	return apiEndpoint.substring(1).replace('.', '_').replace(/\//g, '.');
 }
 
 /**
