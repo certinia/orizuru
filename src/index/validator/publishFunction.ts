@@ -30,7 +30,7 @@ import { AvroSchema, Options } from '../..';
 
 import { SchemaValidator } from './shared/schema';
 
-export interface ValidatedPublishFunctionOptions<C extends Orizuru.Context, M> extends Options.IPublishFunction<C, M> {
+export interface ValidatedPublishFunctionOptions<C extends Orizuru.Context, M extends Orizuru.Message> extends Options.IPublishFunction<C, M> {
 	schema: AvroSchema;
 }
 
@@ -40,7 +40,7 @@ export interface ValidatedPublishFunctionOptions<C extends Orizuru.Context, M> e
  */
 export class PublishFunctionValidator {
 
-	public validate<C extends Orizuru.Context, M>(options: Options.IPublishFunction<C, M>) {
+	public validate<C extends Orizuru.Context, M extends Orizuru.Message>(options: Options.IPublishFunction<C, M>) {
 
 		if (!options) {
 			throw new Error('Missing required object parameter.');

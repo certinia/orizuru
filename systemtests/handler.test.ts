@@ -126,7 +126,7 @@ describe('RabbitMQ handler', () => {
 			// When
 			const testMessage = await new Promise((resolve) => {
 
-				const handlerFunc = async (message: IOrizuruMessage<any, any>) => {
+				const handlerFunc = async (message: IOrizuruMessage<Orizuru.Context, Orizuru.Message>) => {
 					resolve(message);
 				};
 
@@ -178,14 +178,14 @@ describe('RabbitMQ handler', () => {
 
 				const messages: any = [];
 
-				const handlerFunc1 = async (message: IOrizuruMessage<any, any>) => {
+				const handlerFunc1 = async (message: IOrizuruMessage<Orizuru.Context, Orizuru.Message>) => {
 					messages.push(message);
 					if (messages.length === 2) {
 						resolve(messages);
 					}
 				};
 
-				const handlerFunc2 = async (message: IOrizuruMessage<any, any>) => {
+				const handlerFunc2 = async (message: IOrizuruMessage<Orizuru.Context, Orizuru.Message>) => {
 					messages.push(message);
 					if (messages.length === 2) {
 						resolve(messages);

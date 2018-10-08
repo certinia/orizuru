@@ -99,7 +99,7 @@ export class Publisher extends EventEmitter {
 	 * // publishes a message
 	 * publisher.publish({ schema, message });
 	 */
-	public async publish<C extends Orizuru.Context, M>(options: Options.IPublishFunction<C, M>) {
+	public async publish<C extends Orizuru.Context, M extends Orizuru.Message>(options: Options.IPublishFunction<C, M>) {
 
 		let validatedOptions: ValidatedPublishFunctionOptions<C, M>;
 

@@ -77,6 +77,8 @@ declare global {
 
 		interface Context { }
 
+		interface Message { }
+
 		interface IHandlerFunction { }
 
 		interface IHandlerResponse { }
@@ -135,7 +137,7 @@ export interface ITransport {
 /**
  * The Orizuru message sent via the transport layer.
  */
-export interface IOrizuruMessage<C extends Orizuru.Context, M> {
+export interface IOrizuruMessage<C extends Orizuru.Context, M extends Orizuru.Message> {
 
 	/**
 	 * The context for the message.
@@ -146,6 +148,7 @@ export interface IOrizuruMessage<C extends Orizuru.Context, M> {
 	 * The message.
 	 */
 	message: M;
+
 }
 
 /**

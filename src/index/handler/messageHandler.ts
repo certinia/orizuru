@@ -33,7 +33,7 @@ import { Transport } from '../transport/transport';
 /**
  * @private
  */
-export function messageHandler<C extends Orizuru.Context, M>(handler: Handler, options: Options.IHandlerFunction<C, M>) {
+export function messageHandler<C extends Orizuru.Context, M extends Orizuru.Message>(handler: Handler, options: Options.IHandlerFunction<C, M>) {
 
 	const eventName = _.get(options.subscribeOptions, 'eventName') || _.get(options.schema, 'name');
 	const transport = new Transport();

@@ -19,6 +19,8 @@
 	- By default, `close` also closes the transport layer.
 	- By default, `listen` starts the server listening for connections specified in the `Options`.
 - All Orizuru `Handler` and `Publisher` instances must now be initialised by calling the `init()` function. This initialises the connection.
+- Added `Orizuru.Message` interface to the `IOrizuruMessage`.
+	- This acts as the base interface for all messages sent by Orizuru.
 
 - Events have now been converted to use symbols.
 - Add system tests to test core functionality.

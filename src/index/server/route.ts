@@ -49,7 +49,7 @@ export function create<T extends Server>(server: T, routeConfiguration: RouteCon
 				messageValidator.validate(schema, request.body);
 			} else {
 
-				const options: Options.IPublishFunction<Orizuru.Context, any> = {
+				const options: Options.IPublishFunction<Orizuru.Context, Orizuru.Message> = {
 					message: {
 						context: request.orizuru || {},
 						message: request.body
