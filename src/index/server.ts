@@ -60,7 +60,7 @@ export class Server extends EventEmitter {
 	public static readonly INFO = Symbol();
 
 	public readonly options: Options.IServer;
-	private readonly publisher: Publisher;
+	private readonly publisherImpl: Publisher;
 	private readonly server: IServerImpl;
 	private readonly validator: RouteValidator;
 	private readonly routerConfiguration: { [s: string]: express.Router };
@@ -88,7 +88,7 @@ export class Server extends EventEmitter {
 			this.server = options.server || express();
 
 			// Add the publisher
-			this.publisher = new Publisher(options);
+			this.publisherImpl = new Publisher(options);
 
 			// Make sure that  the publisher emits server error events
 			this.publisher.on(Publisher.ERROR, (...args: any[]) => {
@@ -208,10 +208,10 @@ export class Server extends EventEmitter {
 	 *
 	 * @example
 	 * // returns the server implementation
-	 * server.getServer().listen('8080');
+	 * server.serverImpl.listen('8080');
 	 * @returns The server implementation.
 	 */
-	public getServer() {
+	public get serverImpl() {
 		return this.server;
 	}
 
@@ -220,8 +220,8 @@ export class Server extends EventEmitter {
 	 *
 	 * @returns The message publisher.
 	 */
-	public getPublisher() {
-		return this.publisher;
+	public get publisher() {
+		return this.publisherImpl;
 	}
 
 	/**

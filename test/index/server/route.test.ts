@@ -130,9 +130,9 @@ describe('index/server/route', () => {
 
 				// Given
 				const server: any = {
-					getPublisher: sinon.stub().returns({
+					publisher: {
 						publish: sinon.stub().resolves()
-					})
+					}
 				};
 
 				const routeFunction = create(server, routeConfiguration);
@@ -159,7 +159,7 @@ describe('index/server/route', () => {
 
 				// Then
 				expect(routeConfiguration.responseWriter).to.have.been.calledOnce;
-				expect(server.getPublisher().publish).to.have.been.calledWithExactly({
+				expect(server.publisher.publish).to.have.been.calledWithExactly({
 					message: {
 						context: request.orizuru,
 						message: request.body
@@ -176,9 +176,9 @@ describe('index/server/route', () => {
 
 				// Given
 				const server: any = {
-					getPublisher: sinon.stub().returns({
+					publisher: {
 						publish: sinon.stub().resolves()
-					})
+					}
 				};
 
 				const routeFunction = create(server, routeConfiguration);
@@ -201,7 +201,7 @@ describe('index/server/route', () => {
 
 				// Then
 				expect(routeConfiguration.responseWriter).to.have.been.calledOnce;
-				expect(server.getPublisher().publish).to.have.been.calledWithExactly({
+				expect(server.publisher.publish).to.have.been.calledWithExactly({
 					message: {
 						context: {},
 						message: request.body
@@ -224,9 +224,9 @@ describe('index/server/route', () => {
 				const expectedError = new Error('Failed to publish message');
 
 				const server: any = {
-					getPublisher: sinon.stub().returns({
+					publisher: {
 						publish: sinon.stub().rejects(expectedError)
-					})
+					}
 				};
 
 				const routeFunction = create(server, routeConfiguration);
@@ -259,9 +259,9 @@ describe('index/server/route', () => {
 				const expectedError = new Error('Failed to publish message');
 
 				const server: any = {
-					getPublisher: sinon.stub().returns({
+					publisher: {
 						publish: sinon.stub().rejects(expectedError)
-					})
+					}
 				};
 
 				const routeFunction = create(server, routeConfiguration);

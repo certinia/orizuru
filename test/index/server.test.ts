@@ -381,7 +381,7 @@ describe('index/server', () => {
 
 	});
 
-	describe('getServer', () => {
+	describe('serverImpl', () => {
 
 		it('should return the express server', () => {
 
@@ -389,7 +389,7 @@ describe('index/server', () => {
 			const server = new Server(defaultOptions);
 
 			// When
-			const expressServer = server.getServer();
+			const expressServer = server.serverImpl;
 
 			// Then
 			expect(expressServer).to.not.be.undefined;
@@ -398,7 +398,7 @@ describe('index/server', () => {
 
 	});
 
-	describe('getPublisher', () => {
+	describe('publisher', () => {
 
 		it('should return the publisher', () => {
 
@@ -406,7 +406,7 @@ describe('index/server', () => {
 			const server = new Server(defaultOptions);
 
 			// When
-			const publisher = server.getPublisher();
+			const publisher = server.publisher;
 
 			// Then
 			expect(publisher).to.not.be.undefined;

@@ -58,7 +58,7 @@ export function create<T extends Server>(server: T, routeConfiguration: RouteCon
 					schema
 				};
 
-				await server.getPublisher().publish(options);
+				await server.publisher.publish(options);
 
 			}
 
