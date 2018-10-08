@@ -44,6 +44,7 @@ const Router = express.Router;
  * The Server for creating routes in a web dyno based on Avro schemas.
  *
  * Messages are consumed by {@link Handler}.
+ * @extends EventEmitter
  */
 export class Server extends EventEmitter {
 
@@ -116,7 +117,7 @@ export class Server extends EventEmitter {
 	/**
 	 * Adds a 'route' to the server.
 	 */
-	public addRoute(options: Options.Route.IRaw<this>) {
+	public addRoute(options: Options.IRouteConfiguration) {
 
 		// Validate the route options.
 		const validatedRouteConfiguration = this.validator.validate(options);
@@ -154,7 +155,7 @@ export class Server extends EventEmitter {
 	 * Starts the server listening for connections.
 	 * This also initialises the transport connection.
 	 */
-	public async listen(callback?: (app: Server) => void) {
+	public async listen(callback?: (app: Orizuru.IServer) => void) {
 
 		await this.options.transport.connect();
 
@@ -171,7 +172,7 @@ export class Server extends EventEmitter {
 	/**
 	 * Stops the server from accepting new connections.
 	 */
-	public async close(callback?: (app: Server) => void) {
+	public async close(callback?: (app: Orizuru.IServer) => void) {
 		if (this.httpServer) {
 			await this.httpServer.close(async () => {
 				this.info(`Stopped listening to connections on port: ${this.options.port}.`);

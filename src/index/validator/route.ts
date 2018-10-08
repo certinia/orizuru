@@ -29,24 +29,23 @@ import { BAD_REQUEST, OK } from 'http-status-codes';
 import _ from 'lodash';
 
 import { AvroSchema, Options, Request, Response, ResponseWriterFunction } from '../..';
-import { Server } from '../server';
 import * as RouteMethod from '../server/routeMethod';
 import { SchemaValidator } from './shared/schema';
 
-export interface RouteConfiguration<T extends Server> {
+export interface RouteConfiguration {
 	apiEndpoint: string;
 	fullSchemaName: string;
 	method: string;
 	middlewares: RequestHandler[];
 	pathMapper: (schemaNamespace: string) => string;
 	publishOptions: Options.Transport.IPublish;
-	responseWriter: ResponseWriterFunction<T>;
+	responseWriter: ResponseWriterFunction;
 	schema: AvroSchema;
 	schemaName: string;
 	synchronous?: boolean;
 }
 
-function defaultResponseWriter(server: Server) {
+function defaultResponseWriter(server: Orizuru.IServer) {
 
 	return (error: Error | undefined, request: Request, response: Response) => {
 		if (error) {
@@ -101,7 +100,7 @@ function calculateEventName(apiEndpoint: string) {
  */
 export class RouteValidator {
 
-	public validate<T extends Server>(options: Options.Route.IRaw<T>): RouteConfiguration<T> {
+	public validate(options: Options.IRouteConfiguration): RouteConfiguration {
 
 		if (!options) {
 			throw new Error('Missing required object parameter.');
@@ -153,7 +152,7 @@ export class RouteValidator {
 		const apiEndpoint = calculateApiEndpoint(avroSchema, endpoint, pathMapper);
 		const defaultEventName = calculateEventName(apiEndpoint);
 
-		const validatedOptions: RouteConfiguration<T> = {
+		const validatedOptions: RouteConfiguration = {
 			apiEndpoint,
 			fullSchemaName: avroSchema.name,
 			method: options.method || RouteMethod.POST,

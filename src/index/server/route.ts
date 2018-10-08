@@ -24,7 +24,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Options, Request, Response, Server } from '../..';
+import { Options, Request, Response } from '../..';
 
 import { MessageValidator } from '../validator/message';
 import { RouteConfiguration } from '../validator/route';
@@ -32,7 +32,7 @@ import { RouteConfiguration } from '../validator/route';
 /**
  * @private
  */
-export function create<T extends Server>(server: T, routeConfiguration: RouteConfiguration<T>) {
+export function create(server: Orizuru.IServer, routeConfiguration: RouteConfiguration) {
 
 	const messageValidator = new MessageValidator();
 	const writeResponse = routeConfiguration.responseWriter(server);

@@ -37,8 +37,6 @@ import { Type } from 'avsc';
 import { Request, RequestHandler, Response } from 'express';
 import http from 'http';
 
-import { Server } from './index/server';
-
 /**
  * Handler
  */
@@ -69,11 +67,46 @@ declare global {
 	namespace Orizuru {
 
 		// These open interfaces may be extended in an application-specific manner via declaration merging.
-		interface IHandler { }
 
-		interface IPublisher { }
+		/**
+		 * The Handler interface for consuming messages in a worker dyno created by {@link Server}.
+		 */
+		interface IHandler {
 
-		interface IServer { }
+			options: Options.IHandler;
+
+			handle(options: IHandlerFunction): Promise<void>;
+
+		}
+
+		/**
+		 * The Publisher interface for publishing messages based on Avro schemas.
+		 */
+		interface IPublisher {
+
+			options: Options.IPublisher;
+
+			publish(options: IPublishFunction): Promise<boolean>;
+
+		}
+
+		/**
+		 * The Server interface for creating routes in a web dyno based on Avro schemas.
+		 */
+		interface IServer {
+
+			options: Options.IServer;
+			publisher: Orizuru.IPublisher;
+			serverImpl: IServerImpl;
+
+			addRoute(options: IRouteConfiguration): this;
+			set(setting: string, val: any): this;
+			use(path: string, ...handlers: RequestHandler[]): this;
+
+			error(event: any): void;
+			info(event: any): void;
+
+		}
 
 		interface Context { }
 
@@ -84,6 +117,18 @@ declare global {
 		interface IHandlerResponse { }
 
 		interface IPublishFunction { }
+
+		interface IRouteConfiguration { }
+
+		namespace Options {
+
+			interface IHandler { }
+
+			interface IPublisher { }
+
+			interface IServer { }
+
+		}
 
 		// These open interfaces may be extended in an application-specific manner via declaration merging.
 		namespace Transport {
@@ -170,19 +215,19 @@ export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMe
  *
  * This function should always handle errors.
  */
-export type ResponseWriterFunction<T extends Server> = (server: T) => (error: Error | undefined, request: Request, response: Response) => void | Promise<void>;
+export type ResponseWriterFunction = (server: Orizuru.IServer) => (error: Error | undefined, request: Request, response: Response) => void | Promise<void>;
 
 export declare namespace Options {
 
-	export interface IHandler extends Orizuru.IHandler {
+	export interface IHandler extends Orizuru.Options.IHandler {
 		transport: ITransport;
 	}
 
-	export interface IPublisher extends Orizuru.IPublisher {
+	export interface IPublisher extends Orizuru.Options.IPublisher {
 		transport: ITransport;
 	}
 
-	export interface IServer extends Orizuru.IServer {
+	export interface IServer extends Orizuru.Options.IServer {
 		port: number;
 		server?: IServerImpl;
 		transport: ITransport;
@@ -200,47 +245,43 @@ export declare namespace Options {
 		subscribeOptions?: Options.Transport.ISubscribe;
 	}
 
-	export namespace Route {
+	export interface IRouteConfiguration extends Orizuru.IRouteConfiguration {
 
-		export interface IRaw<T extends Server> {
+		/**
+		 * The base endpoint for this route.
+		 *
+		 * By default, the endpoint is constructed using the namepace and name of the Avro schema.
+		 * This parameter adds a prefix to that endpoint.
+		 */
+		endpoint?: string;
 
-			/**
-			 * The base endpoint for this route.
-			 *
-			 * By default, the endpoint is constructed using the namepace and name of the Avro schema.
-			 * This parameter adds a prefix to that endpoint.
-			 */
-			endpoint?: string;
+		/**
+		 * The HTTP method for this route.
+		 */
+		method?: string;
 
-			/**
-			 * The HTTP method for this route.
-			 */
-			method?: string;
+		/**
+		 * The middlewares for this route.
+		 */
+		middleware?: RequestHandler[];
+		pathMapper?: (schemaNamespace: string) => string;
+		publishOptions?: Options.Transport.IPublish;
 
-			/**
-			 * The middlewares for this route.
-			 */
-			middleware?: RequestHandler[];
-			pathMapper?: (schemaNamespace: string) => string;
-			publishOptions?: Options.Transport.IPublish;
+		/**
+		 * Function to determine how the response is written to the server.
+		 */
+		responseWriter?: ResponseWriterFunction;
 
-			/**
-			 * Function to determine how the response is written to the server.
-			 */
-			responseWriter?: ResponseWriterFunction<T>;
+		/**
+		 * The Apache Avro schema that messages for this route should be validated against.
+		 */
+		schema: string | object | Type;
 
-			/**
-			 * The Apache Avro schema that messages for this route should be validated against.
-			 */
-			schema: string | object | Type;
-
-			/**
-			 * Determines whether this process is dealt with synchronously.
-			 * By default, false.
-			 */
-			synchronous?: boolean;
-
-		}
+		/**
+		 * Determines whether this process is dealt with synchronously.
+		 * By default, false.
+		 */
+		synchronous?: boolean;
 
 	}
 
