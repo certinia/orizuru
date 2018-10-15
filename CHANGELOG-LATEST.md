@@ -28,3 +28,6 @@
 	- Addition of RabbitMQ docker image using the same version as Travis CI.
 	- System test coverage is now included in Travis builds.
 - Add nyc.opts file to clean up the package.json.
+
+- Fix a regression where the context Avro schema could contain anonymous types.
+- Documentation is now generated using the master branch for definition links.
