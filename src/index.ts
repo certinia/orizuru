@@ -33,7 +33,7 @@
  * @see Publisher
  */
 
-import { Type } from 'avsc';
+import { Schema, Type } from 'avsc';
 import { Request, RequestHandler, Response } from 'express';
 import http from 'http';
 
@@ -234,14 +234,38 @@ export declare namespace Options {
 	}
 
 	export interface IPublishFunction<C extends Orizuru.Context, M> extends Orizuru.IPublishFunction {
+
+		/**
+		 * The message to be published.
+		 */
 		message: IOrizuruMessage<C, M>;
-		schema: string | object | Type;
+
+		/**
+		 * An [Apache Avro](https://avro.apache.org/docs/current/) schema.
+		 */
+		schema: Schema;
+
+		/**
+		 * The publish options required for the transport layer.
+		 */
 		publishOptions?: Options.Transport.IPublish;
 	}
 
 	export interface IHandlerFunction<C extends Orizuru.Context, M> extends Orizuru.IHandlerFunction {
-		schema: string | object | Type;
+
+		/**
+		 * An [Apache Avro](https://avro.apache.org/docs/current/) schema.
+		 */
+		schema: Schema;
+
+		/**
+		 * A function that handles this [Apache Avro](https://avro.apache.org/docs/current/) schema.
+		 */
 		handler: HandlerFunction<C, M>;
+
+		/**
+		 * The subscription options required for the transport layer.
+		 */
 		subscribeOptions?: Options.Transport.ISubscribe;
 	}
 
@@ -275,7 +299,7 @@ export declare namespace Options {
 		/**
 		 * The Apache Avro schema that messages for this route should be validated against.
 		 */
-		schema: string | object | Type;
+		schema: Schema;
 
 		/**
 		 * Determines whether this process is dealt with synchronously.
