@@ -75,7 +75,15 @@ describe('index/transport/transport', () => {
 		test: 'A'
 	};
 
-	const contextSchema = avsc.Type.forValue(context);
+	const contextSchema = avsc.Type.forSchema({
+		fields: [{
+			name: 'test',
+			type: 'string'
+		}],
+		name: 'Context1',
+		namespace: 'com.financialforce.orizuru',
+		type: 'record'
+	});
 
 	const transportContentsV1 = {
 		contextBuffer: contextSchema.toBuffer(context),
@@ -119,7 +127,7 @@ describe('index/transport/transport', () => {
 
 	describe('encode', () => {
 
-		it('writes the correct data (with context)', () => {
+		it('should write the correct data (with context)', () => {
 
 			// Given
 			const transport = new Transport();
@@ -134,7 +142,7 @@ describe('index/transport/transport', () => {
 
 	describe('decode', () => {
 
-		it('reads the correct data with the same schema', () => {
+		it('should read the correct data with the same schema', () => {
 
 			// Given
 			const transport = new Transport();
@@ -149,7 +157,7 @@ describe('index/transport/transport', () => {
 
 		});
 
-		it('is backward compatible', () => {
+		it('should be backward compatible', () => {
 
 			// Given
 			const transport = new Transport();
@@ -171,7 +179,7 @@ describe('index/transport/transport', () => {
 
 		});
 
-		it('is forward compatible', () => {
+		it('should be forward compatible', () => {
 
 			// Given
 			const transport = new Transport();
