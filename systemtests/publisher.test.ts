@@ -26,6 +26,7 @@
 
 import chai from 'chai';
 
+import { Type } from 'avsc';
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -56,14 +57,16 @@ describe('RabbitMQ publisher', () => {
 		it('schema using only name', async () => {
 
 			// Given
-			const schema = {
+			const expectedPayload = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCQAXsibmFtZSI6InRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLRjNBNTY2OTFGRDlCM0I5OEMy4oCL4oCL4oCL4oCL4oCL';
+
+			const schema = Type.forSchema({
 				fields: [{
 					name: 'id',
 					type: 'string'
 				}],
 				name: 'test',
 				type: 'record'
-			};
+			});
 
 			const publisher = new Publisher({
 				transport
@@ -76,7 +79,7 @@ describe('RabbitMQ publisher', () => {
 				message: {
 					context: {},
 					message: {
-						id: 'testId'
+						id: '​​​​​F3A56691FD9B3B98C2​​​​​'
 					}
 				},
 				schema
@@ -96,14 +99,16 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJABeyJuYW1lIjoidGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19Dgx0ZXN0SWQ=');
+			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
 
 		});
 
 		it('schema using name and namespace', async () => {
 
 			// Given
-			const schema = {
+			const expectedPayload = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCYAXsibmFtZSI6ImFwaS50ZXN0IiwidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W3sibmFtZSI6ImlkIiwidHlwZSI6InN0cmluZyJ9XX1iYOKAi+KAi+KAi+KAi+KAizNBRjlEMkQ2Qzg1NTA2RERBOeKAi+KAi+KAi+KAi+KAiw==';
+
+			const schema = Type.forSchema({
 				fields: [{
 					name: 'id',
 					type: 'string'
@@ -111,7 +116,7 @@ describe('RabbitMQ publisher', () => {
 				name: 'test',
 				namespace: 'api',
 				type: 'record'
-			};
+			});
 
 			const publisher = new Publisher({
 				transport
@@ -124,7 +129,7 @@ describe('RabbitMQ publisher', () => {
 				message: {
 					context: {},
 					message: {
-						id: 'testId'
+						id: '​​​​​3AF9D2D6C85506DDA9​​​​​'
 					}
 				},
 				schema
@@ -144,14 +149,16 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJgBeyJuYW1lIjoiYXBpLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfQ4MdGVzdElk');
+			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
 
 		});
 
 		it('schema using v1.0 within the namespace', async () => {
 
 			// Given
-			const schema = {
+			const expectedPayload = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCiAXsibmFtZSI6ImFwaS52MV8wLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLRDAwNkIyNUZFMjg4MTlBMzc14oCL4oCL4oCL4oCL4oCL';
+
+			const schema = Type.forSchema({
 				fields: [{
 					name: 'id',
 					type: 'string'
@@ -159,7 +166,7 @@ describe('RabbitMQ publisher', () => {
 				name: 'test',
 				namespace: 'api.v1_0',
 				type: 'record'
-			};
+			});
 
 			const publisher = new Publisher({
 				transport
@@ -172,7 +179,7 @@ describe('RabbitMQ publisher', () => {
 				message: {
 					context: {},
 					message: {
-						id: 'testId'
+						id: '​​​​​D006B25FE28819A375​​​​​'
 					}
 				},
 				schema
@@ -192,14 +199,16 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AKIBeyJuYW1lIjoiYXBpLnYxXzAudGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19Dgx0ZXN0SWQ=');
+			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
 
 		});
 
 		it('using publish options', async () => {
 
 			// Given
-			const schema = {
+			const expectedPayload = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCiAXsibmFtZSI6ImFwaS52MV8wLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLRUEzNEY5NEE1MjAzRDFDQTkw4oCL4oCL4oCL4oCL4oCL';
+
+			const schema = Type.forSchema({
 				fields: [{
 					name: 'id',
 					type: 'string'
@@ -207,7 +216,7 @@ describe('RabbitMQ publisher', () => {
 				name: 'test',
 				namespace: 'api.v1_0',
 				type: 'record'
-			};
+			});
 
 			const publisher = new Publisher({
 				transport
@@ -220,7 +229,7 @@ describe('RabbitMQ publisher', () => {
 				message: {
 					context: {},
 					message: {
-						id: 'testId'
+						id: '​​​​​EA34F94A5203D1CA90​​​​​'
 					}
 				},
 				publishOptions: {
@@ -243,7 +252,7 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AKIBeyJuYW1lIjoiYXBpLnYxXzAudGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19Dgx0ZXN0SWQ=');
+			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
 
 		});
 
@@ -254,7 +263,10 @@ describe('RabbitMQ publisher', () => {
 		it('with multiple publishers', async () => {
 
 			// Given
-			const schema1 = {
+			const expectedPayload1 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCYAXsibmFtZSI6ImFwaS50ZXN0IiwidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W3sibmFtZSI6ImlkIiwidHlwZSI6InN0cmluZyJ9XX1iYOKAi+KAi+KAi+KAi+KAizczMTY4RjczNzg4NjI0RTg0NuKAi+KAi+KAi+KAi+KAiw==';
+			const expectedPayload2 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCaAXsibmFtZSI6ImFwaS50ZXN0MiIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigIsyOUNDRjA5OTMxNjA5RDZCRkXigIvigIvigIvigIvigIs=';
+
+			const schema1 = Type.forSchema({
 				fields: [{
 					name: 'id',
 					type: 'string'
@@ -262,9 +274,9 @@ describe('RabbitMQ publisher', () => {
 				name: 'test',
 				namespace: 'api',
 				type: 'record'
-			};
+			});
 
-			const schema2 = {
+			const schema2 = Type.forSchema({
 				fields: [{
 					name: 'id',
 					type: 'string'
@@ -272,7 +284,7 @@ describe('RabbitMQ publisher', () => {
 				name: 'test2',
 				namespace: 'api',
 				type: 'record'
-			};
+			});
 
 			const publisher = new Publisher({
 				transport
@@ -285,7 +297,7 @@ describe('RabbitMQ publisher', () => {
 				message: {
 					context: {},
 					message: {
-						id: 'testId'
+						id: '​​​​​73168F73788624E846​​​​​'
 					}
 				},
 				schema: schema1
@@ -295,7 +307,7 @@ describe('RabbitMQ publisher', () => {
 				message: {
 					context: {},
 					message: {
-						id: 'testId2'
+						id: '​​​​​29CCF09931609D6BFE​​​​​'
 					}
 				},
 				schema: schema2
@@ -315,7 +327,7 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJgBeyJuYW1lIjoiYXBpLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfQ4MdGVzdElk');
+			expect(response.data[0].payload).to.eql(expectedPayload1, `\nactual ${Buffer.from(expectedPayload1, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
 
 			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test2/get',
 				{
@@ -330,7 +342,7 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJoBeyJuYW1lIjoiYXBpLnRlc3QyIiwidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W3sibmFtZSI6ImlkIiwidHlwZSI6InN0cmluZyJ9XX0QDnRlc3RJZDI=');
+			expect(response.data[0].payload).to.eql(expectedPayload2, `\nactual ${Buffer.from(expectedPayload2, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
 
 		});
 
