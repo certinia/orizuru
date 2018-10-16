@@ -27,7 +27,7 @@
 import chai from 'chai';
 
 import { Type } from 'avsc';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import _ from 'lodash';
 
 import { Transport } from '@financialforcedev/orizuru-transport-rabbitmq';
@@ -35,6 +35,12 @@ import { Transport } from '@financialforcedev/orizuru-transport-rabbitmq';
 import { ITransport, Publisher } from '../src';
 
 const expect = chai.expect;
+
+function payloadMessage(expectedPayload: string, response: AxiosResponse) {
+	const expected = Buffer.from(expectedPayload, 'base64').toString();
+	const actual = Buffer.from(response.data[0].payload, 'base64').toString();
+	return `\nexpected ${expected}\nactual ${actual}\nraw`;
+}
 
 describe('RabbitMQ publisher', () => {
 
@@ -99,7 +105,7 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
@@ -149,7 +155,7 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
@@ -199,7 +205,7 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
@@ -252,7 +258,7 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
@@ -327,7 +333,7 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload1, `\nactual ${Buffer.from(expectedPayload1, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload1, payloadMessage(expectedPayload1, response));
 
 			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test2/get',
 				{
@@ -342,7 +348,7 @@ describe('RabbitMQ publisher', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload2, `\nactual ${Buffer.from(expectedPayload2, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload2, payloadMessage(expectedPayload2, response));
 
 		});
 

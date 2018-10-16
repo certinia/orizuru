@@ -27,13 +27,19 @@
 import chai from 'chai';
 import request from 'supertest';
 
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 import { Transport } from '@financialforcedev/orizuru-transport-rabbitmq';
 
 import { ITransport, json, Server } from '../src';
 
 const expect = chai.expect;
+
+function payloadMessage(expectedPayload: string, response: AxiosResponse) {
+	const expected = Buffer.from(expectedPayload, 'base64').toString();
+	const actual = Buffer.from(response.data[0].payload, 'base64').toString();
+	return `\nexpected ${expected}\nactual ${actual}\nraw`;
+}
 
 describe('RabbitMQ server', () => {
 
@@ -260,7 +266,7 @@ describe('RabbitMQ server', () => {
 			expect(response.statusText).to.eql('OK', `Failed to check the message queue: ${JSON.stringify(response.data)}`);
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
@@ -298,7 +304,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload1, `\nactual ${Buffer.from(expectedPayload1, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload1, payloadMessage(expectedPayload1, response));
 
 			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test2/get',
 				{
@@ -312,7 +318,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload2, `\nactual ${Buffer.from(expectedPayload2, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload2, payloadMessage(expectedPayload2, response));
 
 		});
 
@@ -415,7 +421,7 @@ describe('RabbitMQ server', () => {
 			expect(response.statusText).to.eql('OK', `Failed to check the message queue: ${JSON.stringify(response.data)}`);
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
@@ -453,7 +459,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload1, `\nactual ${Buffer.from(expectedPayload1, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload1, payloadMessage(expectedPayload1, response));
 
 			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1_0.test2/get',
 				{
@@ -467,7 +473,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload2, `\nactual ${Buffer.from(expectedPayload2, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload2, payloadMessage(expectedPayload2, response));
 
 		});
 
@@ -558,7 +564,7 @@ describe('RabbitMQ server', () => {
 			expect(response.statusText).to.eql('OK', `Failed to check the message queue: ${JSON.stringify(response.data)}`);
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
@@ -596,7 +602,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload1, `\nactual ${Buffer.from(expectedPayload1, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload1, payloadMessage(expectedPayload1, response));
 
 			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/test2/get',
 				{
@@ -610,7 +616,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload2, `\nactual ${Buffer.from(expectedPayload2, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload2, payloadMessage(expectedPayload2, response));
 
 		});
 
@@ -707,7 +713,7 @@ describe('RabbitMQ server', () => {
 			expect(response.statusText).to.eql('OK', `Failed to check the message queue: ${JSON.stringify(response.data)}`);
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload, `\nactual ${Buffer.from(expectedPayload, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
@@ -745,7 +751,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload1, `\nactual ${Buffer.from(expectedPayload1, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload1, payloadMessage(expectedPayload1, response));
 
 			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/internal.api.v1.0.test2/get',
 				{
@@ -759,7 +765,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload2, `\nactual ${Buffer.from(expectedPayload2, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload2, payloadMessage(expectedPayload2, response));
 
 		});
 
@@ -845,7 +851,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload1, `\nactual ${Buffer.from(expectedPayload1, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload1, payloadMessage(expectedPayload1, response));
 
 			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/internal.api.v1.0.create/get',
 				{
@@ -859,7 +865,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql(expectedPayload2, `\nactual ${Buffer.from(expectedPayload2, 'base64').toString()}\nexpected ${Buffer.from(response.data[0].payload, 'base64').toString()}\nraw`);
+			expect(response.data[0].payload).to.eql(expectedPayload2, payloadMessage(expectedPayload2, response));
 
 		});
 
