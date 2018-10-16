@@ -32,6 +32,9 @@ import { AvroSchema, Options, Request, Response, ResponseWriterFunction } from '
 import * as RouteMethod from '../server/routeMethod';
 import { SchemaValidator } from './shared/schema';
 
+/**
+ * @private
+ */
 export interface RouteConfiguration {
 	apiEndpoint: string;
 	fullSchemaName: string;
@@ -90,10 +93,6 @@ function calculateApiEndpoint(schema: AvroSchema, endpoint: string, pathMapper: 
 	return endpoint + pathMapper(schemaNamespace) + '/' + schemaName;
 }
 
-function calculateEventName(apiEndpoint: string) {
-	return apiEndpoint.substring(1).replace('.', '_').replace(/\//g, '.');
-}
-
 /**
  * Validates the {@link Route} configuration.
  * @private
@@ -150,7 +149,6 @@ export class RouteValidator {
 		const endpoint = getEndpoint(options.endpoint);
 		const pathMapper = options.pathMapper || defaultPathMapper;
 		const apiEndpoint = calculateApiEndpoint(avroSchema, endpoint, pathMapper);
-		const defaultEventName = calculateEventName(apiEndpoint);
 
 		const validatedOptions: RouteConfiguration = {
 			apiEndpoint,
@@ -159,7 +157,7 @@ export class RouteValidator {
 			middlewares: options.middleware || [],
 			pathMapper: options.pathMapper || defaultPathMapper,
 			publishOptions: options.publishOptions || {
-				eventName: defaultEventName
+				eventName: avroSchema.name
 			},
 			responseWriter: options.responseWriter || defaultResponseWriter,
 			schema: avroSchema,

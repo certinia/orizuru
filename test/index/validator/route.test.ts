@@ -118,7 +118,7 @@ describe('index/validator/route', () => {
 				expect(validated.middlewares).to.eql([]);
 				expect(validated.pathMapper).to.be.a('function');
 				expect(validated.publishOptions).to.eql({
-					eventName: 'api.com.example.FullName'
+					eventName: 'com.example.FullName'
 				});
 				expect(validated.responseWriter).to.be.a('function');
 				expect(validated.schema).to.eql(schema);
@@ -154,7 +154,7 @@ describe('index/validator/route', () => {
 				expect(validated.middlewares).to.eql([]);
 				expect(validated.pathMapper).to.be.a('function');
 				expect(validated.publishOptions).to.eql({
-					eventName: 'api.com.example.FullName'
+					eventName: 'com.example.FullName'
 				});
 				expect(validated.responseWriter).to.be.a('function');
 				expect(validated.schema).to.eql(schema);
