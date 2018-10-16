@@ -220,16 +220,35 @@ export type ResponseWriterFunction = (server: Orizuru.IServer) => (error: Error 
 export declare namespace Options {
 
 	export interface IHandler extends Orizuru.Options.IHandler {
+
+		/**
+		 * The transport layer for the handler.
+		 */
 		transport: ITransport;
+
 	}
 
 	export interface IPublisher extends Orizuru.Options.IPublisher {
+
+		/**
+		 * The transport layer for the publisher.
+		 */
 		transport: ITransport;
+
 	}
 
 	export interface IServer extends Orizuru.Options.IServer {
+
+		/**
+		 * The port on which the server should listen.
+		 */
 		port: number;
+
 		server?: IServerImpl;
+
+		/**
+		 * The transport layer for the server.
+		 */
 		transport: ITransport;
 	}
 
@@ -274,8 +293,10 @@ export declare namespace Options {
 		/**
 		 * The base endpoint for this route.
 		 *
-		 * By default, the endpoint is constructed using the namepace and name of the Avro schema.
-		 * This parameter adds a prefix to that endpoint.
+		 * By default, the url is constructed using the namepace and name of the Avro schema.
+		 * This parameter adds a prefix to that url.
+		 *
+		 * Note that the transport eventName omits this part of the url.
 		 */
 		endpoint?: string;
 
@@ -288,7 +309,15 @@ export declare namespace Options {
 		 * The middlewares for this route.
 		 */
 		middleware?: RequestHandler[];
+
+		/**
+		 * A function that maps the schema namespace to the required format.
+		 */
 		pathMapper?: (schemaNamespace: string) => string;
+
+		/**
+		 * The publish options required for the transport layer.
+		 */
 		publishOptions?: Options.Transport.IPublish;
 
 		/**
