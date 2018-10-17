@@ -141,7 +141,18 @@ describe('index/validator/shared/schema', () => {
 
 				// When
 				// Then
-				expect(() => schemaValidator.validate(schema)).to.throw(/^Missing required string parameter: schema\[name\]\.$/);
+				expect(() => schemaValidator.validate(schema)).to.throw(/^Invalid Avro Schema\. Schema error: missing name property in schema: {"type":"record","fields":\[\]}\.$/);
+
+			});
+
+			it('if a nested avro schema does not have a name property', () => {
+
+				// Given
+				const schema: string = '{"name":"Test","type":"record","fields":[{"name":"TestRecord","type":{"type":"record","fields":[{"name":"teststring","type":"string"}]}}]}';
+
+				// When
+				// Then
+				expect(() => schemaValidator.validate(schema)).to.throw(/^Invalid Avro Schema\. Schema error: missing name property in schema: {"type":"record","fields":\[{"name":"teststring","type":"string"}\]}\.$/);
 
 			});
 

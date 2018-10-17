@@ -24,7 +24,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Type } from 'avsc';
+import { ForSchemaOptions, Schema, Type } from 'avsc';
 import { readJsonSync } from 'fs-extra';
 import { resolve } from 'path';
 import { IOrizuruMessage } from '../..';
@@ -75,16 +75,43 @@ export class Transport {
 	 */
 	public encode<C extends Orizuru.Context, M extends Orizuru.Message>(schema: Type, { context, message }: IOrizuruMessage<C, M>) {
 
-		const compiledContextSchema = Type.forValue(context);
+		const validatedContextSchema = this.getContextSchema(context);
+
 		const transport = {
-			contextBuffer: compiledContextSchema.toBuffer(context),
-			contextSchema: JSON.stringify(compiledContextSchema),
+			contextBuffer: validatedContextSchema.toBuffer(context),
+			contextSchema: JSON.stringify(validatedContextSchema),
 			messageBuffer: schema.toBuffer(message),
 			messageSchema: JSON.stringify(schema)
 		};
 
 		return this.compiledSchema.toBuffer(transport);
 
+	}
+
+	private getContextSchema(context: any) {
+
+		const compiledContextSchema = Type.forValue(context, {
+			typeHook: this.getTypeHook()
+		});
+
+		// Validate that the schema has no anonymous types
+		return Type.forSchema(compiledContextSchema, {
+			noAnonymousTypes: true
+		});
+
+	}
+
+	private getTypeHook(): (schema: Schema, opts: ForSchemaOptions) => Type {
+
+		let i = 1;
+		return (schema: any) => {
+			if (schema.type && (schema.type === 'enum' || schema.type === 'fixed' || schema.type === 'record') && !schema.name) {
+				schema.namespace = 'com.financialforce.orizuru';
+				schema.name = `Context${i}`;
+				i++;
+			}
+			return Type.forSchema(schema);
+		};
 	}
 
 }

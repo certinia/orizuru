@@ -27,13 +27,19 @@
 import chai from 'chai';
 import request from 'supertest';
 
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 import { Transport } from '@financialforcedev/orizuru-transport-rabbitmq';
 
 import { ITransport, json, Server } from '../src';
 
 const expect = chai.expect;
+
+function payloadMessage(expectedPayload: string, response: AxiosResponse) {
+	const expected = Buffer.from(expectedPayload, 'base64').toString();
+	const actual = Buffer.from(response.data[0].payload, 'base64').toString();
+	return `\nexpected ${expected}\nactual ${actual}\nraw`;
+}
 
 describe('RabbitMQ server', () => {
 
@@ -109,7 +115,7 @@ describe('RabbitMQ server', () => {
 				await request(app)
 					.get('/api/test')
 					.send({
-						id: 'testId'
+						id: '​​​​​0A9A874B658EAAD9A2​​​​​'
 					})
 					.expect(200);
 
@@ -165,7 +171,7 @@ describe('RabbitMQ server', () => {
 				await request(app)
 					.post('/api/test')
 					.send({
-						id: 'testId'
+						id: '​​​​​917A48E336A50DCCFF​​​​​'
 					})
 					.expect(200);
 
@@ -232,11 +238,13 @@ describe('RabbitMQ server', () => {
 		it('should publish a message to the correct queue', async () => {
 
 			// Given
+			const expectedPayload = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCYAXsibmFtZSI6ImFwaS50ZXN0IiwidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W3sibmFtZSI6ImlkIiwidHlwZSI6InN0cmluZyJ9XX1iYOKAi+KAi+KAi+KAi+KAi0I4NjA4QzExODdEMUEzQzQyMeKAi+KAi+KAi+KAi+KAiw==';
+
 			// When
 			await request(app)
 				.post('/api/test')
 				.send({
-					id: 'testId'
+					id: '​​​​​B8608C1187D1A3C421​​​​​'
 				})
 				.expect(200);
 
@@ -258,25 +266,28 @@ describe('RabbitMQ server', () => {
 			expect(response.statusText).to.eql('OK', `Failed to check the message queue: ${JSON.stringify(response.data)}`);
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJgBeyJuYW1lIjoiYXBpLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfQ4MdGVzdElk');
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
 		it('should publish messages to the correct queues', async () => {
 
 			// Given
+			const expectedPayload1 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCYAXsibmFtZSI6ImFwaS50ZXN0IiwidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W3sibmFtZSI6ImlkIiwidHlwZSI6InN0cmluZyJ9XX1iYOKAi+KAi+KAi+KAi+KAizU0NjRFNjJFMzU2MkQ1QkQ3M+KAi+KAi+KAi+KAi+KAiw==';
+			const expectedPayload2 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCaAXsibmFtZSI6ImFwaS50ZXN0MiIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigIs4OTJGRkUxOTYxRDY2NjhFMjLigIvigIvigIvigIvigIs=';
+
 			// When
 			await request(app)
 				.post('/api/test')
 				.send({
-					id: 'testId'
+					id: '​​​​​5464E62E3562D5BD73​​​​​'
 				})
 				.expect(200);
 
 			await request(app)
 				.post('/api/test2')
 				.send({
-					id: 'testId'
+					id: '​​​​​892FFE1961D6668E22​​​​​'
 				})
 				.expect(200);
 
@@ -293,7 +304,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJgBeyJuYW1lIjoiYXBpLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfQ4MdGVzdElk');
+			expect(response.data[0].payload).to.eql(expectedPayload1, payloadMessage(expectedPayload1, response));
 
 			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.test2/get',
 				{
@@ -307,7 +318,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJoBeyJuYW1lIjoiYXBpLnRlc3QyIiwidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W3sibmFtZSI6ImlkIiwidHlwZSI6InN0cmluZyJ9XX0ODHRlc3RJZA==');
+			expect(response.data[0].payload).to.eql(expectedPayload2, payloadMessage(expectedPayload2, response));
 
 		});
 
@@ -382,6 +393,8 @@ describe('RabbitMQ server', () => {
 		it('should publish a message to the correct queue', async () => {
 
 			// Given
+			const expectedPayload = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCiAXsibmFtZSI6ImFwaS52MV8wLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLREQyNDU4QzNGRDI2RDk2QUJF4oCL4oCL4oCL4oCL4oCL';
+
 			// When
 			await request(app)
 				.post('/api/v1.0/test')
@@ -391,7 +404,7 @@ describe('RabbitMQ server', () => {
 				.expect(200);
 
 			// Then
-			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test/get',
+			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1_0.test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -408,13 +421,16 @@ describe('RabbitMQ server', () => {
 			expect(response.statusText).to.eql('OK', `Failed to check the message queue: ${JSON.stringify(response.data)}`);
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AKIBeyJuYW1lIjoiYXBpLnYxXzAudGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigItERDI0NThDM0ZEMjZEOTZBQkXigIvigIvigIvigIvigIs=');
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
 		it('should publish messages to the correct queues', async () => {
 
 			// Given
+			const expectedPayload1 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCiAXsibmFtZSI6ImFwaS52MV8wLnRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLQUE4MDM0MDZEREY1M0ZBNzU44oCL4oCL4oCL4oCL4oCL';
+			const expectedPayload2 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCkAXsibmFtZSI6ImFwaS52MV8wLnRlc3QyIiwidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W3sibmFtZSI6ImlkIiwidHlwZSI6InN0cmluZyJ9XX1iYOKAi+KAi+KAi+KAi+KAi0JBN0Y0REJFN0IwQTYzOUREROKAi+KAi+KAi+KAi+KAiw==';
+
 			// When
 			await request(app)
 				.post('/api/v1.0/test')
@@ -431,7 +447,7 @@ describe('RabbitMQ server', () => {
 				.expect(200);
 
 			// Then
-			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test/get',
+			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1_0.test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -443,9 +459,9 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AKIBeyJuYW1lIjoiYXBpLnYxXzAudGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigItBQTgwMzQwNkRERjUzRkE3NTjigIvigIvigIvigIvigIs=');
+			expect(response.data[0].payload).to.eql(expectedPayload1, payloadMessage(expectedPayload1, response));
 
-			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test2/get',
+			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1_0.test2/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -457,7 +473,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AKQBeyJuYW1lIjoiYXBpLnYxXzAudGVzdDIiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLQkE3RjREQkU3QjBBNjM5RERE4oCL4oCL4oCL4oCL4oCL');
+			expect(response.data[0].payload).to.eql(expectedPayload2, payloadMessage(expectedPayload2, response));
 
 		});
 
@@ -520,6 +536,8 @@ describe('RabbitMQ server', () => {
 		it('should publish a message to the correct queue', async () => {
 
 			// Given
+			const expectedPayload = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCQAXsibmFtZSI6InRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLNEI1MzQ0RjBGNzQwQzEwNDEz4oCL4oCL4oCL4oCL4oCL';
+
 			// When
 			await request(app)
 				.post('/api/v1.0/test')
@@ -529,7 +547,7 @@ describe('RabbitMQ server', () => {
 				.expect(200);
 
 			// Then
-			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test/get',
+			const response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -546,13 +564,16 @@ describe('RabbitMQ server', () => {
 			expect(response.statusText).to.eql('OK', `Failed to check the message queue: ${JSON.stringify(response.data)}`);
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJABeyJuYW1lIjoidGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigIs0QjUzNDRGMEY3NDBDMTA0MTPigIvigIvigIvigIvigIs=');
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
 		it('should publish messages to the correct queues', async () => {
 
 			// Given
+			const expectedPayload1 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCQAXsibmFtZSI6InRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLNUU0NURFQzZBQjgwOTNCQ0E24oCL4oCL4oCL4oCL4oCL';
+			const expectedPayload2 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCSAXsibmFtZSI6InRlc3QyIiwidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W3sibmFtZSI6ImlkIiwidHlwZSI6InN0cmluZyJ9XX1iYOKAi+KAi+KAi+KAi+KAi0UwRjQyODdEQkYzMEQ2MDY1NuKAi+KAi+KAi+KAi+KAiw==';
+
 			// When
 			await request(app)
 				.post('/api/v1.0/test')
@@ -569,7 +590,7 @@ describe('RabbitMQ server', () => {
 				.expect(200);
 
 			// Then
-			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test/get',
+			let response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/test/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -581,9 +602,9 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJABeyJuYW1lIjoidGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigIs1RTQ1REVDNkFCODA5M0JDQTbigIvigIvigIvigIvigIs=');
+			expect(response.data[0].payload).to.eql(expectedPayload1, payloadMessage(expectedPayload1, response));
 
-			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/api.v1.0.test2/get',
+			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/test2/get',
 				{
 					ackmode: 'ack_requeue_false',
 					count: '1',
@@ -595,7 +616,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJIBeyJuYW1lIjoidGVzdDIiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLRTBGNDI4N0RCRjMwRDYwNjU24oCL4oCL4oCL4oCL4oCL');
+			expect(response.data[0].payload).to.eql(expectedPayload2, payloadMessage(expectedPayload2, response));
 
 		});
 
@@ -664,6 +685,8 @@ describe('RabbitMQ server', () => {
 		it('should publish a message to the correct queue', async () => {
 
 			// Given
+			const expectedPayload = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCQAXsibmFtZSI6InRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLMUMwQTNCOEY2OURDRjk5Mjc04oCL4oCL4oCL4oCL4oCL';
+
 			// When
 			await request(app)
 				.post('/api/v1.0/test')
@@ -690,13 +713,16 @@ describe('RabbitMQ server', () => {
 			expect(response.statusText).to.eql('OK', `Failed to check the message queue: ${JSON.stringify(response.data)}`);
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJABeyJuYW1lIjoidGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigIsxQzBBM0I4RjY5RENGOTkyNzTigIvigIvigIvigIvigIs=');
+			expect(response.data[0].payload).to.eql(expectedPayload, payloadMessage(expectedPayload, response));
 
 		});
 
 		it('should publish messages to the correct queues', async () => {
 
 			// Given
+			const expectedPayload1 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCQAXsibmFtZSI6InRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLMTJFQTYyQjVGRUMwRUFBMTZE4oCL4oCL4oCL4oCL4oCL';
+			const expectedPayload2 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCSAXsibmFtZSI6InRlc3QyIiwidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W3sibmFtZSI6ImlkIiwidHlwZSI6InN0cmluZyJ9XX1iYOKAi+KAi+KAi+KAi+KAizYwNzU5ODNCMTUwOTZGOTZBMOKAi+KAi+KAi+KAi+KAiw==';
+
 			// When
 			await request(app)
 				.post('/api/v1.0/test')
@@ -725,7 +751,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJABeyJuYW1lIjoidGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigIsxMkVBNjJCNUZFQzBFQUExNkTigIvigIvigIvigIvigIs=');
+			expect(response.data[0].payload).to.eql(expectedPayload1, payloadMessage(expectedPayload1, response));
 
 			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/internal.api.v1.0.test2/get',
 				{
@@ -739,7 +765,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJIBeyJuYW1lIjoidGVzdDIiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLNjA3NTk4M0IxNTA5NkY5NkEw4oCL4oCL4oCL4oCL4oCL');
+			expect(response.data[0].payload).to.eql(expectedPayload2, payloadMessage(expectedPayload2, response));
 
 		});
 
@@ -794,6 +820,9 @@ describe('RabbitMQ server', () => {
 		it('should publish messages to the correct queues', async () => {
 
 			// Given
+			const expectedPayload1 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCQAXsibmFtZSI6InRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLMEIwMEVCQzFBRDhCQ0IwNzk14oCL4oCL4oCL4oCL4oCL';
+			const expectedPayload2 = 'lAF7Im5hbWUiOiJjb20uZmluYW5jaWFsZm9yY2Uub3JpenVydS5Db250ZXh0MSIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOltdfQCQAXsibmFtZSI6InRlc3QiLCJ0eXBlIjoicmVjb3JkIiwiZmllbGRzIjpbeyJuYW1lIjoiaWQiLCJ0eXBlIjoic3RyaW5nIn1dfWJg4oCL4oCL4oCL4oCL4oCLNkVEOTJEMTkzMkNERERGMERC4oCL4oCL4oCL4oCL4oCL';
+
 			// When
 			await request(app)
 				.get('/api/v1.0/test')
@@ -822,7 +851,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJABeyJuYW1lIjoidGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigIswQjAwRUJDMUFEOEJDQjA3OTXigIvigIvigIvigIvigIs=');
+			expect(response.data[0].payload).to.eql(expectedPayload1, payloadMessage(expectedPayload1, response));
 
 			response = await axios.post('http://guest:guest@localhost:15672/api/queues/%2F/internal.api.v1.0.create/get',
 				{
@@ -836,7 +865,7 @@ describe('RabbitMQ server', () => {
 
 			expect(response.data.length).to.eql(1);
 			expect(response.data[0].message_count).to.eql(0);
-			expect(response.data[0].payload).to.eql('OnsidHlwZSI6InJlY29yZCIsImZpZWxkcyI6W119AJABeyJuYW1lIjoidGVzdCIsInR5cGUiOiJyZWNvcmQiLCJmaWVsZHMiOlt7Im5hbWUiOiJpZCIsInR5cGUiOiJzdHJpbmcifV19YmDigIvigIvigIvigIvigIs2RUQ5MkQxOTMyQ0REREYwRELigIvigIvigIvigIvigIs=');
+			expect(response.data[0].payload).to.eql(expectedPayload2, payloadMessage(expectedPayload2, response));
 
 		});
 
