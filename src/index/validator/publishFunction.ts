@@ -30,6 +30,9 @@ import { AvroSchema, Options } from '../..';
 
 import { SchemaValidator } from './shared/schema';
 
+/**
+ * @private
+ */
 export interface ValidatedPublishFunctionOptions<C extends Orizuru.Context, M extends Orizuru.Message> extends Options.IPublishFunction<C, M> {
 	schema: AvroSchema;
 }

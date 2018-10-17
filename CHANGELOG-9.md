@@ -1,6 +1,6 @@
 # @financialforcedev/orizuru
 
-## 9.0.0-0 PREMAJOR
+## 9.0.0-2 PREMAJOR
 
 - The `addRoute` method can now add synchronous APIs.
 	- Set the `synchronous` property to `true` in the route options to do this.
@@ -26,3 +26,6 @@
 	- Addition of RabbitMQ docker image using the same version as Travis CI.
 	- System test coverage is now included in Travis builds.
 - Add nyc.opts file to clean up the package.json.
+
+- Fix a regression where the context Avro schema could contain anonymous types.
+- Documentation is now generated using the master branch for definition links.

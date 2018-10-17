@@ -45,12 +45,17 @@ function parseSchema(schema: string) {
 
 /**
  * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc library}.
+ *
+ * This also checks that the schema has no anonymous types which can cause problems with other
+ * [Apache Avro](https://avro.apache.org/) implementations.
  * @private
  */
 function compileSchema(uncompiledSchema: any) {
 
 	try {
-		return Type.forSchema(uncompiledSchema);
+		return Type.forSchema(uncompiledSchema, {
+			noAnonymousTypes: true
+		});
 	} catch (error) {
 		throw new Error(`Invalid Avro Schema. Schema error: ${error.message}.`);
 	}
@@ -58,7 +63,7 @@ function compileSchema(uncompiledSchema: any) {
 }
 
 /**
- * Validates the Apache Avro schema.
+ * Validates the [Apache Avro](https://avro.apache.org/) schema.
  * @private
  */
 export class SchemaValidator {
@@ -75,13 +80,10 @@ export class SchemaValidator {
 		} else if (_.isPlainObject(schema)) {
 			schema = compileSchema(schema);
 		} else if (_.hasIn(schema, 'toJSON') && _.hasIn(schema, 'toBuffer')) {
-			// Already have a compiled schema
+			// Compile the schema to validate that there are no anonymous types.
+			schema = compileSchema(schema);
 		} else {
 			throw new Error(`Invalid Avro Schema. Unexpected value type: ${typeof schema}.`);
-		}
-
-		if (!schema.name) {
-			throw new Error('Missing required string parameter: schema[name].');
 		}
 
 		return schema;
