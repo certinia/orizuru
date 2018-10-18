@@ -110,15 +110,16 @@
 					<div class="tsd-signature tsd-kind-icon">endpoint<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index.ts#L256">index.ts:256</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L301">index.ts:301</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>The base endpoint for this route.</p>
 						</div>
-						<p>By default, the endpoint is constructed using the namepace and name of the Avro schema.
-						This parameter adds a prefix to that endpoint.</p>
+						<p>By default, the url is constructed using the namepace and name of the Avro schema.
+						This parameter adds a prefix to that url.</p>
+						<p>Note that the transport eventName omits this part of the url.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -127,7 +128,7 @@
 					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index.ts#L261">index.ts:261</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L306">index.ts:306</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -142,7 +143,7 @@
 					<div class="tsd-signature tsd-kind-icon">middleware<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RequestHandler</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index.ts#L266">index.ts:266</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L311">index.ts:311</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -157,9 +158,14 @@
 					<div class="tsd-signature tsd-kind-icon">path<wbr>Mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index.ts#L267">index.ts:267</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L316">index.ts:316</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A function that maps the schema namespace to the required format.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="publishoptions" class="tsd-anchor"></a>
@@ -167,9 +173,14 @@
 					<div class="tsd-signature tsd-kind-icon">publish<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="options.transport.ipublish.html" class="tsd-signature-type">IPublish</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index.ts#L268">index.ts:268</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L321">index.ts:321</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The publish options required for the transport layer.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="responsewriter" class="tsd-anchor"></a>
@@ -177,7 +188,7 @@
 					<div class="tsd-signature tsd-kind-icon">response<wbr>Writer<span class="tsd-signature-symbol">:</span> <a href="../globals.html#responsewriterfunction" class="tsd-signature-type">ResponseWriterFunction</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index.ts#L273">index.ts:273</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L326">index.ts:326</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -189,10 +200,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="schema" class="tsd-anchor"></a>
 					<h3>schema</h3>
-					<div class="tsd-signature tsd-kind-icon">schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Type</span></div>
+					<div class="tsd-signature tsd-kind-icon">schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Schema</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index.ts#L278">index.ts:278</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L331">index.ts:331</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -207,7 +218,7 @@
 					<div class="tsd-signature tsd-kind-icon">synchronous<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/a5d68c1/src/index.ts#L284">index.ts:284</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L337">index.ts:337</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
