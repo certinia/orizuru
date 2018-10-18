@@ -1,6 +1,6 @@
 # @financialforcedev/orizuru
 
-## 9.0.0-2 PREMAJOR
+## 9.0.0
 
 - The `addRoute` method can now add synchronous APIs.
 	- Set the `synchronous` property to `true` in the route options to do this.
