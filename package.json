@@ -1,6 +1,6 @@
 {
 	"name": "@financialforcedev/orizuru",
-	"version": "8.0.2",
+	"version": "9.0.0",
 	"description": "Streamlined communication between Heroku dynos / other worker processes",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -44,7 +44,7 @@
 		"lodash": "^4.17.11"
 	},
 	"devDependencies": {
-		"@financialforcedev/orizuru-transport-rabbitmq": "^5.0.0-0",
+		"@financialforcedev/orizuru-transport-rabbitmq": "^5.0.0",
 		"@types/chai": "^4.1.6",
 		"@types/chai-as-promised": "^7.1.0",
 		"@types/mocha": "^5.2.5",

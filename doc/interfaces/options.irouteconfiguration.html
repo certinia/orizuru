@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IValidated | @financialforcedev/orizuru</title>
+	<title>IRouteConfiguration | @financialforcedev/orizuru</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -59,13 +59,10 @@
 					<a href="../modules/options.html">Options</a>
 				</li>
 				<li>
-					<a href="../modules/options.route.html">Route</a>
-				</li>
-				<li>
-					<a href="options.route.ivalidated.html">IValidated</a>
+					<a href="options.irouteconfiguration.html">IRouteConfiguration</a>
 				</li>
 			</ul>
-			<h1>Interface IValidated</h1>
+			<h1>Interface IRouteConfiguration</h1>
 		</div>
 	</div>
 </header>
@@ -76,7 +73,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IValidated</span>
+						<a href="__global.orizuru.irouteconfiguration.html" class="tsd-signature-type">IRouteConfiguration</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">IRouteConfiguration</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -87,13 +89,14 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.route.ivalidated.html#endpoint" class="tsd-kind-icon">endpoint</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.route.ivalidated.html#method" class="tsd-kind-icon">method</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.route.ivalidated.html#middleware" class="tsd-kind-icon">middleware</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.route.ivalidated.html#pathmapper" class="tsd-kind-icon">path<wbr>Mapper</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.route.ivalidated.html#publishoptions" class="tsd-kind-icon">publish<wbr>Options</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.route.ivalidated.html#responsewriter" class="tsd-kind-icon">response<wbr>Writer</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.route.ivalidated.html#schema" class="tsd-kind-icon">schema</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.irouteconfiguration.html#endpoint" class="tsd-kind-icon">endpoint</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.irouteconfiguration.html#method" class="tsd-kind-icon">method</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.irouteconfiguration.html#middleware" class="tsd-kind-icon">middleware</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.irouteconfiguration.html#pathmapper" class="tsd-kind-icon">path<wbr>Mapper</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.irouteconfiguration.html#publishoptions" class="tsd-kind-icon">publish<wbr>Options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.irouteconfiguration.html#responsewriter" class="tsd-kind-icon">response<wbr>Writer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.irouteconfiguration.html#schema" class="tsd-kind-icon">schema</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="options.irouteconfiguration.html#synchronous" class="tsd-kind-icon">synchronous</a></li>
 							</ul>
 						</section>
 					</div>
@@ -103,63 +106,65 @@
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="endpoint" class="tsd-anchor"></a>
-					<h3>endpoint</h3>
-					<div class="tsd-signature tsd-kind-icon">endpoint<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> endpoint</h3>
+					<div class="tsd-signature tsd-kind-icon">endpoint<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index.ts#L185">index.ts:185</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L301">index.ts:301</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The base endpoint for this route.</p>
+						</div>
+						<p>By default, the url is constructed using the namepace and name of the Avro schema.
+						This parameter adds a prefix to that url.</p>
+						<p>Note that the transport eventName omits this part of the url.</p>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="method" class="tsd-anchor"></a>
-					<h3>method</h3>
-					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> method</h3>
+					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index.ts#L186">index.ts:186</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L306">index.ts:306</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The HTTP method for this route.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="middleware" class="tsd-anchor"></a>
-					<h3>middleware</h3>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> middleware</h3>
 					<div class="tsd-signature tsd-kind-icon">middleware<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RequestHandler</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index.ts#L187">index.ts:187</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L311">index.ts:311</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The middlewares for this route.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="pathmapper" class="tsd-anchor"></a>
-					<h3>path<wbr>Mapper</h3>
-					<div class="tsd-signature tsd-kind-icon">path<wbr>Mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> path<wbr>Mapper</h3>
+					<div class="tsd-signature tsd-kind-icon">path<wbr>Mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index.ts#L188">index.ts:188</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L316">index.ts:316</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>schemaNamespace<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>schemaNamespace: <span class="tsd-signature-type">string</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A function that maps the schema namespace to the required format.</p>
+						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -168,29 +173,60 @@
 					<div class="tsd-signature tsd-kind-icon">publish<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="options.transport.ipublish.html" class="tsd-signature-type">IPublish</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index.ts#L189">index.ts:189</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L321">index.ts:321</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The publish options required for the transport layer.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="responsewriter" class="tsd-anchor"></a>
-					<h3>response<wbr>Writer</h3>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> response<wbr>Writer</h3>
 					<div class="tsd-signature tsd-kind-icon">response<wbr>Writer<span class="tsd-signature-symbol">:</span> <a href="../globals.html#responsewriterfunction" class="tsd-signature-type">ResponseWriterFunction</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index.ts#L190">index.ts:190</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L326">index.ts:326</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Function to determine how the response is written to the server.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="schema" class="tsd-anchor"></a>
 					<h3>schema</h3>
-					<div class="tsd-signature tsd-kind-icon">schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Type</span></div>
+					<div class="tsd-signature tsd-kind-icon">schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Schema</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index.ts#L191">index.ts:191</a></li>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L331">index.ts:331</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The Apache Avro schema that messages for this route should be validated against.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="synchronous" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> synchronous</h3>
+					<div class="tsd-signature tsd-kind-icon">synchronous<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index.ts#L337">index.ts:337</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Determines whether this process is dealt with synchronously.
+							By default, false.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -203,11 +239,8 @@
 					<li class="label tsd-is-external">
 						<span>Externals</span>
 					</li>
-					<li class=" tsd-kind-module tsd-is-external">
+					<li class="current tsd-kind-module tsd-is-external">
 						<a href="../modules/options.html">Options</a>
-					</li>
-					<li class="current tsd-kind-module tsd-parent-kind-module tsd-is-external">
-						<a href="../modules/options.route.html">Options.<wbr>Route</a>
 					</li>
 					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external">
 						<a href="../modules/options.transport.html">Options.<wbr>Transport</a>
@@ -222,6 +255,9 @@
 						<a href="../modules/__global.orizuru.html">__global.<wbr>Orizuru</a>
 					</li>
 					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external tsd-is-not-exported">
+						<a href="../modules/__global.orizuru.options.html">__global.<wbr>Orizuru.<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external tsd-is-not-exported">
 						<a href="../modules/__global.orizuru.transport.html">__global.<wbr>Orizuru.<wbr>Transport</a>
 					</li>
 				</ul>
@@ -229,38 +265,53 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
-						<a href="options.route.iraw.html" class="tsd-kind-icon">IRaw</a>
+						<a href="options.ihandler.html" class="tsd-kind-icon">IHandler</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+						<a href="options.ihandlerfunction.html" class="tsd-kind-icon">IHandler<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+						<a href="options.ipublishfunction.html" class="tsd-kind-icon">IPublish<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+						<a href="options.ipublisher.html" class="tsd-kind-icon">IPublisher</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-is-external">
-						<a href="options.route.ivalidated.html" class="tsd-kind-icon">IValidated</a>
+						<a href="options.irouteconfiguration.html" class="tsd-kind-icon">IRoute<wbr>Configuration</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.route.ivalidated.html#endpoint" class="tsd-kind-icon">endpoint</a>
+								<a href="options.irouteconfiguration.html#endpoint" class="tsd-kind-icon">endpoint</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.route.ivalidated.html#method" class="tsd-kind-icon">method</a>
+								<a href="options.irouteconfiguration.html#method" class="tsd-kind-icon">method</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.route.ivalidated.html#middleware" class="tsd-kind-icon">middleware</a>
+								<a href="options.irouteconfiguration.html#middleware" class="tsd-kind-icon">middleware</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.route.ivalidated.html#pathmapper" class="tsd-kind-icon">path<wbr>Mapper</a>
+								<a href="options.irouteconfiguration.html#pathmapper" class="tsd-kind-icon">path<wbr>Mapper</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.route.ivalidated.html#publishoptions" class="tsd-kind-icon">publish<wbr>Options</a>
+								<a href="options.irouteconfiguration.html#publishoptions" class="tsd-kind-icon">publish<wbr>Options</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.route.ivalidated.html#responsewriter" class="tsd-kind-icon">response<wbr>Writer</a>
+								<a href="options.irouteconfiguration.html#responsewriter" class="tsd-kind-icon">response<wbr>Writer</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="options.route.ivalidated.html#schema" class="tsd-kind-icon">schema</a>
+								<a href="options.irouteconfiguration.html#schema" class="tsd-kind-icon">schema</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="options.irouteconfiguration.html#synchronous" class="tsd-kind-icon">synchronous</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+						<a href="options.iserver.html" class="tsd-kind-icon">IServer</a>
+					</li>
 				</ul>
 			</nav>
 		</div>

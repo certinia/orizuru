@@ -69,7 +69,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Validates the Apache Avro schema.</p>
+						<p>Validates the <a href="https://avro.apache.org/">Apache Avro</a> schema.</p>
 					</div>
 				</div>
 			</section>
@@ -100,22 +100,22 @@
 					<a name="validate" class="tsd-anchor"></a>
 					<h3>validate</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">validate<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">validate<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/avroschema.html" class="tsd-signature-type">AvroSchema</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/286e3c7/src/index/validator/shared/schema.ts#L64">index/validator/shared/schema.ts:64</a></li>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index/validator/shared/schema.ts#L71">index/validator/shared/schema.ts:71</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>config: <span class="tsd-signature-type">any</span></h5>
+									<h5>schema: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/avroschema.html" class="tsd-signature-type">AvroSchema</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -131,30 +131,6 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="commonvalidator.html" class="tsd-kind-icon">Common<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="handler.html" class="tsd-kind-icon">Handler</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="handlerfunctionvalidator.html" class="tsd-kind-icon">Handler<wbr>Function<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="handlervalidator.html" class="tsd-kind-icon">Handler<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="publishfunctionvalidator.html" class="tsd-kind-icon">Publish<wbr>Function<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="publisher.html" class="tsd-kind-icon">Publisher</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="publishervalidator.html" class="tsd-kind-icon">Publisher<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="routevalidator.html" class="tsd-kind-icon">Route<wbr>Validator</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-is-private">
@@ -167,69 +143,6 @@
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-class">
-						<a href="server.html" class="tsd-kind-icon">Server</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="servervalidator.html" class="tsd-kind-icon">Server<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="transport.html" class="tsd-kind-icon">Transport</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-has-type-parameter tsd-is-external">
-						<a href="../interfaces/iorizurumessage.html" class="tsd-kind-icon">IOrizuru<wbr>Message</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="../interfaces/itransport.html" class="tsd-kind-icon">ITransport</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-external">
-						<a href="../globals.html#handlerfunction" class="tsd-kind-icon">Handler<wbr>Function</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-is-external">
-						<a href="../globals.html#responsewriterfunction" class="tsd-kind-icon">Response<wbr>Writer<wbr>Function</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#delete" class="tsd-kind-icon">DELETE</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#get" class="tsd-kind-icon">GET</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#head" class="tsd-kind-icon">HEAD</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#options" class="tsd-kind-icon">OPTIONS</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-private tsd-is-not-exported">
-						<a href="../globals.html#parameter_api_schema_endpoint" class="tsd-kind-icon">PARAMETER_<wbr>API_<wbr>SCHEMA_<wbr>ENDPOINT</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#patch" class="tsd-kind-icon">PATCH</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#post" class="tsd-kind-icon">POST</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#put" class="tsd-kind-icon">PUT</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-private tsd-is-not-exported">
-						<a href="../globals.html#router" class="tsd-kind-icon">Router</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#trace" class="tsd-kind-icon">TRACE</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
-						<a href="../globals.html#compileschema" class="tsd-kind-icon">compile<wbr>Schema</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="../globals.html#create" class="tsd-kind-icon">create</a>
-					</li>
-					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-private">
-						<a href="../globals.html#messagehandler" class="tsd-kind-icon">message<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
-						<a href="../globals.html#parseschema" class="tsd-kind-icon">parse<wbr>Schema</a>
-					</li>
 				</ul>
 			</nav>
 		</div>
