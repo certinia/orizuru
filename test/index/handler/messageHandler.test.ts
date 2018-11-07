@@ -95,7 +95,7 @@ describe('index/handler/messageHandler', () => {
 		config.handler.returns(null);
 
 		// When
-		await messageHandler(server, config)(new Buffer('test'));
+		await messageHandler(server, config)(Buffer.from('test'));
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
@@ -117,7 +117,7 @@ describe('index/handler/messageHandler', () => {
 
 		// When
 
-		await messageHandler(server, config)(new Buffer('test'));
+		await messageHandler(server, config)(Buffer.from('test'));
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
@@ -138,7 +138,7 @@ describe('index/handler/messageHandler', () => {
 		config.handler.throws(expectedError);
 
 		// When
-		await messageHandler(server, config)(new Buffer('test'));
+		await messageHandler(server, config)(Buffer.from('test'));
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
@@ -157,7 +157,7 @@ describe('index/handler/messageHandler', () => {
 		sinon.stub(Transport.prototype, 'decode').throws(expectedError);
 
 		// When
-		messageHandler(server, config)(new Buffer('test'));
+		messageHandler(server, config)(Buffer.from('test'));
 
 		// Then
 		expect(server.info).to.have.been.calledOnce;
