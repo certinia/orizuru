@@ -1,5 +1,11 @@
 # @financialforcedev/orizuru
 
+## 9.0.1
+
+- Update all dependencies to latest versions
+- Remove all references to `new Buffer()`
+	- Use `Buffer.from()` instead to remove deprecation warnings
+
 ## 9.0.0
 
 - The `addRoute` method can now add synchronous APIs.
