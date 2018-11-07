@@ -48,6 +48,9 @@ const Router = express.Router;
  */
 export class Server extends EventEmitter {
 
+	/**
+	 * The HTTP methods (DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, TRACE)
+	 */
 	public static readonly ROUTE_METHOD = ROUTE_METHOD;
 
 	/**
