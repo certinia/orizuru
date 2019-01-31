@@ -374,7 +374,7 @@ export declare namespace Options {
 			 * In some cases, the transport layer determines where to publish the message from a message property.
 			 * The message is here for convenience so that the transport layer does not need to decode the supplied buffer.
 			 */
-			message?: any;
+			message?: Orizuru.Message;
 
 			/**
 			 * The Avro schema for this message.
