@@ -32,6 +32,7 @@ import sinonChai from 'sinon-chai';
 import { Transport } from '../../../src/index/transport/transport';
 
 import { messageHandler } from '../../../src/index/handler/messageHandler';
+import { IOrizuruMessage } from '../../../src';
 
 chai.use(sinonChai);
 
@@ -41,6 +42,7 @@ describe('index/handler/messageHandler', () => {
 
 	let config: any;
 	let server: any;
+	let content: IOrizuruMessage<Orizuru.Context, Orizuru.Message>;
 
 	beforeEach(() => {
 
@@ -62,6 +64,13 @@ describe('index/handler/messageHandler', () => {
 			})
 		};
 
+		content = {
+			context: {},
+			message: {
+				name: 'test'
+			}
+		};
+
 	});
 
 	afterEach(() => {
@@ -71,7 +80,7 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler resolves', async () => {
 
 		// Given
-		sinon.stub(Transport.prototype, 'decode').returns('test');
+		sinon.stub(Transport.prototype, 'decode').returns(content);
 
 		config.handler.resolves();
 
@@ -80,7 +89,7 @@ describe('index/handler/messageHandler', () => {
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
-		expect(config.handler).to.have.been.calledWithExactly('test');
+		expect(config.handler).to.have.been.calledWithExactly(content);
 		expect(server.info).to.have.been.calledOnce;
 		expect(server.info).to.have.been.calledWithExactly('Handler received com.example.FullName event.');
 		expect(server.error).to.not.have.been.called;
@@ -90,7 +99,7 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler returns', async () => {
 
 		// Given
-		sinon.stub(Transport.prototype, 'decode').returns('test');
+		sinon.stub(Transport.prototype, 'decode').returns(content);
 
 		config.handler.returns(null);
 
@@ -99,7 +108,7 @@ describe('index/handler/messageHandler', () => {
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
-		expect(config.handler).to.have.been.calledWithExactly('test');
+		expect(config.handler).to.have.been.calledWithExactly(content);
 		expect(server.info).to.have.been.calledOnce;
 		expect(server.info).to.have.been.calledWithExactly('Handler received com.example.FullName event.');
 		expect(server.error).to.not.have.been.called;
@@ -109,7 +118,7 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler rejects', async () => {
 
 		// Given
-		sinon.stub(Transport.prototype, 'decode').returns('test');
+		sinon.stub(Transport.prototype, 'decode').returns(content);
 
 		const expectedError = new Error('Error');
 
@@ -121,7 +130,7 @@ describe('index/handler/messageHandler', () => {
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
-		expect(config.handler).to.have.been.calledWithExactly('test');
+		expect(config.handler).to.have.been.calledWithExactly(content);
 		expect(server.info).to.have.been.calledOnce;
 		expect(server.info).to.have.been.calledWithExactly('Handler received com.example.FullName event.');
 		expect(server.error).to.have.been.calledWithExactly(expectedError);
@@ -131,7 +140,7 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler throws', async () => {
 
 		// Given
-		sinon.stub(Transport.prototype, 'decode').returns('test');
+		sinon.stub(Transport.prototype, 'decode').returns(content);
 
 		const expectedError = new Error('Error');
 
@@ -142,7 +151,7 @@ describe('index/handler/messageHandler', () => {
 
 		// Then
 		expect(config.handler).to.have.been.calledOnce;
-		expect(config.handler).to.have.been.calledWithExactly('test');
+		expect(config.handler).to.have.been.calledWithExactly(content);
 		expect(server.info).to.have.been.calledOnce;
 		expect(server.info).to.have.been.calledWithExactly('Handler received com.example.FullName event.');
 		expect(server.error).to.have.been.calledWithExactly(expectedError);

@@ -33,7 +33,7 @@ import avsc from 'avsc';
 import { EventEmitter } from 'events';
 import _ from 'lodash';
 
-import { ITransport, Options } from '../../src';
+import { AvroSchema, ITransport, Options } from '../../src';
 import { Transport } from '../../src/index/transport/transport';
 import { MessageValidator } from '../../src/index/validator/message';
 import { PublishFunctionValidator } from '../../src/index/validator/publishFunction';
@@ -125,7 +125,7 @@ describe('index/publisher', () => {
 			// Given
 			sinon.stub(MessageValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			sinon.stub(Transport.prototype, 'encode').returns('encodedMessage');
+			sinon.stub(Transport.prototype, 'encode').returns(Buffer.from('encodedMessage'));
 
 			const publisher = new Publisher(options);
 
@@ -137,7 +137,7 @@ describe('index/publisher', () => {
 				name: 'FullName',
 				namespace: 'com.example',
 				type: 'record'
-			});
+			}) as AvroSchema;
 
 			const publishOptions = {
 				message: {
@@ -166,7 +166,7 @@ describe('index/publisher', () => {
 			expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
 			expect(Transport.prototype.encode).to.have.been.calledWithExactly(publishOptions.schema, publishOptions.message);
 			expect(transport.publish).to.have.been.calledOnce;
-			expect(transport.publish).to.have.been.calledWithExactly('encodedMessage', {
+			expect(transport.publish).to.have.been.calledWithExactly(Buffer.from('encodedMessage'), {
 				context: {
 					user: {
 						username: 'test@test.com'
@@ -191,7 +191,7 @@ describe('index/publisher', () => {
 			// Given
 			sinon.stub(MessageValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			sinon.stub(Transport.prototype, 'encode').returns('encodedMessage');
+			sinon.stub(Transport.prototype, 'encode').returns(Buffer.from('encodedMessage'));
 
 			const publisher = new Publisher(options);
 
@@ -203,7 +203,7 @@ describe('index/publisher', () => {
 				name: 'FullName',
 				namespace: 'com.example',
 				type: 'record'
-			});
+			}) as AvroSchema;
 
 			const messagePublishOptions = {
 				message: {
@@ -218,7 +218,7 @@ describe('index/publisher', () => {
 					}
 				},
 				publishOptions: {
-					eventName: 'test'
+					eventName: 'com.example.FullName'
 				},
 				schema
 			};
@@ -235,13 +235,13 @@ describe('index/publisher', () => {
 			expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
 			expect(Transport.prototype.encode).to.have.been.calledWithExactly(messagePublishOptions.schema, messagePublishOptions.message);
 			expect(transport.publish).to.have.been.calledOnce;
-			expect(transport.publish).to.have.been.calledWithExactly('encodedMessage', {
+			expect(transport.publish).to.have.been.calledWithExactly(Buffer.from('encodedMessage'), {
 				context: {
 					user: {
 						username: 'test@test.com'
 					}
 				},
-				eventName: 'test',
+				eventName: 'com.example.FullName',
 				message: {
 					first: 'First',
 					last: 'Last'
@@ -277,6 +277,16 @@ describe('index/publisher', () => {
 			it('if the transport cannot be encoded', async () => {
 
 				// Given
+				const schema = avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				}) as AvroSchema;
+
 				const publishMessage = {
 					message: {
 						context: {},
@@ -285,15 +295,7 @@ describe('index/publisher', () => {
 							last: 'Tester'
 						}
 					},
-					schema: avsc.Type.forSchema({
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						],
-						name: 'FullName',
-						namespace: 'com.example',
-						type: 'record'
-					})
+					schema
 				};
 
 				sinon.stub(PublishFunctionValidator.prototype, 'validate').returns(publishMessage);
@@ -319,6 +321,16 @@ describe('index/publisher', () => {
 				sinon.stub(MessageValidator.prototype, 'validate');
 				sinon.stub(Transport.prototype, 'encode').throws(new Error('encoding error'));
 
+				const schema = avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				}) as AvroSchema;
+
 				const publishMessage = {
 					message: {
 						context: {},
@@ -327,15 +339,7 @@ describe('index/publisher', () => {
 							last: 'Tester'
 						}
 					},
-					schema: avsc.Type.forSchema({
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						],
-						name: 'FullName',
-						namespace: 'com.example',
-						type: 'record'
-					})
+					schema
 				};
 
 				sinon.stub(PublishFunctionValidator.prototype, 'validate').returns(publishMessage);
@@ -362,6 +366,16 @@ describe('index/publisher', () => {
 
 				options.transport.publish = sinon.stub().rejects(expectedError);
 
+				const schema = avsc.Type.forSchema({
+					fields: [
+						{ name: 'first', type: 'string' },
+						{ name: 'last', type: 'string' }
+					],
+					name: 'FullName',
+					namespace: 'com.example',
+					type: 'record'
+				}) as AvroSchema;
+
 				const publishMessage = {
 					message: {
 						context: {},
@@ -370,15 +384,7 @@ describe('index/publisher', () => {
 							last: 'Tester'
 						}
 					},
-					schema: avsc.Type.forSchema({
-						fields: [
-							{ name: 'first', type: 'string' },
-							{ name: 'last', type: 'string' }
-						],
-						name: 'FullName',
-						namespace: 'com.example',
-						type: 'record'
-					})
+					schema
 				};
 
 				sinon.stub(PublishFunctionValidator.prototype, 'validate').returns(publishMessage);

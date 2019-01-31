@@ -421,13 +421,13 @@ describe('index/server', () => {
 		it('should start the http server listening on the port specified in the options', async () => {
 
 			// Given
-			const httpServerStub = {
+			const httpServerStub: Partial<http.Server> = {
 				listen: sinon.stub()
 			};
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 
@@ -445,13 +445,13 @@ describe('index/server', () => {
 		it('should emit an info event stating that the server is listening', async () => {
 
 			// Given
-			const httpServerStub = {
+			const httpServerStub: Partial<http.Server> = {
 				listen: sinon.stub().yields()
 			};
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -472,13 +472,13 @@ describe('index/server', () => {
 		it('should invoke the callback if specified after the server has started listening', async () => {
 
 			// Given
-			const httpServerStub = {
+			const httpServerStub: Partial<http.Server> = {
 				listen: sinon.stub().yields()
 			};
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -518,14 +518,14 @@ describe('index/server', () => {
 		it('should stop the http server listening', async () => {
 
 			// Given
-			const httpServerStub = {
+			const httpServerStub: Partial<http.Server> = {
 				close: sinon.stub(),
 				listen: sinon.stub().returnsThis()
 			};
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			await server.listen();
@@ -544,14 +544,14 @@ describe('index/server', () => {
 		it('should close the transport', async () => {
 
 			// Given
-			const httpServerStub = {
+			const httpServerStub: Partial<http.Server> = {
 				close: sinon.stub().yields(),
 				listen: sinon.stub().returnsThis()
 			};
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -573,14 +573,14 @@ describe('index/server', () => {
 		it('should emit an info event stating that the server has stopped listening', async () => {
 
 			// Given
-			const httpServerStub = {
+			const httpServerStub: Partial<http.Server> = {
 				close: sinon.stub().yields(),
 				listen: sinon.stub().returnsThis()
 			};
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -604,14 +604,14 @@ describe('index/server', () => {
 		it('should invoke the callback if specified after the server has stopped listening', async () => {
 
 			// Given
-			const httpServerStub = {
+			const httpServerStub: Partial<http.Server> = {
 				close: sinon.stub().yields(),
 				listen: sinon.stub().returnsThis()
 			};
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');

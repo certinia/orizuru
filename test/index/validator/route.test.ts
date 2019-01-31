@@ -31,7 +31,7 @@ import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 
-import { Options } from '../../../src';
+import { AvroSchema, Options } from '../../../src';
 import { SchemaValidator } from '../../../src/index/validator/shared/schema';
 
 import { RouteValidator } from '../../../src/index/validator/route';
@@ -64,7 +64,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
@@ -99,7 +99,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
@@ -135,7 +135,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
@@ -171,7 +171,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'api.v1_0.com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
@@ -206,7 +206,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
@@ -244,7 +244,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
