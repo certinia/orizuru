@@ -6,22 +6,17 @@
 		"*.avsc": "json"
 	},
 	"files.exclude": {
-		"**/.nyc_output": true,
-		"**/.git": true,
-		"**/.svn": true,
-		"**/.hg": true,
-		"**/CVS": true,
 		"**/.DS_Store": true,
-		"**/coverage": true
+		"**/.git": true,
+		"**/.hg": true,
+		"**/.nyc_output": true,
+		"**/.svn": true,
+		"**/coverage": true,
+		"**/coverage-systemtests": true,
+		"**/CVS": true
 	},
 	"files.insertFinalNewline": true,
 	"lcov.path": "coverage/lcov.info",
-	"lcov.watch": [
-		{
-			"pattern": "**/*.ts",
-			"command": "npm test"
-		}
-	],
 	"terminal.integrated.scrollback": 10000,
 	"workbench.colorCustomizations": {
 		"activityBar.foreground": "#007DFF"
