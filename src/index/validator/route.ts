@@ -48,6 +48,9 @@ export interface RouteConfiguration {
 	synchronous?: boolean;
 }
 
+/**
+ * @private
+ */
 function defaultResponseWriter(server: Orizuru.IServer) {
 
 	return (error: Error | undefined, request: Request, response: Response) => {
@@ -63,10 +66,16 @@ function defaultResponseWriter(server: Orizuru.IServer) {
 
 }
 
+/**
+ * @private
+ */
 function defaultPathMapper(namespace: string) {
 	return namespace.replace(/\./g, '/').replace('_', '.');
 }
 
+/**
+ * @private
+ */
 function getEndpoint(endpoint?: string) {
 
 	if (!endpoint) {
@@ -81,11 +90,17 @@ function getEndpoint(endpoint?: string) {
 
 }
 
+/**
+ * @private
+ */
 function getSchemaName(avroSchema: AvroSchema) {
 	const schemaNameParts = avroSchema.name.split('.');
 	return schemaNameParts.pop() as string;
 }
 
+/**
+ * @private
+ */
 function calculateApiEndpoint(schema: AvroSchema, endpoint: string, pathMapper: (schemaNamespace: string) => string) {
 	const schemaName = getSchemaName(schema);
 	const schemaNameParts = schema.name.split('.');
