@@ -2,8 +2,12 @@
 	"name": "@financialforcedev/orizuru",
 	"version": "9.0.1",
 	"description": "Streamlined communication between Heroku dynos / other worker processes",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"main": "dist/src/index.js",
+	"types": "dist/types/src/index.d.ts",
+	"files": [
+		"dist/src",
+		"dist/types/src"
+	],
 	"scripts": {
 		"build": "npm run build-clean && npm run build-compile && npm run build-copy",
 		"build-clean": "rm -rf dist",
