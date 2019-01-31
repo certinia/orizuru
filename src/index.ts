@@ -221,12 +221,14 @@ export interface IServerImpl {
 
 export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMessage<C, M>) => Promise<void | Orizuru.IHandlerResponse>;
 
+export type ResponseWriter = (error: Error | undefined, request: Request, response: Response) => void | Promise<void>;
+
 /**
  * A function to write a response to the client.
  *
  * This function should always handle errors.
  */
-export type ResponseWriterFunction = (server: Orizuru.IServer) => (error: Error | undefined, request: Request, response: Response) => void | Promise<void>;
+export type ResponseWriterFunction = (server: Orizuru.IServer) => ResponseWriter;
 
 export declare namespace Options {
 
