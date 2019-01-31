@@ -1,6 +1,5 @@
 .nyc_output
-coverage
-coverage-systemtests
+coverage*
 dist
 node_modules
 
