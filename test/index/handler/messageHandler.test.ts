@@ -26,13 +26,13 @@
 
 import avsc from 'avsc';
 import chai from 'chai';
-import sinon from 'sinon';
+import sinon, { SinonStubbedInstance } from 'sinon';
 import sinonChai from 'sinon-chai';
 
-import { Transport } from '../../../src/index/transport/transport';
+import { IOrizuruMessage } from '../../../src';
+import * as transport from '../../../src/index/transport/transport';
 
 import { messageHandler } from '../../../src/index/handler/messageHandler';
-import { IOrizuruMessage } from '../../../src';
 
 chai.use(sinonChai);
 
@@ -43,8 +43,12 @@ describe('index/handler/messageHandler', () => {
 	let config: any;
 	let server: any;
 	let content: IOrizuruMessage<Orizuru.Context, Orizuru.Message>;
+	let transportStubInstance: SinonStubbedInstance<transport.Transport>;
 
 	beforeEach(() => {
+
+		transportStubInstance = sinon.createStubInstance(transport.Transport);
+		sinon.stub(transport, 'Transport').returns(transportStubInstance);
 
 		server = {
 			error: sinon.stub(),
@@ -80,7 +84,7 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler resolves', async () => {
 
 		// Given
-		sinon.stub(Transport.prototype, 'decode').returns(content);
+		transportStubInstance.decode.returns(content);
 
 		config.handler.resolves();
 
@@ -99,7 +103,7 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler returns', async () => {
 
 		// Given
-		sinon.stub(Transport.prototype, 'decode').returns(content);
+		transportStubInstance.decode.returns(content);
 
 		config.handler.returns(null);
 
@@ -118,14 +122,13 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler rejects', async () => {
 
 		// Given
-		sinon.stub(Transport.prototype, 'decode').returns(content);
+		transportStubInstance.decode.returns(content);
 
 		const expectedError = new Error('Error');
 
 		config.handler.rejects(expectedError);
 
 		// When
-
 		await messageHandler(server, config)(Buffer.from('test'));
 
 		// Then
@@ -140,7 +143,7 @@ describe('index/handler/messageHandler', () => {
 	it('should handle a message where the base handler throws', async () => {
 
 		// Given
-		sinon.stub(Transport.prototype, 'decode').returns(content);
+		transportStubInstance.decode.returns(content);
 
 		const expectedError = new Error('Error');
 
@@ -163,7 +166,7 @@ describe('index/handler/messageHandler', () => {
 		// Given
 		const expectedError = new Error('Failed to decode message.');
 
-		sinon.stub(Transport.prototype, 'decode').throws(expectedError);
+		transportStubInstance.decode.throws(expectedError);
 
 		// When
 		messageHandler(server, config)(Buffer.from('test'));

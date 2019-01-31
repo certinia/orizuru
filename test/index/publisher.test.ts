@@ -26,7 +26,7 @@
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import sinon from 'sinon';
+import sinon, { SinonStubbedInstance } from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
@@ -34,7 +34,7 @@ import { EventEmitter } from 'events';
 import _ from 'lodash';
 
 import { AvroSchema, ITransport, Options } from '../../src';
-import { Transport } from '../../src/index/transport/transport';
+import * as orizuruTransport from '../../src/index/transport/transport';
 import { MessageValidator } from '../../src/index/validator/message';
 import { PublishFunctionValidator } from '../../src/index/validator/publishFunction';
 
@@ -49,8 +49,12 @@ describe('index/publisher', () => {
 
 	let transport: ITransport;
 	let options: Options.IPublisher;
+	let transportStubInstance: SinonStubbedInstance<orizuruTransport.Transport>;
 
 	beforeEach(() => {
+
+		transportStubInstance = sinon.createStubInstance(orizuruTransport.Transport);
+		sinon.stub(orizuruTransport, 'Transport').returns(transportStubInstance);
 
 		transport = {
 			close: sinon.stub(),
@@ -125,7 +129,8 @@ describe('index/publisher', () => {
 			// Given
 			sinon.stub(MessageValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			sinon.stub(Transport.prototype, 'encode').returns(Buffer.from('encodedMessage'));
+
+			transportStubInstance.encode.returns(Buffer.from('encodedMessage'));
 
 			const publisher = new Publisher(options);
 
@@ -164,7 +169,7 @@ describe('index/publisher', () => {
 
 			// Then
 			expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
-			expect(Transport.prototype.encode).to.have.been.calledWithExactly(publishOptions.schema, publishOptions.message);
+			expect(transportStubInstance.encode).to.have.been.calledWithExactly(publishOptions.schema, publishOptions.message);
 			expect(transport.publish).to.have.been.calledOnce;
 			expect(transport.publish).to.have.been.calledWithExactly(Buffer.from('encodedMessage'), {
 				context: {
@@ -191,7 +196,8 @@ describe('index/publisher', () => {
 			// Given
 			sinon.stub(MessageValidator.prototype, 'validate');
 			sinon.spy(EventEmitter.prototype, 'emit');
-			sinon.stub(Transport.prototype, 'encode').returns(Buffer.from('encodedMessage'));
+
+			transportStubInstance.encode.returns(Buffer.from('encodedMessage'));
 
 			const publisher = new Publisher(options);
 
@@ -233,7 +239,7 @@ describe('index/publisher', () => {
 
 			// Then
 			expect(PublishFunctionValidator.prototype.validate).to.have.been.calledOnce;
-			expect(Transport.prototype.encode).to.have.been.calledWithExactly(messagePublishOptions.schema, messagePublishOptions.message);
+			expect(transportStubInstance.encode).to.have.been.calledWithExactly(messagePublishOptions.schema, messagePublishOptions.message);
 			expect(transport.publish).to.have.been.calledOnce;
 			expect(transport.publish).to.have.been.calledWithExactly(Buffer.from('encodedMessage'), {
 				context: {
@@ -300,7 +306,6 @@ describe('index/publisher', () => {
 
 				sinon.stub(PublishFunctionValidator.prototype, 'validate').returns(publishMessage);
 				sinon.stub(MessageValidator.prototype, 'validate').throws(new Error('validation error'));
-				sinon.stub(Transport.prototype, 'encode');
 
 				const publisher = new Publisher(options);
 				sinon.spy(publisher, 'error');
@@ -319,7 +324,8 @@ describe('index/publisher', () => {
 
 				// Given
 				sinon.stub(MessageValidator.prototype, 'validate');
-				sinon.stub(Transport.prototype, 'encode').throws(new Error('encoding error'));
+
+				transportStubInstance.encode.throws(new Error('encoding error'));
 
 				const schema = avsc.Type.forSchema({
 					fields: [
