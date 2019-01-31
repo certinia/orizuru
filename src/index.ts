@@ -52,7 +52,7 @@ export { Publisher } from './index/publisher';
  */
 export { Server } from './index/server';
 
-export { json, urlencoded, Request, Response, NextFunction, static as addStaticRoute } from 'express';
+export { json, urlencoded, Request, RequestHandler, Response, NextFunction, static as addStaticRoute } from 'express';
 
 declare global {
 
