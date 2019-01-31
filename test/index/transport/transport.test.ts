@@ -26,7 +26,7 @@
 
 import avsc from 'avsc';
 import chai from 'chai';
-import fs from 'fs-extra';
+import fs from 'fs';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
@@ -35,7 +35,6 @@ import { Transport } from '../../../src/index/transport/transport';
 chai.use(sinonChai);
 
 const expect = chai.expect;
-const transportSchema = fs.readJsonSync(__dirname + '/../../../src/index/transport/transport.avsc');
 
 describe('index/transport/transport', () => {
 
@@ -99,7 +98,24 @@ describe('index/transport/transport', () => {
 		messageSchema: JSON.stringify(messageSchemaV2)
 	};
 
-	const compiledTransportSchema = avsc.Type.forSchema(transportSchema);
+	const compiledTransportSchema = avsc.Type.forSchema({
+		fields: [{
+			name: 'contextSchema',
+			type: 'string'
+		}, {
+			name: 'contextBuffer',
+			type: 'bytes'
+		}, {
+			name: 'messageSchema',
+			type: 'string'
+		}, {
+			name: 'messageBuffer',
+			type: 'bytes'
+		}],
+		name: 'Transport',
+		namespace: 'com.ffdc.orizuru.transport',
+		type: 'record'
+	});
 
 	afterEach(() => {
 		sinon.restore();
@@ -110,14 +126,15 @@ describe('index/transport/transport', () => {
 		it('should read the transport schema and store it in a property', () => {
 
 			// Given
-			sinon.stub(fs, 'readJsonSync').returns(JSON.parse('{"namespace":"com.ffdc.orizuru.transport","name":"Transport","type":"record","fields":[{"name":"contextSchema","type":"string"},{"name":"contextBuffer","type":"bytes"},{"name":"messageSchema","type":"string"},{"name":"messageBuffer","type":"bytes"}]}'));
+			const schema = Buffer.from('{"namespace":"com.ffdc.orizuru.transport","name":"Transport","type":"record","fields":[{"name":"contextSchema","type":"string"},{"name":"contextBuffer","type":"bytes"},{"name":"messageSchema","type":"string"},{"name":"messageBuffer","type":"bytes"}]}');
+			sinon.stub(fs, 'readFileSync').returns(schema);
 			sinon.stub(avsc.Type, 'forSchema');
 
 			// When
 			const transport = new Transport();
 
 			// Then
-			expect(fs.readJsonSync).to.have.been.calledOnce;
+			expect(fs.readFileSync).to.have.been.calledOnce;
 			expect(avsc.Type.forSchema).to.have.been.calledOnce;
 			expect(transport).to.have.property('compiledSchema');
 
