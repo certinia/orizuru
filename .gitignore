@@ -4,6 +4,4 @@ coverage-systemtests
 dist
 node_modules
 
-local.*.properties
-
 *.tgz
