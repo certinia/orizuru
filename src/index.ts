@@ -75,7 +75,11 @@ declare global {
 
 			options: Options.IHandler;
 
+			init(): Promise<void>;
 			handle(options: IHandlerFunction): Promise<void>;
+
+			error(event: any): void;
+			info(event: any): void;
 
 		}
 
@@ -86,7 +90,11 @@ declare global {
 
 			options: Options.IPublisher;
 
+			init(): Promise<void>;
 			publish(options: IPublishFunction): Promise<boolean>;
+
+			error(event: any): void;
+			info(event: any): void;
 
 		}
 
@@ -102,6 +110,9 @@ declare global {
 			addRoute(options: IRouteConfiguration): this;
 			set(setting: string, val: any): this;
 			use(path: string, ...handlers: RequestHandler[]): this;
+
+			listen(callback?: (app: Orizuru.IServer) => void): void;
+			close(callback?: (app: Orizuru.IServer) => void): void;
 
 			error(event: any): void;
 			info(event: any): void;
