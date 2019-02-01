@@ -31,7 +31,6 @@ import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 import { EventEmitter } from 'events';
-import _ from 'lodash';
 
 import { HandlerFunctionValidator } from '../../src/index/validator/handlerFunction';
 

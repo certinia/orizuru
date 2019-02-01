@@ -32,7 +32,6 @@ import avsc, { Type } from 'avsc';
 import { EventEmitter } from 'events';
 import express from 'express';
 import http from 'http';
-import _ from 'lodash';
 
 import { RouteValidator } from '../../src/index/validator/route';
 

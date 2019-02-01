@@ -28,7 +28,6 @@ import chai from 'chai';
 
 import { Type } from 'avsc';
 import axios, { AxiosResponse } from 'axios';
-import _ from 'lodash';
 
 import { Transport } from '@financialforcedev/orizuru-transport-rabbitmq';
 
