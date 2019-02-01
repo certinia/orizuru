@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -25,7 +25,7 @@
  */
 
 import { ForSchemaOptions, Schema, Type } from 'avsc';
-import { readJsonSync } from 'fs-extra';
+import fs from 'fs';
 import { resolve } from 'path';
 import { IOrizuruMessage } from '../..';
 
@@ -42,8 +42,11 @@ export class Transport {
 	 */
 	constructor() {
 
+		// Read jn the transport schema
 		const schemaPath = resolve(__dirname, './transport.avsc');
-		const transport = readJsonSync(schemaPath);
+		const schemaBuffer = fs.readFileSync(schemaPath);
+		const schema = schemaBuffer.toString();
+		const transport = JSON.parse(schema);
 
 		// Define the transport schema as a property.
 		this.compiledSchema = Type.forSchema(transport);

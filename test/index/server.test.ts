@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -32,7 +32,6 @@ import avsc, { Type } from 'avsc';
 import { EventEmitter } from 'events';
 import express from 'express';
 import http from 'http';
-import _ from 'lodash';
 
 import { RouteValidator } from '../../src/index/validator/route';
 
@@ -421,13 +420,11 @@ describe('index/server', () => {
 		it('should start the http server listening on the port specified in the options', async () => {
 
 			// Given
-			const httpServerStub = {
-				listen: sinon.stub()
-			};
+			const httpServerStub = sinon.createStubInstance(http.Server);
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 
@@ -445,13 +442,12 @@ describe('index/server', () => {
 		it('should emit an info event stating that the server is listening', async () => {
 
 			// Given
-			const httpServerStub = {
-				listen: sinon.stub().yields()
-			};
+			const httpServerStub = sinon.createStubInstance(http.Server);
+			httpServerStub.listen.yields();
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -472,13 +468,12 @@ describe('index/server', () => {
 		it('should invoke the callback if specified after the server has started listening', async () => {
 
 			// Given
-			const httpServerStub = {
-				listen: sinon.stub().yields()
-			};
+			const httpServerStub = sinon.createStubInstance(http.Server);
+			httpServerStub.listen.yields();
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -518,14 +513,12 @@ describe('index/server', () => {
 		it('should stop the http server listening', async () => {
 
 			// Given
-			const httpServerStub = {
-				close: sinon.stub(),
-				listen: sinon.stub().returnsThis()
-			};
+			const httpServerStub = sinon.createStubInstance(http.Server);
+			httpServerStub.listen.returnsThis();
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			await server.listen();
@@ -544,14 +537,13 @@ describe('index/server', () => {
 		it('should close the transport', async () => {
 
 			// Given
-			const httpServerStub = {
-				close: sinon.stub().yields(),
-				listen: sinon.stub().returnsThis()
-			};
+			const httpServerStub = sinon.createStubInstance(http.Server);
+			httpServerStub.listen.returnsThis();
+			httpServerStub.close.yields();
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -573,14 +565,13 @@ describe('index/server', () => {
 		it('should emit an info event stating that the server has stopped listening', async () => {
 
 			// Given
-			const httpServerStub = {
-				close: sinon.stub().yields(),
-				listen: sinon.stub().returnsThis()
-			};
+			const httpServerStub = sinon.createStubInstance(http.Server);
+			httpServerStub.listen.returnsThis();
+			httpServerStub.close.yields();
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -604,14 +595,13 @@ describe('index/server', () => {
 		it('should invoke the callback if specified after the server has stopped listening', async () => {
 
 			// Given
-			const httpServerStub = {
-				close: sinon.stub().yields(),
-				listen: sinon.stub().returnsThis()
-			};
+			const httpServerStub = sinon.createStubInstance(http.Server);
+			httpServerStub.listen.returnsThis();
+			httpServerStub.close.yields();
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub);
+			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');

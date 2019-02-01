@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -26,7 +26,7 @@
 
 import { RequestHandler } from 'express-serve-static-core';
 import { BAD_REQUEST, OK } from 'http-status-codes';
-import _ from 'lodash';
+import { isArray, isBoolean, isFunction, isPlainObject, isString } from 'lodash';
 
 import { AvroSchema, Options, Request, Response, ResponseWriterFunction } from '../..';
 import * as RouteMethod from '../server/routeMethod';
@@ -48,6 +48,9 @@ export interface RouteConfiguration {
 	synchronous?: boolean;
 }
 
+/**
+ * @private
+ */
 function defaultResponseWriter(server: Orizuru.IServer) {
 
 	return (error: Error | undefined, request: Request, response: Response) => {
@@ -63,10 +66,16 @@ function defaultResponseWriter(server: Orizuru.IServer) {
 
 }
 
+/**
+ * @private
+ */
 function defaultPathMapper(namespace: string) {
 	return namespace.replace(/\./g, '/').replace('_', '.');
 }
 
+/**
+ * @private
+ */
 function getEndpoint(endpoint?: string) {
 
 	if (!endpoint) {
@@ -81,15 +90,22 @@ function getEndpoint(endpoint?: string) {
 
 }
 
+/**
+ * @private
+ */
 function getSchemaName(avroSchema: AvroSchema) {
 	const schemaNameParts = avroSchema.name.split('.');
 	return schemaNameParts.pop() as string;
 }
 
+/**
+ * @private
+ */
 function calculateApiEndpoint(schema: AvroSchema, endpoint: string, pathMapper: (schemaNamespace: string) => string) {
 	const schemaName = getSchemaName(schema);
 	const schemaNameParts = schema.name.split('.');
-	const schemaNamespace = _.initial(schemaNameParts).join('.');
+	schemaNameParts.pop();
+	const schemaNamespace = schemaNameParts.join('.');
 	return endpoint + pathMapper(schemaNamespace) + '/' + schemaName;
 }
 
@@ -105,41 +121,45 @@ export class RouteValidator {
 			throw new Error('Missing required object parameter.');
 		}
 
-		if (!_.isPlainObject(options)) {
+		if (!isPlainObject(options)) {
 			throw new Error(`Invalid parameter: ${options} is not an object.`);
 		}
 
-		if (options.endpoint && !_.isString(options.endpoint)) {
+		if (options.endpoint && !isString(options.endpoint)) {
 			throw new Error('Invalid parameter: endpoint is not a string.');
 		}
 
-		if (options.method && !_.isString(options.method)) {
+		if (options.method && !isString(options.method)) {
 			throw new Error('Invalid parameter: method is not a string.');
 		}
 
-		if (options.method && !_.find(_.values(RouteMethod), (value) => value === options.method)) {
-			throw new Error(`Invalid parameter: method must be one of the following options: ${_.values(RouteMethod)}. Got ${options.method}.`);
+		if (options.method && !Object.values(RouteMethod).find((value) => value === options.method)) {
+			throw new Error(`Invalid parameter: method must be one of the following options: ${Object.values(RouteMethod)}. Got ${options.method}.`);
 		}
 
-		if (options.middleware && !_.isArray(options.middleware)) {
-			throw new Error('Invalid parameter: middleware is not an array.');
-		}
+		if (options.middleware) {
 
-		_.each(options.middleware, (middleware, index) => {
-			if (!_.isFunction(middleware)) {
-				throw new Error(`Invalid parameter: middleware[${index}] is not a function.`);
+			if (!isArray(options.middleware)) {
+				throw new Error('Invalid parameter: middleware is not an array.');
 			}
-		});
 
-		if (options.responseWriter && !_.isFunction(options.responseWriter)) {
+			options.middleware.forEach(((middleware, index) => {
+				if (!isFunction(middleware)) {
+					throw new Error(`Invalid parameter: middleware[${index}] is not a function.`);
+				}
+			}));
+
+		}
+
+		if (options.responseWriter && !isFunction(options.responseWriter)) {
 			throw new Error('Invalid parameter: responseWriter is not a function.');
 		}
 
-		if (options.pathMapper && !_.isFunction(options.pathMapper)) {
+		if (options.pathMapper && !isFunction(options.pathMapper)) {
 			throw new Error('Invalid parameter: pathMapper is not a function.');
 		}
 
-		if (options.synchronous !== undefined && !_.isBoolean(options.synchronous)) {
+		if (options.synchronous !== undefined && !isBoolean(options.synchronous)) {
 			throw new Error('Invalid parameter: synchronous is not a boolean.');
 		}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, FinancialForce.com, inc
+ * Copyright (c) 2018-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -28,7 +28,6 @@ import chai from 'chai';
 
 import { Type } from 'avsc';
 import axios, { AxiosResponse } from 'axios';
-import _ from 'lodash';
 
 import { Transport } from '@financialforcedev/orizuru-transport-rabbitmq';
 

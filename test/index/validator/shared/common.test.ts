@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -25,7 +25,8 @@
  */
 
 import chai from 'chai';
-import _ from 'lodash';
+
+import { noop } from 'lodash';
 
 import { CommonValidator } from '../../../../src/index/validator/shared/common';
 
@@ -42,10 +43,10 @@ describe('index/validator/shared/common', () => {
 				// Given
 				const options: any = {
 					transport: {
-						close: _.noop,
-						connect: _.noop,
-						publish: _.noop,
-						subscribe: _.noop
+						close: noop,
+						connect: noop,
+						publish: noop,
+						subscribe: noop
 					}
 				};
 
@@ -177,9 +178,9 @@ describe('index/validator/shared/common', () => {
 				// Given
 				const options: any = {
 					transport: {
-						close: _.noop,
-						connect: _.noop,
-						publish: _.noop
+						close: noop,
+						connect: noop,
+						publish: noop
 					}
 				};
 
@@ -194,9 +195,9 @@ describe('index/validator/shared/common', () => {
 				// Given
 				const options: any = {
 					transport: {
-						close: _.noop,
-						connect: _.noop,
-						publish: _.noop,
+						close: noop,
+						connect: noop,
+						publish: noop,
 						subscribe: 2
 					}
 				};
@@ -212,9 +213,9 @@ describe('index/validator/shared/common', () => {
 				// Given
 				const options: any = {
 					transport: {
-						connect: _.noop,
-						publish: _.noop,
-						subscribe: _.noop
+						connect: noop,
+						publish: noop,
+						subscribe: noop
 					}
 				};
 
@@ -230,9 +231,9 @@ describe('index/validator/shared/common', () => {
 				const options: any = {
 					transport: {
 						close: 2,
-						connect: _.noop,
-						publish: _.noop,
-						subscribe: _.noop
+						connect: noop,
+						publish: noop,
+						subscribe: noop
 					}
 				};
 
@@ -247,9 +248,9 @@ describe('index/validator/shared/common', () => {
 				// Given
 				const options: any = {
 					transport: {
-						close: _.noop,
-						publish: _.noop,
-						subscribe: _.noop
+						close: noop,
+						publish: noop,
+						subscribe: noop
 					}
 				};
 
@@ -264,10 +265,10 @@ describe('index/validator/shared/common', () => {
 				// Given
 				const options: any = {
 					transport: {
-						close: _.noop,
+						close: noop,
 						connect: 2,
-						publish: _.noop,
-						subscribe: _.noop
+						publish: noop,
+						subscribe: noop
 					}
 				};
 

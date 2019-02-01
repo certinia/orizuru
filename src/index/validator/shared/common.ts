@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -24,7 +24,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import _ from 'lodash';
+import { isFunction, isObjectLike, isPlainObject } from 'lodash';
 import { Options } from '../../..';
 
 /**
@@ -39,7 +39,7 @@ export class CommonValidator {
 			throw new Error('Missing required object parameter.');
 		}
 
-		if (!_.isPlainObject(options)) {
+		if (!isPlainObject(options)) {
 			throw new Error(`Invalid parameter: ${options} is not an object.`);
 		}
 
@@ -47,7 +47,7 @@ export class CommonValidator {
 			throw new Error('Missing required object parameter: transport.');
 		}
 
-		if (!_.isObjectLike(options.transport)) {
+		if (!isObjectLike(options.transport)) {
 			throw new Error('Invalid parameter: transport is not an object.');
 		}
 
@@ -55,7 +55,7 @@ export class CommonValidator {
 			throw new Error('Missing required function parameter: transport[publish].');
 		}
 
-		if (!_.isFunction(options.transport.publish)) {
+		if (!isFunction(options.transport.publish)) {
 			throw new Error('Invalid parameter: transport[publish] is not a function.');
 		}
 
@@ -63,7 +63,7 @@ export class CommonValidator {
 			throw new Error('Missing required function parameter: transport[subscribe].');
 		}
 
-		if (!_.isFunction(options.transport.subscribe)) {
+		if (!isFunction(options.transport.subscribe)) {
 			throw new Error('Invalid parameter: transport[subscribe] is not a function.');
 		}
 
@@ -71,7 +71,7 @@ export class CommonValidator {
 			throw new Error('Missing required function parameter: transport[close].');
 		}
 
-		if (!_.isFunction(options.transport.close)) {
+		if (!isFunction(options.transport.close)) {
 			throw new Error('Invalid parameter: transport[close] is not a function.');
 		}
 
@@ -79,7 +79,7 @@ export class CommonValidator {
 			throw new Error('Missing required function parameter: transport[connect].');
 		}
 
-		if (!_.isFunction(options.transport.connect)) {
+		if (!isFunction(options.transport.connect)) {
 			throw new Error('Invalid parameter: transport[connect] is not a function.');
 		}
 

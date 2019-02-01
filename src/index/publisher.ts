@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -26,7 +26,7 @@
 
 import { EventEmitter } from 'events';
 
-import { AvroSchema, ITransport, Options } from '..';
+import { ITransport, Options } from '..';
 import { Transport } from './transport/transport';
 import { MessageValidator } from './validator/message';
 import { PublisherValidator } from './validator/publisher';
@@ -120,9 +120,9 @@ export class Publisher extends EventEmitter {
 		}
 
 		// Generate transport buffer.
-		const schema = options.schema as AvroSchema;
+		const schema = validatedOptions.schema;
 		const message = options.message;
-		const eventName = schema.name as string;
+		const eventName = schema.name;
 
 		const publishOptions = options.publishOptions || {
 			eventName

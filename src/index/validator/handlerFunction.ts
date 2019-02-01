@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -24,7 +24,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import _ from 'lodash';
+import { isFunction, isPlainObject } from 'lodash';
 import { SchemaValidator } from './shared/schema';
 
 /**
@@ -39,7 +39,7 @@ export class HandlerFunctionValidator {
 			throw new Error('Missing required object parameter.');
 		}
 
-		if (!_.isPlainObject(config)) {
+		if (!isPlainObject(config)) {
 			throw new Error(`Invalid parameter: ${config} is not an object.`);
 		}
 
@@ -47,7 +47,7 @@ export class HandlerFunctionValidator {
 			throw new Error('Missing required function parameter: handler.');
 		}
 
-		if (!_.isFunction(config.handler)) {
+		if (!isFunction(config.handler)) {
 			throw new Error('Invalid parameter: handler is not a function.');
 		}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -52,7 +52,7 @@ export { Publisher } from './index/publisher';
  */
 export { Server } from './index/server';
 
-export { json, urlencoded, Request, Response, NextFunction, static as addStaticRoute } from 'express';
+export { json, urlencoded, Request, RequestHandler, Response, NextFunction, static as addStaticRoute } from 'express';
 
 declare global {
 
@@ -75,7 +75,11 @@ declare global {
 
 			options: Options.IHandler;
 
+			init(): Promise<void>;
 			handle(options: IHandlerFunction): Promise<void>;
+
+			error(event: any): void;
+			info(event: any): void;
 
 		}
 
@@ -86,7 +90,11 @@ declare global {
 
 			options: Options.IPublisher;
 
+			init(): Promise<void>;
 			publish(options: IPublishFunction): Promise<boolean>;
+
+			error(event: any): void;
+			info(event: any): void;
 
 		}
 
@@ -102,6 +110,9 @@ declare global {
 			addRoute(options: IRouteConfiguration): this;
 			set(setting: string, val: any): this;
 			use(path: string, ...handlers: RequestHandler[]): this;
+
+			listen(callback?: (app: Orizuru.IServer) => void): void;
+			close(callback?: (app: Orizuru.IServer) => void): void;
 
 			error(event: any): void;
 			info(event: any): void;
@@ -210,12 +221,14 @@ export interface IServerImpl {
 
 export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMessage<C, M>) => Promise<void | Orizuru.IHandlerResponse>;
 
+export type ResponseWriter = (error: Error | undefined, request: Request, response: Response) => void | Promise<void>;
+
 /**
  * A function to write a response to the client.
  *
  * This function should always handle errors.
  */
-export type ResponseWriterFunction = (server: Orizuru.IServer) => (error: Error | undefined, request: Request, response: Response) => void | Promise<void>;
+export type ResponseWriterFunction = (server: Orizuru.IServer) => ResponseWriter;
 
 export declare namespace Options {
 
@@ -361,7 +374,7 @@ export declare namespace Options {
 			 * In some cases, the transport layer determines where to publish the message from a message property.
 			 * The message is here for convenience so that the transport layer does not need to decode the supplied buffer.
 			 */
-			message?: any;
+			message?: Orizuru.Message;
 
 			/**
 			 * The Avro schema for this message.

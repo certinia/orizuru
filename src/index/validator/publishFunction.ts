@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -24,7 +24,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import _ from 'lodash';
+import { isPlainObject } from 'lodash';
 
 import { AvroSchema, Options } from '../..';
 
@@ -49,7 +49,7 @@ export class PublishFunctionValidator {
 			throw new Error('Missing required object parameter.');
 		}
 
-		if (!_.isPlainObject(options)) {
+		if (!isPlainObject(options)) {
 			throw new Error(`Invalid parameter: ${options} is not an object.`);
 		}
 

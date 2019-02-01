@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -31,7 +31,6 @@ import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
 import { EventEmitter } from 'events';
-import _ from 'lodash';
 
 import { HandlerFunctionValidator } from '../../src/index/validator/handlerFunction';
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -25,7 +25,7 @@
  */
 
 import { EventEmitter } from 'events';
-import _ from 'lodash';
+import { get } from 'lodash';
 
 import { ITransport, Options } from '..';
 import { messageHandler } from './handler/messageHandler';
@@ -107,7 +107,7 @@ export class Handler extends EventEmitter {
 			throw err;
 		}
 
-		const eventName = _.get(options, 'subscribeOptions.eventName') || _.get(options, 'schema.name');
+		const eventName = get(options, 'subscribeOptions.eventName') || get(options, 'schema.name');
 		const handler = messageHandler(this, options);
 		const subscribeOptions = options.subscribeOptions || {
 			eventName

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2018, FinancialForce.com, inc
+ * Copyright (c) 2017-2019, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -25,13 +25,13 @@
  */
 
 import chai from 'chai';
-import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
+import { noop } from 'lodash';
 
-import { Options } from '../../../src';
+import { AvroSchema, Options } from '../../../src';
 import { SchemaValidator } from '../../../src/index/validator/shared/schema';
 
 import { RouteValidator } from '../../../src/index/validator/route';
@@ -64,7 +64,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
@@ -99,7 +99,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
@@ -135,7 +135,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
@@ -171,7 +171,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'api.v1_0.com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
@@ -206,7 +206,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
@@ -244,7 +244,7 @@ describe('index/validator/route', () => {
 					name: 'FullName',
 					namespace: 'com.example',
 					type: 'record'
-				});
+				}) as AvroSchema;
 
 				sinon.stub(SchemaValidator.prototype, 'validate').returns(schema);
 
@@ -385,7 +385,7 @@ describe('index/validator/route', () => {
 				// Given
 				const options: any = {
 					pathMapper: 23,
-					responseWriter: _.noop,
+					responseWriter: noop,
 					schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 				};
 
@@ -431,7 +431,7 @@ describe('index/validator/route', () => {
 
 			// Given
 			const options: any = {
-				middleware: [_.noop],
+				middleware: [noop],
 				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 			};
 
