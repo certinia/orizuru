@@ -28,7 +28,7 @@ import chai from 'chai';
 import sinon, { SinonStub } from 'sinon';
 import sinonChai from 'sinon-chai';
 
-import _ from 'lodash';
+import { noop } from 'lodash';
 
 import { SchemaValidator } from '../../../src/index/validator/shared/schema';
 
@@ -57,7 +57,7 @@ describe('index/validator/handlerFunction', () => {
 
 			// Given
 			const config = {
-				handler: _.noop,
+				handler: noop,
 				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 			};
 
@@ -119,7 +119,7 @@ describe('index/validator/handlerFunction', () => {
 				(SchemaValidator.prototype.validate as SinonStub).throws(new Error('invalid schema'));
 
 				const config = {
-					handler: _.noop
+					handler: noop
 				};
 
 				// When

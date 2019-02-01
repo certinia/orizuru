@@ -25,11 +25,11 @@
  */
 
 import chai from 'chai';
-import _ from 'lodash';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import avsc from 'avsc';
+import { noop } from 'lodash';
 
 import { AvroSchema, Options } from '../../../src';
 import { SchemaValidator } from '../../../src/index/validator/shared/schema';
@@ -385,7 +385,7 @@ describe('index/validator/route', () => {
 				// Given
 				const options: any = {
 					pathMapper: 23,
-					responseWriter: _.noop,
+					responseWriter: noop,
 					schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 				};
 
@@ -431,7 +431,7 @@ describe('index/validator/route', () => {
 
 			// Given
 			const options: any = {
-				middleware: [_.noop],
+				middleware: [noop],
 				schema: '{"name":"com.example.FullName","type":"record","fields":[]}'
 			};
 
