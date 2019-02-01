@@ -18,6 +18,7 @@
 	"files.insertFinalNewline": true,
 	"lcov.path": "coverage/lcov.info",
 	"terminal.integrated.scrollback": 10000,
+	"typescript.tsdk": "node_modules/typescript/lib",
 	"workbench.colorCustomizations": {
 		"activityBar.foreground": "#007DFF"
 	}
