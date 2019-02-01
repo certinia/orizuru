@@ -25,7 +25,7 @@
  */
 
 import { Type } from 'avsc';
-import _ from 'lodash';
+import { get } from 'lodash';
 
 import { Handler, IOrizuruMessage, Options } from '../..';
 import { Transport } from '../transport/transport';
@@ -35,7 +35,7 @@ import { Transport } from '../transport/transport';
  */
 export function messageHandler<C extends Orizuru.Context, M extends Orizuru.Message>(handler: Handler, options: Options.IHandlerFunction<C, M>) {
 
-	const eventName = _.get(options.subscribeOptions, 'eventName') || _.get(options.schema, 'name');
+	const eventName = get(options.subscribeOptions, 'eventName') || get(options.schema, 'name');
 	const transport = new Transport();
 
 	return async (content: Buffer) => {

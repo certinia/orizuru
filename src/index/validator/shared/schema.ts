@@ -25,7 +25,7 @@
  */
 
 import { Type } from 'avsc';
-import _ from 'lodash';
+import { hasIn, isPlainObject, isString } from 'lodash';
 
 import { AvroSchema } from '../../..';
 
@@ -74,12 +74,12 @@ export class SchemaValidator {
 			throw new Error('Missing required avro-schema parameter: schema.');
 		}
 
-		if (_.isString(schema)) {
+		if (isString(schema)) {
 			const parsedSchema = parseSchema(schema);
 			schema = compileSchema(parsedSchema);
-		} else if (_.isPlainObject(schema)) {
+		} else if (isPlainObject(schema)) {
 			schema = compileSchema(schema);
-		} else if (_.hasIn(schema, 'toJSON') && _.hasIn(schema, 'toBuffer')) {
+		} else if (hasIn(schema, 'toJSON') && hasIn(schema, 'toBuffer')) {
 			// Compile the schema to validate that there are no anonymous types.
 			schema = compileSchema(schema);
 		} else {
