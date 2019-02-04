@@ -1,5 +1,16 @@
 # @financialforcedev/orizuru
 
+## 9.1.0
+
+- Export the RequestHandler from express
+- Export the ResponseWriter type
+- Update the IServer, IPublisher and IHandler types to include the missing functions
+- Update the lodash imports and use es2017 functions where appropriate
+- Update tests for changes to sinon
+- Remove fs-extra dependency
+- Remove the npmignore file and update the package.json to package the correct files
+- Remove the properties files
+
 ## 9.0.1
 
 - Update all dependencies to latest versions
