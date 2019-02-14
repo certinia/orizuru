@@ -6,10 +6,6 @@
 		"esModuleInterop": true,
 		"inlineSourceMap": true,
 		"inlineSources": true,
-		"lib": [
-			"dom",
-			"es2017"
-		],
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"noFallthroughCasesInSwitch": true,
@@ -18,7 +14,7 @@
 		"outDir": "./dist",
 		"strict": true,
 		"strictNullChecks": true,
-		"target": "es5"
+		"target": "es2017"
 	},
 	"include": [
 		"src",
