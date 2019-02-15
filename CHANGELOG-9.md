@@ -1,5 +1,9 @@
 # @financialforcedev/orizuru
 
+## 9.2.0
+
+- Update typescript configuration to target es2017
+
 ## 9.1.0
 
 - Export the RequestHandler from express
