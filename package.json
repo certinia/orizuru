@@ -14,7 +14,7 @@
 		"build-compile": "tsc",
 		"build-copy": "npm run build-copy-transport",
 		"build-copy-transport": "cp src/index/transport/transport.avsc dist/src/index/transport",
-		"coverage": "nyc --report-dir=coverage --nycrc-path=test/.nyc.json mocha",
+		"coverage": "nyc --report-dir=coverage --nycrc-path=test/.nyc.json mocha --config test/.mocha.json",
 		"coverage-systemtests": "nyc --report-dir=coverage --nycrc-path=systemtests/nyc.opts mocha --opts systemtests/mocha.opts",
 		"doc": "npm run doc-generate && npm run doc-sanitize-avsc && npm run doc-sanitize-node",
 		"doc-generate": "typedoc --gitRevision master --ignoreCompilerErrors --out doc src/**/* --mode file",
@@ -23,7 +23,7 @@
 		"prepare": "npm run build",
 		"pretest": "tslint -p tsconfig.json",
 		"posttest": "nyc --report-dir=coverage-systemtests --nycrc-path=systemtests/nyc.opts mocha --opts systemtests/mocha.opts",
-		"test": "nyc --report-dir=coverage --nycrc-path=test/.nyc.json mocha"
+		"test": "nyc --report-dir=coverage --nycrc-path=test/.nyc.json mocha --config test/.mocha.json"
 	},
 	"repository": {
 		"type": "git",
