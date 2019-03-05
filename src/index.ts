@@ -34,7 +34,7 @@
  */
 
 import { Schema, Type } from 'avsc';
-import { Request, RequestHandler, Response } from 'express';
+import { EventEmitter } from 'events';
 import http from 'http';
 
 /**
@@ -71,7 +71,7 @@ declare global {
 		/**
 		 * The Handler interface for consuming messages in a worker dyno created by {@link Server}.
 		 */
-		interface IHandler {
+		interface IHandler extends EventEmitter {
 
 			options: Options.IHandler;
 
@@ -86,7 +86,7 @@ declare global {
 		/**
 		 * The Publisher interface for publishing messages based on Avro schemas.
 		 */
-		interface IPublisher {
+		interface IPublisher extends EventEmitter {
 
 			options: Options.IPublisher;
 
@@ -101,7 +101,7 @@ declare global {
 		/**
 		 * The Server interface for creating routes in a web dyno based on Avro schemas.
 		 */
-		interface IServer {
+		interface IServer extends EventEmitter {
 
 			options: Options.IServer;
 			publisher: Orizuru.IPublisher;
