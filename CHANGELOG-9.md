@@ -1,5 +1,10 @@
 # @financialforcedev/orizuru
 
+## 9.3.0
+
+- Updated IHandler, IPublisher and IServer interfaces to extend EventEmitter
+- Added support for ErrorRequestHandler as middlewares
+
 ## 9.2.0
 
 - Update typescript configuration to target es2017
