@@ -24,7 +24,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { RequestHandler } from 'express-serve-static-core';
+import { ErrorRequestHandler, RequestHandler } from 'express-serve-static-core';
 import { BAD_REQUEST, OK } from 'http-status-codes';
 import { isArray, isBoolean, isFunction, isPlainObject, isString } from 'lodash';
 
@@ -39,7 +39,7 @@ export interface RouteConfiguration {
 	apiEndpoint: string;
 	fullSchemaName: string;
 	method: string;
-	middlewares: RequestHandler[];
+	middlewares: Array<ErrorRequestHandler | RequestHandler>;
 	pathMapper: (schemaNamespace: string) => string;
 	publishOptions: Options.Transport.IPublish;
 	responseWriter: ResponseWriterFunction;

@@ -34,7 +34,8 @@
  */
 
 import { Schema, Type } from 'avsc';
-import { Request, RequestHandler, Response } from 'express';
+import { EventEmitter } from 'events';
+import { ErrorRequestHandler, Request, RequestHandler, Response } from 'express';
 import http from 'http';
 
 /**
@@ -52,7 +53,16 @@ export { Publisher } from './index/publisher';
  */
 export { Server } from './index/server';
 
-export { json, urlencoded, Request, RequestHandler, Response, NextFunction, static as addStaticRoute } from 'express';
+export {
+	ErrorRequestHandler,
+	json,
+	urlencoded,
+	Request,
+	RequestHandler,
+	Response,
+	NextFunction,
+	static as addStaticRoute
+} from 'express';
 
 declare global {
 
@@ -71,7 +81,7 @@ declare global {
 		/**
 		 * The Handler interface for consuming messages in a worker dyno created by {@link Server}.
 		 */
-		interface IHandler {
+		interface IHandler extends EventEmitter {
 
 			options: Options.IHandler;
 
@@ -86,7 +96,7 @@ declare global {
 		/**
 		 * The Publisher interface for publishing messages based on Avro schemas.
 		 */
-		interface IPublisher {
+		interface IPublisher extends EventEmitter {
 
 			options: Options.IPublisher;
 
@@ -101,7 +111,7 @@ declare global {
 		/**
 		 * The Server interface for creating routes in a web dyno based on Avro schemas.
 		 */
-		interface IServer {
+		interface IServer extends EventEmitter {
 
 			options: Options.IServer;
 			publisher: Orizuru.IPublisher;
@@ -109,7 +119,7 @@ declare global {
 
 			addRoute(options: IRouteConfiguration): this;
 			set(setting: string, val: any): this;
-			use(path: string, ...handlers: RequestHandler[]): this;
+			use(path: string, ...handlers: Array<ErrorRequestHandler | RequestHandler>): this;
 
 			listen(callback?: (app: Orizuru.IServer) => void): void;
 			close(callback?: (app: Orizuru.IServer) => void): void;
@@ -216,7 +226,7 @@ export interface IServerImpl {
 	(req: Request | http.IncomingMessage, res: Response | http.ServerResponse): void;
 	listen(port: number, callback?: (app: this) => void): http.Server;
 	set(setting: string, val: any): this;
-	use(path: string, ...handlers: RequestHandler[]): this;
+	use(path: string, ...handlers: Array<ErrorRequestHandler | RequestHandler>): this;
 }
 
 export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMessage<C, M>) => Promise<void | Orizuru.IHandlerResponse>;
@@ -321,7 +331,7 @@ export declare namespace Options {
 		/**
 		 * The middlewares for this route.
 		 */
-		middleware?: RequestHandler[];
+		middleware?: Array<ErrorRequestHandler | RequestHandler>;
 
 		/**
 		 * A function that maps the schema namespace to the required format.

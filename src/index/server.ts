@@ -26,7 +26,7 @@
 
 import { EventEmitter } from 'events';
 import express from 'express';
-import { RequestHandler } from 'express-serve-static-core';
+import { ErrorRequestHandler, RequestHandler } from 'express-serve-static-core';
 import http from 'http';
 
 import { IServerImpl, Options, Publisher } from '..';
@@ -200,7 +200,7 @@ export class Server extends EventEmitter {
 	/**
 	 * Use the given request handlers for the specified paths.
 	 */
-	public use(path: string, ...handlers: RequestHandler[]) {
+	public use(path: string, ...handlers: Array<ErrorRequestHandler | RequestHandler>) {
 		this.server.use(path, ...handlers);
 		return this;
 	}
