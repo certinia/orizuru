@@ -25,6 +25,7 @@
  */
 
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
@@ -37,6 +38,7 @@ import { RouteValidator } from '../../src/index/validator/route';
 
 import { Options, Publisher, Server } from '../../src';
 
+chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 const expect = chai.expect;
