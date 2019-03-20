@@ -4,28 +4,79 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Debug Tests",
-			"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+			"name": "Coverage Tests - Current File",
+			"program": "${workspaceFolder}/node_modules/.bin/jest",
 			"args": [
+				"${relativeFile}",
 				"--config",
-				"${workspaceRoot}/test/.mocha.json",
-				"--no-timeouts"
+				"test/.jest.json",
+				"--runInBand"
 			],
-			"console": "internalConsole",
-			"internalConsoleOptions": "openOnSessionStart"
+			"env": {
+				"NODE_ENV": "test"
+			},
+			"console": "externalTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"disableOptimisticBPs": true
 		},
 		{
 			"type": "node",
 			"request": "launch",
 			"name": "Debug System Tests",
-			"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+			"program": "${workspaceFolder}/node_modules/.bin/jest",
 			"args": [
+				"--runInBand",
 				"--config",
-				"${workspaceRoot}/systemtests/.mocha.json",
-				"--no-timeouts"
+				"systemtests/.jest.json",
+				"--coverage",
+				"false"
 			],
-			"console": "internalConsole",
-			"internalConsoleOptions": "openOnSessionStart"
+			"env": {
+				"NODE_ENV": "test",
+				"NODE_APP_INSTANCE": "system"
+			},
+			"console": "externalTerminal",
+			"disableOptimisticBPs": true,
+			"internalConsoleOptions": "neverOpen"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Debug Unit Tests",
+			"program": "${workspaceFolder}/node_modules/.bin/jest",
+			"args": [
+				"--runInBand",
+				"--config",
+				"test/.jest.json",
+				"--coverage",
+				"false"
+			],
+			"env": {
+				"NODE_ENV": "test"
+			},
+			"console": "externalTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"disableOptimisticBPs": true
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Debug Unit Tests - Current File",
+			"program": "${workspaceFolder}/node_modules/.bin/jest",
+			"args": [
+				"${relativeFile}",
+				"--config",
+				"test/.jest.json",
+				"--runInBand",
+				"--coverage",
+				"false"
+			],
+			"env": {
+				"NODE_ENV": "test"
+			},
+			"console": "externalTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"disableOptimisticBPs": true
 		}
 	]
 }
