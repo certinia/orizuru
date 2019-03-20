@@ -426,7 +426,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 
@@ -449,7 +449,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -475,7 +475,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -520,7 +520,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			await server.listen();
@@ -545,7 +545,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -573,7 +573,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -603,7 +603,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
