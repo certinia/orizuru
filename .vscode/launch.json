@@ -26,6 +26,6 @@
 			],
 			"console": "internalConsole",
 			"internalConsoleOptions": "openOnSessionStart"
-		},
+		}
 	]
 }
