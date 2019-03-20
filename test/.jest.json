@@ -1,0 +1,39 @@
+{
+	"collectCoverage": true,
+	"collectCoverageFrom": [
+		"<rootDir>/src/**/*.ts"
+	],
+	"coverageDirectory": "<rootDir>/coverage",
+	"coveragePathIgnorePatterns": [
+		"<rootDir>/node_modules"
+	],
+	"coverageReporters": [
+		"lcov",
+		"text",
+		"text-summary"
+	],
+	"coverageThreshold": {
+		"global": {
+			"branches": 100,
+			"functions": 100,
+			"lines": 100,
+			"statements": 100
+		}
+	},
+	"moduleFileExtensions": [
+		"ts",
+		"js",
+		"json"
+	],
+	"modulePathIgnorePatterns": [
+		"<rootDir>/tools"
+	],
+	"rootDir": "../",
+	"silent": true,
+	"testEnvironment": "node",
+	"testRegex": "test\/.*.test.ts$",
+	"transform": {
+		".(ts|tsx)": "<rootDir>/node_modules/ts-jest"
+	},
+	"verbose": true
+}
