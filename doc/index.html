@@ -67,7 +67,7 @@
 				<h1 id="orizuru">Orizuru</h1>
 				<p><a href="https://travis-ci.org/financialforcedev/orizuru"><img src="https://travis-ci.org/financialforcedev/orizuru.svg?branch=master" alt="Build Status"></a></p>
 				<p>Orizuru is a library that streamlines strongly typed communication between Heroku dynos (or other processes).
-				It leverages <a href="https://avro.apache.org/">Apache Avro</a> for schema validation and communication.</p>
+				It leverages <a href="https://avro.apache.org/docs/current/">Apache Avro</a> for schema validation and communication.</p>
 				<h2 id="install">Install</h2>
 				<pre><code class="language-bash">npm install @financialforcedev/orizuru</code></pre>
 				<h2 id="usage">Usage</h2>
@@ -119,7 +119,7 @@ server.addRoute({
 
 server.listen();</code></pre>
 				<p>In the above example, a POST API for <code>/api/path/ageAndDob</code> is created on the server before it listens on port <code>8080</code>. The post body sent is validated against the schema, which requires <code>age</code> and <code>dob</code> string fields in the JSON body. If the validation succeeds, an event name passed to the transport layer will be the fully qualified name of the Avro schema type <code>ageAndDob</code>, along with an Avro serialised buffer of the POST body.</p>
-				<p>Additionally, if there is an object on the request called <code>orizuru</code>, e.g. <code>request.orizuru</code>, this will also be serialized and added to the buffer as <code>context</code>. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.</p>
+				<p>Additionally, if there is an object on the request called <code>orizuru</code>, e.g. <code>request.orizuru</code>, this will also be serialized and added to the buffer as <code>context</code>. This allows middleware to add context information to the event fired, e.g. session validation and credentials.</p>
 				<h3 id="publisher">Publisher</h3>
 				<p>The Orizuru Publisher allows you to publish events directly from Node.js via a transport layer, with Avro. This can be useful for communication between worker processes that do not expose a Web API. Messages are validated against a supplied schema, and there is also the facility to supply untyped context information.</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { IOrizuruMessage, Publisher } <span class="hljs-keyword">from</span> <span class="hljs-string">'@financialforcedev/orizuru'</span>;
@@ -198,7 +198,7 @@ publisher.publish({ schema, message });</code></pre>
 <span class="hljs-built_in">Promise</span>.all([
     handlerInstance.handle({ schema, handler })
 ]);</code></pre>
-				<p>The handler can handle multiple events, with callbacks for each wired in. The input to the callback <code>{ message, context }</code> is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middlewares or supplied to the publish function.</p>
+				<p>The handler can handle multiple events, with callbacks for each wired in. The input to the callback <code>{ message, context }</code> is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middleware or supplied to the publish function.</p>
 				<h2 id="api-docs">API Docs</h2>
 				<p>Click to view <a href="http://htmlpreview.github.io/?https://github.com/financialforcedev/orizuru/blob/master/doc/index.html">TSDoc API documentation</a>.</p>
 			</div>
@@ -210,153 +210,66 @@ publisher.publish({ schema, message });</code></pre>
 						<a href="globals.html"><em>Globals</em></a>
 					</li>
 					<li class="label tsd-is-external">
+						<span>Internals</span>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/handler.html">handler</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/handler_messagehandler.html">handler/message<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/publisher.html">publisher</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/server.html">server</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/server_route.html">server/route</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/server_routemethod.html">server/route<wbr>Method</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/transport_transport.html">transport/transport</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/validator_handler.html">validator/handler</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/validator_handlerfunction.html">validator/handler<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/validator_message.html">validator/message</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/validator_publishfunction.html">validator/publish<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/validator_publisher.html">validator/publisher</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/validator_route.html">validator/route</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/validator_server.html">validator/server</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/validator_shared_common.html">validator/shared/common</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/validator_shared_schema.html">validator/shared/schema</a>
+					</li>
+					<li class="label tsd-is-external">
 						<span>Externals</span>
 					</li>
-					<li class=" tsd-kind-module tsd-is-external">
-						<a href="modules/options.html">Options</a>
-					</li>
-					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external">
-						<a href="modules/options.transport.html">Options.<wbr>Transport</a>
-					</li>
-					<li class=" tsd-kind-module tsd-is-external tsd-is-not-exported">
-						<a href="modules/__global.html">__global</a>
-					</li>
-					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external tsd-is-not-exported">
-						<a href="modules/__global.express.html">__global.<wbr>Express</a>
-					</li>
-					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external tsd-is-not-exported">
-						<a href="modules/__global.orizuru.html">__global.<wbr>Orizuru</a>
-					</li>
-					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external tsd-is-not-exported">
-						<a href="modules/__global.orizuru.options.html">__global.<wbr>Orizuru.<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-external tsd-is-not-exported">
-						<a href="modules/__global.orizuru.transport.html">__global.<wbr>Orizuru.<wbr>Transport</a>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_financialforcedev_orizuru.html">@financialforcedev/orizuru</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="classes/commonvalidator.html" class="tsd-kind-icon">Common<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/handler.html" class="tsd-kind-icon">Handler</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="classes/handlerfunctionvalidator.html" class="tsd-kind-icon">Handler<wbr>Function<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="classes/handlervalidator.html" class="tsd-kind-icon">Handler<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="classes/messagevalidator.html" class="tsd-kind-icon">Message<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="classes/publishfunctionvalidator.html" class="tsd-kind-icon">Publish<wbr>Function<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/publisher.html" class="tsd-kind-icon">Publisher</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="classes/publishervalidator.html" class="tsd-kind-icon">Publisher<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="classes/routevalidator.html" class="tsd-kind-icon">Route<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="classes/schemavalidator.html" class="tsd-kind-icon">Schema<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/server.html" class="tsd-kind-icon">Server</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="classes/servervalidator.html" class="tsd-kind-icon">Server<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="classes/transport.html" class="tsd-kind-icon">Transport</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="interfaces/avroschema.html" class="tsd-kind-icon">Avro<wbr>Schema</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-has-type-parameter tsd-is-external">
-						<a href="interfaces/iorizurumessage.html" class="tsd-kind-icon">IOrizuru<wbr>Message</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="interfaces/iserverimpl.html" class="tsd-kind-icon">IServer<wbr>Impl</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="interfaces/itransport.html" class="tsd-kind-icon">ITransport</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-private">
-						<a href="interfaces/routeconfiguration.html" class="tsd-kind-icon">Route<wbr>Configuration</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-has-type-parameter tsd-is-private">
-						<a href="interfaces/validatedpublishfunctionoptions.html" class="tsd-kind-icon">Validated<wbr>Publish<wbr>Function<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-external">
-						<a href="globals.html#handlerfunction" class="tsd-kind-icon">Handler<wbr>Function</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-is-external">
-						<a href="globals.html#responsewriter" class="tsd-kind-icon">Response<wbr>Writer</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-is-external">
-						<a href="globals.html#responsewriterfunction" class="tsd-kind-icon">Response<wbr>Writer<wbr>Function</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#delete" class="tsd-kind-icon">DELETE</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#get" class="tsd-kind-icon">GET</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#head" class="tsd-kind-icon">HEAD</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#options" class="tsd-kind-icon">OPTIONS</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#patch" class="tsd-kind-icon">PATCH</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#post" class="tsd-kind-icon">POST</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#put" class="tsd-kind-icon">PUT</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-private tsd-is-not-exported">
-						<a href="globals.html#router" class="tsd-kind-icon">Router</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#trace" class="tsd-kind-icon">TRACE</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
-						<a href="globals.html#calculateapiendpoint" class="tsd-kind-icon">calculate<wbr>Api<wbr>Endpoint</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
-						<a href="globals.html#compileschema" class="tsd-kind-icon">compile<wbr>Schema</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#create" class="tsd-kind-icon">create</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
-						<a href="globals.html#defaultpathmapper" class="tsd-kind-icon">default<wbr>Path<wbr>Mapper</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
-						<a href="globals.html#defaultresponsewriter" class="tsd-kind-icon">default<wbr>Response<wbr>Writer</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
-						<a href="globals.html#getendpoint" class="tsd-kind-icon">get<wbr>Endpoint</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
-						<a href="globals.html#getschemaname" class="tsd-kind-icon">get<wbr>Schema<wbr>Name</a>
-					</li>
-					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-private">
-						<a href="globals.html#messagehandler" class="tsd-kind-icon">message<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private tsd-is-not-exported">
-						<a href="globals.html#parseschema" class="tsd-kind-icon">parse<wbr>Schema</a>
-					</li>
 				</ul>
 			</nav>
 		</div>
