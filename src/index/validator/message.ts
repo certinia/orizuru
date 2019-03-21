@@ -24,16 +24,21 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @module validator/message
+ */
+
 import { AvroSchema } from '../..';
 
 /**
- * Validates a message against the Apache Avro schema.
- * @private
+ * Validates a message against the [Apache Avro](https://avro.apache.org/docs/current/) schema.
  */
 export class MessageValidator {
 
 	/**
 	 * Validates a message.
+	 * @param schema The [Apache Avro](https://avro.apache.org/docs/current/) schema to validate.
+	 * @param message The incoming message to validate.
 	 */
 	public validate(schema: AvroSchema, message: any) {
 

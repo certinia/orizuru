@@ -24,12 +24,15 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @module validator/server
+ */
+
 import { Options } from '../..';
 import { CommonValidator } from './shared/common';
 
 /**
  * Validates the {@link Server} configuration.
- * @private
  */
 export class ServerValidator extends CommonValidator {
 

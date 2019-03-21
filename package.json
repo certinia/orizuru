@@ -20,9 +20,9 @@
 		"coverage-systemtests": "nyc --report-dir=coverage --nycrc-path=systemtests/.nyc.json mocha --config systemtests/.mocha.json",
 		"coverage-unit": "jest --config test/.jest.json",
 		"doc": "npm run doc-generate && npm run doc-sanitize-avsc && npm run doc-sanitize-node",
-		"doc-generate": "typedoc --gitRevision master --ignoreCompilerErrors --out doc src/**/* --mode file",
-		"doc-sanitize-avsc": "sed -E -i '' 's|'$PWD'/node_modules/avsc/types/index.d.ts:([0-9]*)|<a href=\"https://github.com/mtth/avsc/blob/master/types/index.d.ts#L\\1\">avsc/types/index.d.ts:\\1</a>|g' $(find doc -type f -regex '^doc/[a-zA-Z/.]*.html$')",
-		"doc-sanitize-node": "sed -E -i '' 's|'$PWD'/node_modules/@types/node/events.d.ts:([0-9]*)|<a href=\"https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/events.d.ts#L\\1\">node/events.d.ts:\\1</a>|g' $(find doc -type f -regex '^doc/[a-zA-Z/.]*.html$')",
+		"doc-generate": "typedoc --gitRevision master --ignoreCompilerErrors --out doc src/**/* --readme readme.md",
+		"doc-sanitize-avsc": "sed -E -i '' 's|'$PWD'/node_modules/avsc/types/index.d.ts:([0-9]*)|<a href=\"https://github.com/mtth/avsc/blob/master/types/index.d.ts#L\\1\">avsc/types/index.d.ts:\\1</a>|g' $(find doc -type f -regex '^doc/[a-zA-Z/._]*.html$')",
+		"doc-sanitize-node": "sed -E -i '' 's|'$PWD'/node_modules/@types/node/events.d.ts:([0-9]*)|<a href=\"https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/events.d.ts#L\\1\">node/events.d.ts:\\1</a>|g' $(find doc -type f -regex '^doc/[a-zA-Z/._]*.html$')",
 		"posttest": "npm run coverage-system",
 		"prepare": "npm run build",
 		"pretest": "tslint -p tsconfig.json",
@@ -54,7 +54,7 @@
 		"lodash": "^4.17.11"
 	},
 	"devDependencies": {
-		"@financialforcedev/orizuru-transport-rabbitmq": "^5.0.1",
+		"@financialforcedev/orizuru-transport-rabbitmq": "^5.1.0",
 		"@types/chai": "^4.1.7",
 		"@types/chai-as-promised": "^7.1.0",
 		"@types/jest": "^24.0.11",
@@ -72,6 +72,7 @@
 		"ts-jest": "^24.0.0",
 		"tslint": "^5.14.0",
 		"typedoc": "^0.14.2",
+		"typedoc-plugin-external-module-name": "^2.0.0",
 		"typescript": "^3.3.4000"
 	}
 }

@@ -24,25 +24,33 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @module validator/publishFunction
+ */
+
 import { isPlainObject } from 'lodash';
 
 import { AvroSchema, Options } from '../..';
 
 import { SchemaValidator } from './shared/schema';
 
-/**
- * @private
- */
 export interface ValidatedPublishFunctionOptions<C extends Orizuru.Context, M extends Orizuru.Message> extends Options.IPublishFunction<C, M> {
+
+	/**
+	 * The [Apache Avro](https://avro.apache.org/docs/current/) schema.
+	 */
 	schema: AvroSchema;
 }
 
 /**
- * Validates {@link Publisher} function configurations.
- * @private
+ * Validates {@link Publisher} function options.
  */
 export class PublishFunctionValidator {
 
+	/**
+	 * Validate the publish function options.
+	 * @param options The publish function options to validate.
+	 */
 	public validate<C extends Orizuru.Context, M extends Orizuru.Message>(options: Options.IPublishFunction<C, M>) {
 
 		if (!options) {

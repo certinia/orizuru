@@ -24,6 +24,10 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @module validator/shared/schema
+ */
+
 import { Type } from 'avsc';
 import { hasIn, isPlainObject, isString } from 'lodash';
 
@@ -31,7 +35,6 @@ import { AvroSchema } from '../../..';
 
 /**
  * Parses the schema from a JSON string.
- * @private
  */
 function parseSchema(schema: string) {
 
@@ -47,8 +50,7 @@ function parseSchema(schema: string) {
  * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc library}.
  *
  * This also checks that the schema has no anonymous types which can cause problems with other
- * [Apache Avro](https://avro.apache.org/) implementations.
- * @private
+ * [Apache Avro](https://avro.apache.org/docs/current/) implementations.
  */
 function compileSchema(uncompiledSchema: any) {
 
@@ -63,11 +65,14 @@ function compileSchema(uncompiledSchema: any) {
 }
 
 /**
- * Validates the [Apache Avro](https://avro.apache.org/) schema.
- * @private
+ * Validates the [Apache Avro](https://avro.apache.org/docs/current/) schema.
  */
 export class SchemaValidator {
 
+	/**
+	 * Validates the schema.
+	 * @param schema The [Apache Avro](https://avro.apache.org/docs/current/) schema to validate.
+	 */
 	public validate(schema: any): AvroSchema {
 
 		if (!schema) {

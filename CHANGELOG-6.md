@@ -36,7 +36,7 @@
 
 ### OTHER CHANGES
 
-- The transport schema has been updated to an Apache Avro schema (`.avsc`) file.
+- The transport schema has been updated to an [Apache Avro](https://avro.apache.org/docs/current/) schema (`.avsc`) file.
 - Updated the JS documentation to use the Minami theme.
 - Removed the jsbeautifyrc file.
 	- We now use the beautify file specified in the eslint-config package.

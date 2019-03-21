@@ -24,12 +24,15 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @module validator/handler
+ */
+
 import { Options } from '../..';
 import { CommonValidator } from './shared/common';
 
 /**
  * Validates the {@link Handler} configuration.
- * @private
  */
 export class HandlerValidator extends CommonValidator {
 

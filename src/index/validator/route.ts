@@ -24,6 +24,10 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @module validator/route
+ */
+
 import { ErrorRequestHandler, RequestHandler } from 'express-serve-static-core';
 import { BAD_REQUEST, OK } from 'http-status-codes';
 import { isArray, isBoolean, isFunction, isPlainObject, isString } from 'lodash';
@@ -32,24 +36,65 @@ import { AvroSchema, Options, Request, Response, ResponseWriterFunction } from '
 import * as RouteMethod from '../server/routeMethod';
 import { SchemaValidator } from './shared/schema';
 
-/**
- * @private
- */
 export interface RouteConfiguration {
+
+	/**
+	 * The API endpoint for this route.
+	 */
 	apiEndpoint: string;
+
+	/**
+	 * The full name for the schema.
+	 */
 	fullSchemaName: string;
+
+	/**
+	 * The HTTP method for this route.
+	 */
 	method: string;
-	middlewares: Array<ErrorRequestHandler | RequestHandler>;
+
+	/**
+	 * The middleware for this route.
+	 */
+	middleware: Array<ErrorRequestHandler | RequestHandler>;
+
+	/**
+	 * A function that maps the schema namespace to the required format.
+	 */
 	pathMapper: (schemaNamespace: string) => string;
+
+	/**
+	 * The publish options required for the transport layer.
+	 */
 	publishOptions: Options.Transport.IPublish;
+
+	/**
+	 * Writes the response to the incoming request.
+	 */
 	responseWriter: ResponseWriterFunction;
+
+	/**
+	 * The [Apache Avro](https://avro.apache.org/docs/current/) schema that messages for this route should be validated against.
+	 */
 	schema: AvroSchema;
+
+	/**
+	 * The schema name.
+	 */
 	schemaName: string;
+
+	/**
+	 * Determines whether this process is dealt with synchronously.
+	 * By default, false.
+	 */
 	synchronous?: boolean;
+
 }
 
 /**
- * @private
+ * The default response writer.
+ *
+ * @param server The Orizuru server instance.
  */
 function defaultResponseWriter(server: Orizuru.IServer) {
 
@@ -67,14 +112,18 @@ function defaultResponseWriter(server: Orizuru.IServer) {
 }
 
 /**
- * @private
+ * Generates the default path for the route.
+ *
+ * @param namespace The schema namespace.
  */
 function defaultPathMapper(namespace: string) {
 	return namespace.replace(/\./g, '/').replace('_', '.');
 }
 
 /**
- * @private
+ * Generates the endpoint for the route.
+ *
+ * @param [endpoint] Optional endpoint to validate.
  */
 function getEndpoint(endpoint?: string) {
 
@@ -91,7 +140,9 @@ function getEndpoint(endpoint?: string) {
 }
 
 /**
- * @private
+ * Gets the schema name from the [Apache Avro](https://avro.apache.org/docs/current/) schema.
+ *
+ * @param avroSchema The [Apache Avro](https://avro.apache.org/docs/current/) schema.
  */
 function getSchemaName(avroSchema: AvroSchema) {
 	const schemaNameParts = avroSchema.name.split('.');
@@ -99,7 +150,11 @@ function getSchemaName(avroSchema: AvroSchema) {
 }
 
 /**
- * @private
+ * Calculates the full API endpoint for this route.
+ *
+ * @param schema The [Apache Avro](https://avro.apache.org/docs/current/) schema.
+ * @param endpoint The endpoint for the route.
+ * @param pathMapper The path mapper.
  */
 function calculateApiEndpoint(schema: AvroSchema, endpoint: string, pathMapper: (schemaNamespace: string) => string) {
 	const schemaName = getSchemaName(schema);
@@ -111,10 +166,13 @@ function calculateApiEndpoint(schema: AvroSchema, endpoint: string, pathMapper: 
 
 /**
  * Validates the {@link Route} configuration.
- * @private
  */
 export class RouteValidator {
 
+	/**
+	 * Validate the route configuration options.
+	 * @param options The route configuration options to validate.
+	 */
 	public validate(options: Options.IRouteConfiguration): RouteConfiguration {
 
 		if (!options) {
@@ -174,7 +232,7 @@ export class RouteValidator {
 			apiEndpoint,
 			fullSchemaName: avroSchema.name,
 			method: options.method || RouteMethod.POST,
-			middlewares: options.middleware || [],
+			middleware: options.middleware || [],
 			pathMapper: options.pathMapper || defaultPathMapper,
 			publishOptions: options.publishOptions || {
 				eventName: avroSchema.name

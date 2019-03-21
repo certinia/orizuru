@@ -3,7 +3,7 @@
 ## 9.3.0
 
 - Updated IHandler, IPublisher and IServer interfaces to extend EventEmitter
-- Added support for ErrorRequestHandler as middlewares
+- Added support for ErrorRequestHandler as middleware
 
 ## 9.2.0
 
@@ -30,7 +30,7 @@
 
 - The `addRoute` method can now add synchronous APIs.
 	- Set the `synchronous` property to `true` in the route options to do this.
-	- All incoming messages are still validated against the Apache Avro schema but are not published to a message queue.
+	- All incoming messages are still validated against the [Apache Avro](https://avro.apache.org/docs/current/) schema but are not published to a message queue.
 	- The validated request is stored in the body property of the request.
 	- Synchronous request logic should be added to the `responseWriter` property.
 - The routing mechanism for Orizuru has been updated so that each endpoint now uses a different express router.

@@ -1,0 +1,9 @@
+{
+	"extends": [
+		"../tslint.json"
+	],
+	"rules": {
+		"completed-docs": false
+	},
+	"rulesDirectory": []
+}

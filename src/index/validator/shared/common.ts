@@ -24,12 +24,15 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @module validator/shared/common
+ */
+
 import { isFunction, isObjectLike, isPlainObject } from 'lodash';
 import { Options } from '../../..';
 
 /**
  * Validates common configuration shared by the Handler, Publisher and Server.
- * @private
  */
 export class CommonValidator {
 

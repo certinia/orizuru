@@ -5,6 +5,7 @@
 	],
 	"jsRules": {},
 	"rules": {
+		"completed-docs": true,
 		"indent": [
 			true,
 			"tabs",
