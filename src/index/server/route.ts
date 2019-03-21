@@ -33,9 +33,6 @@ import { Options, Request, Response } from '../..';
 import { MessageValidator } from '../validator/message';
 import { RouteConfiguration } from '../validator/route';
 
-/**
- * @private
- */
 export function create(server: Orizuru.IServer, routeConfiguration: RouteConfiguration) {
 
 	const messageValidator = new MessageValidator();

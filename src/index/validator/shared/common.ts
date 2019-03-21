@@ -33,7 +33,6 @@ import { Options } from '../../..';
 
 /**
  * Validates common configuration shared by the Handler, Publisher and Server.
- * @private
  */
 export class CommonValidator {
 

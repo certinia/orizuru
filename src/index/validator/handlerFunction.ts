@@ -33,7 +33,6 @@ import { SchemaValidator } from './shared/schema';
 
 /**
  * Validates {@link Handler} function configurations.
- * @private
  */
 export class HandlerFunctionValidator {
 

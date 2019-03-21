@@ -35,7 +35,6 @@ import { AvroSchema } from '../../..';
 
 /**
  * Parses the schema from a JSON string.
- * @private
  */
 function parseSchema(schema: string) {
 
@@ -52,7 +51,6 @@ function parseSchema(schema: string) {
  *
  * This also checks that the schema has no anonymous types which can cause problems with other
  * [Apache Avro](https://avro.apache.org/) implementations.
- * @private
  */
 function compileSchema(uncompiledSchema: any) {
 
@@ -68,7 +66,6 @@ function compileSchema(uncompiledSchema: any) {
 
 /**
  * Validates the [Apache Avro](https://avro.apache.org/) schema.
- * @private
  */
 export class SchemaValidator {
 

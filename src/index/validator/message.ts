@@ -32,7 +32,6 @@ import { AvroSchema } from '../..';
 
 /**
  * Validates a message against the Apache Avro schema.
- * @private
  */
 export class MessageValidator {
 

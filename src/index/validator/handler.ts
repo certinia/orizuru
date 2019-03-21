@@ -33,7 +33,6 @@ import { CommonValidator } from './shared/common';
 
 /**
  * Validates the {@link Handler} configuration.
- * @private
  */
 export class HandlerValidator extends CommonValidator {
 

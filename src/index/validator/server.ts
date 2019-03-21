@@ -33,7 +33,6 @@ import { CommonValidator } from './shared/common';
 
 /**
  * Validates the {@link Server} configuration.
- * @private
  */
 export class ServerValidator extends CommonValidator {
 

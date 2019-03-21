@@ -39,9 +39,6 @@ import * as ROUTE_METHOD from './server/routeMethod';
 import { RouteValidator } from './validator/route';
 import { ServerValidator } from './validator/server';
 
-/**
- * @private
- */
 const Router = express.Router;
 
 /**

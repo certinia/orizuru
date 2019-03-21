@@ -33,7 +33,6 @@ import { CommonValidator } from './shared/common';
 
 /**
  * Validates the {@link Publisher} configuration.
- * @private
  */
 export class PublisherValidator extends CommonValidator {
 
