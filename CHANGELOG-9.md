@@ -1,5 +1,10 @@
 # @financialforcedev/orizuru
 
+## 9.3.1
+
+- Rework and complete documentation
+- Convert to using Jest for testing
+
 ## 9.3.0
 
 - Updated IHandler, IPublisher and IServer interfaces to extend EventEmitter
