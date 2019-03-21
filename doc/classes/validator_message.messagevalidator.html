@@ -3,17 +3,17 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@financialforcedev/orizuru</title>
+	<title>MessageValidator | @financialforcedev/orizuru</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
 <header>
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">@financialforcedev/orizuru</a>
+					<a href="../index.html" class="title">@financialforcedev/orizuru</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -53,113 +53,170 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="globals.html">Globals</a>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="../modules/validator_message.html">validator/message</a>
+				</li>
+				<li>
+					<a href="validator_message.messagevalidator.html">MessageValidator</a>
 				</li>
 			</ul>
-			<h1> @financialforcedev/orizuru</h1>
+			<h1>Class MessageValidator</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Validates a message against the <a href="https://avro.apache.org/docs/current/">Apache Avro</a> schema.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">MessageValidator</span>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>External modules</h3>
+							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_financialforcedev_orizuru.html" class="tsd-kind-icon">@financialforcedev/orizuru</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/handler.html" class="tsd-kind-icon">handler</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/handler_messagehandler.html" class="tsd-kind-icon">handler/message<wbr>Handler</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/publisher.html" class="tsd-kind-icon">publisher</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/server.html" class="tsd-kind-icon">server</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/server_route.html" class="tsd-kind-icon">server/route</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/server_routemethod.html" class="tsd-kind-icon">server/route<wbr>Method</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/transport_transport.html" class="tsd-kind-icon">transport/transport</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/validator_handler.html" class="tsd-kind-icon">validator/handler</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/validator_handlerfunction.html" class="tsd-kind-icon">validator/handler<wbr>Function</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/validator_message.html" class="tsd-kind-icon">validator/message</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/validator_publishfunction.html" class="tsd-kind-icon">validator/publish<wbr>Function</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/validator_publisher.html" class="tsd-kind-icon">validator/publisher</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/validator_route.html" class="tsd-kind-icon">validator/route</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/validator_server.html" class="tsd-kind-icon">validator/server</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/validator_shared_common.html" class="tsd-kind-icon">validator/shared/common</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/validator_shared_schema.html" class="tsd-kind-icon">validator/shared/schema</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="validator_message.messagevalidator.html#validate" class="tsd-kind-icon">validate</a></li>
 							</ul>
 						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="validate" class="tsd-anchor"></a>
+					<h3>validate</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">validate<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><a href="../interfaces/_financialforcedev_orizuru.avroschema.html" class="tsd-signature-type">AvroSchema</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/financialforcedev/orizuru/blob/master/src/index/validator/message.ts#L43">index/validator/message.ts:43</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Validates a message.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>schema: <a href="../interfaces/_financialforcedev_orizuru.avroschema.html" class="tsd-signature-type">AvroSchema</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The <a href="https://avro.apache.org/docs/current/">Apache Avro</a> schema to validate.</p>
+									</div>
+								</li>
+								<li>
+									<h5>message: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The incoming message to validate.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals current ">
-						<a href="globals.html"><em>Globals</em></a>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="label tsd-is-external">
 						<span>Internals</span>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/handler.html">handler</a>
+						<a href="../modules/handler.html">handler</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/handler_messagehandler.html">handler/message<wbr>Handler</a>
+						<a href="../modules/handler_messagehandler.html">handler/message<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/publisher.html">publisher</a>
+						<a href="../modules/publisher.html">publisher</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/server.html">server</a>
+						<a href="../modules/server.html">server</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/server_route.html">server/route</a>
+						<a href="../modules/server_route.html">server/route</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/server_routemethod.html">server/route<wbr>Method</a>
+						<a href="../modules/server_routemethod.html">server/route<wbr>Method</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/transport_transport.html">transport/transport</a>
+						<a href="../modules/transport_transport.html">transport/transport</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/validator_handler.html">validator/handler</a>
+						<a href="../modules/validator_handler.html">validator/handler</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/validator_handlerfunction.html">validator/handler<wbr>Function</a>
+						<a href="../modules/validator_handlerfunction.html">validator/handler<wbr>Function</a>
+					</li>
+					<li class="current tsd-kind-external-module">
+						<a href="../modules/validator_message.html">validator/message</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/validator_message.html">validator/message</a>
+						<a href="../modules/validator_publishfunction.html">validator/publish<wbr>Function</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/validator_publishfunction.html">validator/publish<wbr>Function</a>
+						<a href="../modules/validator_publisher.html">validator/publisher</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/validator_publisher.html">validator/publisher</a>
+						<a href="../modules/validator_route.html">validator/route</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/validator_route.html">validator/route</a>
+						<a href="../modules/validator_server.html">validator/server</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/validator_server.html">validator/server</a>
+						<a href="../modules/validator_shared_common.html">validator/shared/common</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/validator_shared_common.html">validator/shared/common</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/validator_shared_schema.html">validator/shared/schema</a>
+						<a href="../modules/validator_shared_schema.html">validator/shared/schema</a>
 					</li>
 					<li class="label tsd-is-external">
 						<span>Externals</span>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_financialforcedev_orizuru.html">@financialforcedev/orizuru</a>
+						<a href="../modules/_financialforcedev_orizuru.html">@financialforcedev/orizuru</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class tsd-parent-kind-external-module">
+						<a href="validator_message.messagevalidator.html" class="tsd-kind-icon">Message<wbr>Validator</a>
+						<ul>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="validator_message.messagevalidator.html#validate" class="tsd-kind-icon">validate</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
 				</ul>
 			</nav>
 		</div>
@@ -228,7 +285,7 @@
 	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>
