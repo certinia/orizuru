@@ -25,6 +25,7 @@
  */
 
 /**
+ * The HTTP methods that can be used with the Orizuru Server.
  * @module server/routeMethod
  */
 
