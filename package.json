@@ -54,7 +54,7 @@
 		"lodash": "^4.17.11"
 	},
 	"devDependencies": {
-		"@financialforcedev/orizuru-transport-rabbitmq": "^5.0.1",
+		"@financialforcedev/orizuru-transport-rabbitmq": "^5.1.0",
 		"@types/chai": "^4.1.7",
 		"@types/chai-as-promised": "^7.1.0",
 		"@types/jest": "^24.0.11",
