@@ -24,6 +24,10 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @module validator/publishFunction
+ */
+
 import { isPlainObject } from 'lodash';
 
 import { AvroSchema, Options } from '../..';

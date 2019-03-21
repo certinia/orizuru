@@ -24,6 +24,10 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @module server
+ */
+
 import { EventEmitter } from 'events';
 import express from 'express';
 import { ErrorRequestHandler, RequestHandler } from 'express-serve-static-core';

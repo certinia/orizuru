@@ -24,6 +24,10 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @module transport/transport
+ */
+
 import { ForSchemaOptions, Schema, Type } from 'avsc';
 import fs from 'fs';
 import { resolve } from 'path';

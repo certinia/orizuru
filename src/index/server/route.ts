@@ -24,6 +24,10 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @module server/route
+ */
+
 import { Options, Request, Response } from '../..';
 
 import { MessageValidator } from '../validator/message';

@@ -25,6 +25,10 @@
  */
 
 /**
+ * @module server/routeMethod
+ */
+
+/**
  * _The DELETE method requests that the origin server remove the
  * association between the target resource and its current
  * functionality.  In effect, this method is similar to the rm command

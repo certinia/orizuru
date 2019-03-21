@@ -25,9 +25,9 @@
  */
 
 /**
- * The Index file for project.
+ * FinancialForce Orizuru
  * Returns the Server, Handler and Publisher classes.
- * @module index
+ * @module @financialforcedev/orizuru
  * @see Server
  * @see Handler
  * @see Publisher
