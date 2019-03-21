@@ -34,6 +34,12 @@ import { get } from 'lodash';
 import { Handler, IOrizuruMessage, Options } from '../..';
 import { Transport } from '../transport/transport';
 
+/**
+ * Handles an incoming message with the given handler.
+ *
+ * @param handler The Orizuru Handler.
+ * @param options The handler function options.
+ */
 export function messageHandler<C extends Orizuru.Context, M extends Orizuru.Message>(handler: Handler, options: Options.IHandlerFunction<C, M>) {
 
 	const eventName = get(options.subscribeOptions, 'eventName') || get(options.schema, 'name');

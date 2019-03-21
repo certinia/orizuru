@@ -69,6 +69,10 @@ function compileSchema(uncompiledSchema: any) {
  */
 export class SchemaValidator {
 
+	/**
+	 * Validates the schema.
+	 * @param schema The [Apache Avro](https://avro.apache.org/) schema to validate.
+	 */
 	public validate(schema: any): AvroSchema {
 
 		if (!schema) {

@@ -69,7 +69,12 @@ declare global {
 	namespace Express {
 
 		interface Request {
+
+			/**
+			 * The Orizuru context for this request.
+			 */
 			orizuru?: Orizuru.Context;
+
 		}
 
 	}
@@ -83,12 +88,35 @@ declare global {
 		 */
 		interface IHandler extends EventEmitter {
 
+			/**
+			 * The Orizuru Handler Options.
+			 */
 			options: Options.IHandler;
 
+			/**
+			 * Initializes the handler.
+			 */
 			init(): Promise<void>;
+
+			/**
+			 * Handles an incoming message from the transport layer.
+			 *
+			 * @param options The handle function options.
+			 */
 			handle(options: IHandlerFunction): Promise<void>;
 
+			/**
+			 * Emit an error event.
+			 *
+			 * @param event The error event.
+			 */
 			error(event: any): void;
+
+			/**
+			 * Emit an info event.
+			 *
+			 * @param event The info event.
+			 */
 			info(event: any): void;
 
 		}
@@ -98,12 +126,35 @@ declare global {
 		 */
 		interface IPublisher extends EventEmitter {
 
+			/**
+			 * The Orizuru Publisher Options.
+			 */
 			options: Options.IPublisher;
 
+			/**
+			 * Initializes the publisher.
+			 */
 			init(): Promise<void>;
+
+			/**
+			 * Publishes an incoming message to the transport layer.
+			 *
+			 * @param options The publish function options.
+			 */
 			publish(options: IPublishFunction): Promise<boolean>;
 
+			/**
+			 * Emit an error event.
+			 *
+			 * @param event The error event.
+			 */
 			error(event: any): void;
+
+			/**
+			 * Emit an info event.
+			 *
+			 * @param event The info event.
+			 */
 			info(event: any): void;
 
 		}
@@ -113,18 +164,73 @@ declare global {
 		 */
 		interface IServer extends EventEmitter {
 
+			/**
+			 * The Orizuru Server Options.
+			 */
 			options: Options.IServer;
+
+			/**
+			 * The publisher that is used to publish Orizuru messages via the transport layer.
+			 */
 			publisher: Orizuru.IPublisher;
+
+			/**
+			 * The server implementation.
+			 *
+			 * Express is used by default.
+			 */
 			serverImpl: IServerImpl;
 
+			/**
+			 * Adds a route to the server.
+			 *
+			 * @param options The route configuration options.
+			 */
 			addRoute(options: IRouteConfiguration): this;
+
+			/**
+			 * Assigns setting `name` to `value`.
+			 *
+			 * @param setting The setting name.
+			 * @param val The setting value.
+			 */
 			set(setting: string, val: any): this;
+
+			/**
+			 * Use the given request handlers for the specified paths.
+			 *
+			 * @param path The path for the incoming request.
+			 * @param handlers The middleware to be used when processing the incoming request.
+			 */
 			use(path: string, ...handlers: Array<ErrorRequestHandler | RequestHandler>): this;
 
+			/**
+			 * Starts the server listening for connections.
+			 * This also initialises the transport connection.
+			 *
+			 * @param [callback] Optional callback to invoke after the server has started listening to connections.
+			 */
 			listen(callback?: (app: Orizuru.IServer) => void): void;
+
+			/**
+			 * Stops the server from accepting new connections.
+			 *
+			 * @param [callback] Optional callback to invoke after the server has stopped listening to connections.
+			 */
 			close(callback?: (app: Orizuru.IServer) => void): void;
 
+			/**
+			 * Emit an error event.
+			 *
+			 * @param event The error event.
+			 */
 			error(event: any): void;
+
+			/**
+			 * Emit an info event.
+			 *
+			 * @param event The info event.
+			 */
 			info(event: any): void;
 
 		}
@@ -185,11 +291,16 @@ export interface ITransport {
 
 	/**
 	 * Publishes a message.
+	 *
+	 * @param buffer The buffer that contains the message to publish.
+	 * @param options The options to use when publishing the message.
 	 */
 	publish: (buffer: Buffer, options: Orizuru.Transport.IPublish) => Promise<boolean>;
 
 	/**
 	 * Subscribes to a message queue.
+	 *
+	 * @param handler The handler to invoke when a message is received.
 	 */
 	subscribe: (handler: (content: Buffer) => Promise<void | Orizuru.IHandlerResponse>, options: Orizuru.Transport.ISubscribe) => Promise<void>;
 
@@ -223,10 +334,33 @@ export interface IOrizuruMessage<C extends Orizuru.Context, M extends Orizuru.Me
  * This allows us to easily set up a mock implementation for testing.
  */
 export interface IServerImpl {
+
 	(req: Request | http.IncomingMessage, res: Response | http.ServerResponse): void;
+
+	/**
+	 * Starts the server listening for connections on the given port.
+	 *
+	 * @param port The port number to listen to connections on.
+	 * @param [callback] Optional callback to invoke after the server has started listening to connections.
+	 */
 	listen(port: number, callback?: (app: this) => void): http.Server;
+
+	/**
+	 * Assigns setting `name` to `value`.
+	 *
+	 * @param setting The setting name.
+	 * @param val The setting value.
+	 */
 	set(setting: string, val: any): this;
+
+	/**
+	 * Use the given request handlers for the specified paths.
+	 *
+	 * @param path The path for the incoming request.
+	 * @param handlers The middleware to be used when processing the incoming request.
+	 */
 	use(path: string, ...handlers: Array<ErrorRequestHandler | RequestHandler>): this;
+
 }
 
 export type HandlerFunction<C extends Orizuru.Context, M> = (message: IOrizuruMessage<C, M>) => Promise<void | Orizuru.IHandlerResponse>;
@@ -267,6 +401,11 @@ export declare namespace Options {
 		 */
 		port: number;
 
+		/**
+		 * The server implementation.
+		 *
+		 * Express is used by default.
+		 */
 		server?: IServerImpl;
 
 		/**
@@ -329,7 +468,7 @@ export declare namespace Options {
 		method?: string;
 
 		/**
-		 * The middlewares for this route.
+		 * The middleware for this route.
 		 */
 		middleware?: Array<ErrorRequestHandler | RequestHandler>;
 
@@ -344,7 +483,7 @@ export declare namespace Options {
 		publishOptions?: Options.Transport.IPublish;
 
 		/**
-		 * Function to determine how the response is written to the server.
+		 * Writes the response to the incoming request.
 		 */
 		responseWriter?: ResponseWriterFunction;
 

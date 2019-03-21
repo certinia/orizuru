@@ -52,8 +52,19 @@ export class Handler extends EventEmitter {
 	 */
 	public static readonly INFO = Symbol();
 
+	/**
+	 * The Orizuru Handler Options.
+	 */
 	public readonly options: Options.IHandler;
+
+	/**
+	 * The transport layer for the handler.
+	 */
 	private readonly transport: ITransport;
+
+	/**
+	 * Validates Handler function options.
+	 */
 	private readonly validator: HandlerFunctionValidator;
 
 	/**
@@ -84,14 +95,16 @@ export class Handler extends EventEmitter {
 	}
 
 	/**
-	 * Initialise the handler.
+	 * Initializes the handler.
 	 */
 	public async init() {
 		await this.transport.connect();
 	}
 
 	/**
-	 * Sets the handler function for a schema type.
+	 * Handles an incoming message from the transport layer.
+	 *
+	 * @param options The handle function options.
 	 *
 	 * @example
 	 * ```typescript
@@ -125,7 +138,8 @@ export class Handler extends EventEmitter {
 
 	/**
 	 * Emit an error event.
-	 * @param event - The error event.
+	 *
+	 * @param event The error event.
 	 */
 	public error(event: any) {
 		this.emit(Handler.ERROR, event);
@@ -133,7 +147,8 @@ export class Handler extends EventEmitter {
 
 	/**
 	 * Emit an info event.
-	 * @param event - The info event.
+	 *
+	 * @param event The info event.
 	 */
 	public info(event: any) {
 		this.emit(Handler.INFO, event);

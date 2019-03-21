@@ -32,32 +32,36 @@ import { isFunction, isPlainObject } from 'lodash';
 import { SchemaValidator } from './shared/schema';
 
 /**
- * Validates {@link Handler} function configurations.
+ * Validates {@link Handler} function options.
  */
 export class HandlerFunctionValidator {
 
-	public validate(config: any) {
+	/**
+	 * Validate the handler options.
+	 * @param options The handler options to validate.
+	 */
+	public validate(options: any) {
 
-		if (!config) {
+		if (!options) {
 			throw new Error('Missing required object parameter.');
 		}
 
-		if (!isPlainObject(config)) {
-			throw new Error(`Invalid parameter: ${config} is not an object.`);
+		if (!isPlainObject(options)) {
+			throw new Error(`Invalid parameter: ${options} is not an object.`);
 		}
 
-		if (!config.handler) {
+		if (!options.handler) {
 			throw new Error('Missing required function parameter: handler.');
 		}
 
-		if (!isFunction(config.handler)) {
+		if (!isFunction(options.handler)) {
 			throw new Error('Invalid parameter: handler is not a function.');
 		}
 
 		// Validate the schema
-		config.schema = new SchemaValidator().validate(config.schema);
+		options.schema = new SchemaValidator().validate(options.schema);
 
-		return config;
+		return options;
 
 	}
 

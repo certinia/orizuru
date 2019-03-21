@@ -33,6 +33,11 @@ import { Options, Request, Response } from '../..';
 import { MessageValidator } from '../validator/message';
 import { RouteConfiguration } from '../validator/route';
 
+/**
+ * Creates a route for the Orizuru Server.
+ * @param server The Orizuru server instance.
+ * @param routeConfiguration The configuration for this route.
+ */
 export function create(server: Orizuru.IServer, routeConfiguration: RouteConfiguration) {
 
 	const messageValidator = new MessageValidator();

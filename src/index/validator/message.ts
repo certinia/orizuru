@@ -37,6 +37,8 @@ export class MessageValidator {
 
 	/**
 	 * Validates a message.
+	 * @param schema The [Apache Avro](https://avro.apache.org/) schema to validate.
+	 * @param message The incoming message to validate.
 	 */
 	public validate(schema: AvroSchema, message: any) {
 

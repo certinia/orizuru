@@ -52,10 +52,29 @@ export class Publisher extends EventEmitter {
 	 */
 	public static readonly INFO = Symbol();
 
+	/**
+	 * The Orizuru Publisher Options.
+	 */
 	public readonly options: Options.IPublisher;
+
+	/**
+	 * Internal transport implementation that combines the message and context.
+	 */
 	private readonly transport: Transport;
+
+	/**
+	 * The transport layer for the publisher.
+	 */
 	private readonly transportImpl: ITransport;
+
+	/**
+	 * Validates Publisher function options.
+	 */
 	private readonly validator: PublishFunctionValidator;
+
+	/**
+	 * Validates a message against the Apache Avro schema.
+	 */
 	private readonly messageValidator: MessageValidator;
 
 	/**
@@ -90,14 +109,15 @@ export class Publisher extends EventEmitter {
 	}
 
 	/**
-	 * Initialise the publisher.
+	 * Initializes the publisher.
 	 */
 	public async init() {
 		await this.transportImpl.connect();
 	}
 
 	/**
-	 * Publishes a message.
+	 * Publishes an incoming message to the transport layer.
+	 * @param options The publish function options.
 	 *
 	 * @example
 	 * // publishes a message
@@ -160,7 +180,7 @@ export class Publisher extends EventEmitter {
 
 	/**
 	 * Emit an error event.
-	 * @param event - The error event.
+	 * @param event The error event.
 	 */
 	public error(event: any) {
 		this.emit(Publisher.ERROR, event);
@@ -168,7 +188,7 @@ export class Publisher extends EventEmitter {
 
 	/**
 	 * Emit an info event.
-	 * @param event - The info event.
+	 * @param event The info event.
 	 */
 	public info(event: any) {
 		this.emit(Publisher.INFO, event);

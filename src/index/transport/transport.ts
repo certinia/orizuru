@@ -38,6 +38,9 @@ import { IOrizuruMessage } from '../..';
  */
 export class Transport {
 
+	/**
+	 * The compiled transport [Apache Avro](https://avro.apache.org/docs/current/) schema.
+	 */
 	private readonly compiledSchema: Type;
 
 	/**
@@ -58,6 +61,9 @@ export class Transport {
 
 	/**
 	 * Decode a message using the transport schema.
+	 *
+	 * @param schema The [Apache Avro](https://avro.apache.org/docs/current/) schema.
+	 * @param content The buffer from which to decode the message.
 	 */
 	public decode<C extends Orizuru.Context, M extends Orizuru.Message>(schema: Type, content: Buffer): IOrizuruMessage<C, M> {
 
@@ -78,6 +84,10 @@ export class Transport {
 
 	/**
 	 * Encode a message using the transport schema.
+	 *
+	 * @param schema The [Apache Avro](https://avro.apache.org/docs/current/) schema.
+	 * @param context The Orizuru context for this message.
+	 * @param message The message to send.
 	 */
 	public encode<C extends Orizuru.Context, M extends Orizuru.Message>(schema: Type, { context, message }: IOrizuruMessage<C, M>) {
 
@@ -94,6 +104,13 @@ export class Transport {
 
 	}
 
+	/**
+	 * Generates the context schema for the message.
+	 *
+	 * This makes sure that the schema has no anonymous types.
+	 *
+	 * @param context The context for which to generate the schema.
+	 */
 	private getContextSchema(context: any) {
 
 		const compiledContextSchema = Type.forValue(context, {
@@ -107,6 +124,11 @@ export class Transport {
 
 	}
 
+	/**
+	 * Generates type names for any anonymous types.
+	 *
+	 * @param schema The schema for which to generate the type names.
+	 */
 	private getTypeHook(): (schema: Schema, opts: ForSchemaOptions) => Type {
 
 		let i = 1;

@@ -55,21 +55,51 @@ export class Server extends EventEmitter {
 	public static readonly ROUTE_METHOD = ROUTE_METHOD;
 
 	/**
-	 * The error event name.
+	 * The error event symbol.
 	 */
 	public static readonly ERROR = Symbol();
 
 	/**
-	 * The info event name.
+	 * The info event symbol.
 	 */
 	public static readonly INFO = Symbol();
 
+	/**
+	 * The server options.
+	 */
 	public readonly options: Options.IServer;
+
+	/**
+	 * The publisher that is used to publish Orizuru messages via the transport layer.
+	 */
 	private readonly publisherImpl: Publisher;
+
+	/**
+	 * The server implementation.
+	 *
+	 * Express is used by default.
+	 */
 	private readonly server: IServerImpl;
+
+	/**
+	 * The route validator.
+	 *
+	 * This validates that the routes that are added to the server contain the correct information.
+	 */
 	private readonly validator: RouteValidator;
+
+	/**
+	 * An internal map of each of the routes to the appropriate Express Router.
+	 *
+	 * For example, if a route is added using the GET and POST method, the map contains
+	 * a single entry for the route with both the GET and POST methods added to a single
+	 * router.
+	 */
 	private readonly routerConfiguration: { [s: string]: express.Router };
 
+	/**
+	 * The root HTTP server that is used to recieve incoming traffic.
+	 */
 	private httpServer?: http.Server;
 
 	/**
@@ -119,14 +149,16 @@ export class Server extends EventEmitter {
 	}
 
 	/**
-	 * Adds a 'route' to the server.
+	 * Adds a route to the server.
+	 *
+	 * @param options The route configuration options.
 	 */
 	public addRoute(options: Options.IRouteConfiguration) {
 
 		// Validate the route options.
 		const validatedRouteConfiguration = this.validator.validate(options);
 
-		const { apiEndpoint, middlewares, fullSchemaName, method } = validatedRouteConfiguration;
+		const { apiEndpoint, middleware, fullSchemaName, method } = validatedRouteConfiguration;
 
 		let router: any = this.routerConfiguration[apiEndpoint];
 
@@ -149,7 +181,7 @@ export class Server extends EventEmitter {
 		this.info(`Adding route: ${fullSchemaName} (${method.toUpperCase()}).`);
 
 		// Add the router method.
-		router[method]('/', ...middlewares, createRoute(this, validatedRouteConfiguration));
+		router[method]('/', ...middleware, createRoute(this, validatedRouteConfiguration));
 
 		return this;
 
@@ -158,6 +190,8 @@ export class Server extends EventEmitter {
 	/**
 	 * Starts the server listening for connections.
 	 * This also initialises the transport connection.
+	 *
+	 * @param [callback] Optional callback to invoke after the server has started listening to connections.
 	 */
 	public async listen(callback?: (app: Orizuru.IServer) => void) {
 
@@ -175,6 +209,8 @@ export class Server extends EventEmitter {
 
 	/**
 	 * Stops the server from accepting new connections.
+	 *
+	 * @param [callback] Optional callback to invoke after the server has stopped listening to connections.
 	 */
 	public async close(callback?: (app: Orizuru.IServer) => void) {
 		if (this.httpServer) {
@@ -192,6 +228,9 @@ export class Server extends EventEmitter {
 
 	/**
 	 * Assigns setting `name` to `value`.
+	 *
+	 * @param setting The setting name.
+	 * @param val The setting value.
 	 */
 	public set(setting: string, val: any) {
 		this.server.set(setting, val);
@@ -200,6 +239,9 @@ export class Server extends EventEmitter {
 
 	/**
 	 * Use the given request handlers for the specified paths.
+	 *
+	 * @param path The path for the incoming request.
+	 * @param handlers The middleware to be used when processing the incoming request.
 	 */
 	public use(path: string, ...handlers: Array<ErrorRequestHandler | RequestHandler>) {
 		this.server.use(path, ...handlers);
@@ -231,7 +273,8 @@ export class Server extends EventEmitter {
 
 	/**
 	 * Emit an error event.
-	 * @param event - The error event.
+	 *
+	 * @param event The error event.
 	 */
 	public error(event: any) {
 		this.emit(Server.ERROR, event);
@@ -239,7 +282,8 @@ export class Server extends EventEmitter {
 
 	/**
 	 * Emit an info event.
-	 * @param event - The info event.
+	 *
+	 * @param event The info event.
 	 */
 	public info(event: any) {
 		this.emit(Server.INFO, event);
