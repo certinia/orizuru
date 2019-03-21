@@ -79,7 +79,7 @@ describe('index/validator/route', () => {
 				expect(validated.apiEndpoint).to.eql('/com/example/FullName');
 				expect(validated.fullSchemaName).to.eql('com.example.FullName');
 				expect(validated.method).to.eql('post');
-				expect(validated.middlewares).to.eql([]);
+				expect(validated.middleware).to.eql([]);
 				expect(validated.pathMapper).to.be.a('function');
 				expect(validated.publishOptions).to.eql({
 					eventName: 'com.example.FullName'
@@ -115,7 +115,7 @@ describe('index/validator/route', () => {
 				expect(validated.apiEndpoint).to.eql('/api/com/example/FullName');
 				expect(validated.fullSchemaName).to.eql('com.example.FullName');
 				expect(validated.method).to.eql('post');
-				expect(validated.middlewares).to.eql([]);
+				expect(validated.middleware).to.eql([]);
 				expect(validated.pathMapper).to.be.a('function');
 				expect(validated.publishOptions).to.eql({
 					eventName: 'com.example.FullName'
@@ -151,7 +151,7 @@ describe('index/validator/route', () => {
 				expect(validated.apiEndpoint).to.eql('/api/com/example/FullName');
 				expect(validated.fullSchemaName).to.eql('com.example.FullName');
 				expect(validated.method).to.eql('post');
-				expect(validated.middlewares).to.eql([]);
+				expect(validated.middleware).to.eql([]);
 				expect(validated.pathMapper).to.be.a('function');
 				expect(validated.publishOptions).to.eql({
 					eventName: 'com.example.FullName'
@@ -186,7 +186,7 @@ describe('index/validator/route', () => {
 				expect(validated.apiEndpoint).to.eql('/api/v1.0/com/example/FullName');
 				expect(validated.fullSchemaName).to.eql('api.v1_0.com.example.FullName');
 				expect(validated.method).to.eql('post');
-				expect(validated.middlewares).to.eql([]);
+				expect(validated.middleware).to.eql([]);
 				expect(validated.pathMapper).to.be.a('function');
 				expect(validated.publishOptions).to.eql({
 					eventName: 'api.v1_0.com.example.FullName'
@@ -224,7 +224,7 @@ describe('index/validator/route', () => {
 				expect(validated.apiEndpoint).to.eql('/com/example/FullName');
 				expect(validated.fullSchemaName).to.eql('com.example.FullName');
 				expect(validated.method).to.eql('post');
-				expect(validated.middlewares).to.eql([]);
+				expect(validated.middleware).to.eql([]);
 				expect(validated.pathMapper).to.be.a('function');
 				expect(validated.publishOptions).to.eql({
 					eventName: 'internal.com.example.fullname'
@@ -263,7 +263,7 @@ describe('index/validator/route', () => {
 				expect(validated.apiEndpoint).to.eql('/com/example/FullName');
 				expect(validated.fullSchemaName).to.eql('com.example.FullName');
 				expect(validated.method).to.eql('post');
-				expect(validated.middlewares).to.eql([]);
+				expect(validated.middleware).to.eql([]);
 				expect(validated.pathMapper).to.be.a('function');
 				expect(validated.publishOptions).to.eql({
 					eventName: 'internal.com.example.fullname'

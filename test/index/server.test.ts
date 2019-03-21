@@ -688,7 +688,7 @@ describe('index/server', () => {
 
 		});
 
-		it('should use the specified middlewares on the given path', () => {
+		it('should use the specified middleware on the given path', () => {
 
 			// Given
 			const options: any = {
