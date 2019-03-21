@@ -37,7 +37,7 @@ import { SchemaValidator } from './shared/schema';
 export interface ValidatedPublishFunctionOptions<C extends Orizuru.Context, M extends Orizuru.Message> extends Options.IPublishFunction<C, M> {
 
 	/**
-	 * The [Apache Avro](https://avro.apache.org/) schema.
+	 * The [Apache Avro](https://avro.apache.org/docs/current/) schema.
 	 */
 	schema: AvroSchema;
 }

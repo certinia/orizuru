@@ -74,7 +74,7 @@ export interface RouteConfiguration {
 	responseWriter: ResponseWriterFunction;
 
 	/**
-	 * The Apache Avro schema that messages for this route should be validated against.
+	 * The [Apache Avro](https://avro.apache.org/docs/current/) schema that messages for this route should be validated against.
 	 */
 	schema: AvroSchema;
 
@@ -140,9 +140,9 @@ function getEndpoint(endpoint?: string) {
 }
 
 /**
- * Gets the schema name from the Apache Avro schema.
+ * Gets the schema name from the [Apache Avro](https://avro.apache.org/docs/current/) schema.
  *
- * @param avroSchema The Apache Avro schema.
+ * @param avroSchema The [Apache Avro](https://avro.apache.org/docs/current/) schema.
  */
 function getSchemaName(avroSchema: AvroSchema) {
 	const schemaNameParts = avroSchema.name.split('.');
@@ -152,7 +152,7 @@ function getSchemaName(avroSchema: AvroSchema) {
 /**
  * Calculates the full API endpoint for this route.
  *
- * @param schema The Apache Avro schema.
+ * @param schema The [Apache Avro](https://avro.apache.org/docs/current/) schema.
  * @param endpoint The endpoint for the route.
  * @param pathMapper The path mapper.
  */

@@ -270,12 +270,12 @@ declare global {
 }
 
 /**
- * An Apache Avro Schema
+ * An [Apache Avro](https://avro.apache.org/docs/current/) Schema
  */
 export interface AvroSchema extends Type {
 
 	/**
-	 * The name of the Apache Avro schema.
+	 * The name of the [Apache Avro](https://avro.apache.org/docs/current/) schema.
 	 * This should always be set.
 	 */
 	readonly name: string;
@@ -488,7 +488,7 @@ export declare namespace Options {
 		responseWriter?: ResponseWriterFunction;
 
 		/**
-		 * The Apache Avro schema that messages for this route should be validated against.
+		 * The [Apache Avro](https://avro.apache.org/docs/current/) schema that messages for this route should be validated against.
 		 */
 		schema: Schema;
 

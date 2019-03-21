@@ -50,7 +50,7 @@ function parseSchema(schema: string) {
  * Compiles the schema using the {@link https://www.npmjs.com/package/avsc|NPM avsc library}.
  *
  * This also checks that the schema has no anonymous types which can cause problems with other
- * [Apache Avro](https://avro.apache.org/) implementations.
+ * [Apache Avro](https://avro.apache.org/docs/current/) implementations.
  */
 function compileSchema(uncompiledSchema: any) {
 
@@ -65,13 +65,13 @@ function compileSchema(uncompiledSchema: any) {
 }
 
 /**
- * Validates the [Apache Avro](https://avro.apache.org/) schema.
+ * Validates the [Apache Avro](https://avro.apache.org/docs/current/) schema.
  */
 export class SchemaValidator {
 
 	/**
 	 * Validates the schema.
-	 * @param schema The [Apache Avro](https://avro.apache.org/) schema to validate.
+	 * @param schema The [Apache Avro](https://avro.apache.org/docs/current/) schema to validate.
 	 */
 	public validate(schema: any): AvroSchema {
 

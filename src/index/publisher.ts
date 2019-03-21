@@ -73,7 +73,7 @@ export class Publisher extends EventEmitter {
 	private readonly validator: PublishFunctionValidator;
 
 	/**
-	 * Validates a message against the Apache Avro schema.
+	 * Validates a message against the [Apache Avro](https://avro.apache.org/docs/current/) schema.
 	 */
 	private readonly messageValidator: MessageValidator;
 

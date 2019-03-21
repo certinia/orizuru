@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/financialforcedev/orizuru.svg?branch=master)](https://travis-ci.org/financialforcedev/orizuru)
 
 Orizuru is a library that streamlines strongly typed communication between Heroku dynos (or other processes).
-It leverages [Apache Avro](https://avro.apache.org/) for schema validation and communication.
+It leverages [Apache Avro](https://avro.apache.org/docs/current/) for schema validation and communication.
 
 ## Install
 
