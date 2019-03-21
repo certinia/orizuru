@@ -3,7 +3,7 @@
 ## 9.3.0
 
 - Updated IHandler, IPublisher and IServer interfaces to extend EventEmitter
-- Added support for ErrorRequestHandler as middlewares
+- Added support for ErrorRequestHandler as middleware
 
 ## 9.2.0
 

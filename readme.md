@@ -73,7 +73,7 @@ server.listen();
 
 In the above example, a POST API for `/api/path/ageAndDob` is created on the server before it listens on port `8080`. The post body sent is validated against the schema, which requires `age` and `dob` string fields in the JSON body. If the validation succeeds, an event name passed to the transport layer will be the fully qualified name of the Avro schema type `ageAndDob`, along with an Avro serialised buffer of the POST body.
 
-Additionally, if there is an object on the request called `orizuru`, e.g. `request.orizuru`, this will also be serialized and added to the buffer as `context`. This allows middlewares to add context information to the event fired, e.g. session validation and credentials.
+Additionally, if there is an object on the request called `orizuru`, e.g. `request.orizuru`, this will also be serialized and added to the buffer as `context`. This allows middleware to add context information to the event fired, e.g. session validation and credentials.
 
 ### Publisher
 
@@ -165,7 +165,7 @@ Promise.all([
 ]);
 ```
 
-The handler can handle multiple events, with callbacks for each wired in. The input to the callback `{ message, context }` is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middlewares or supplied to the publish function.
+The handler can handle multiple events, with callbacks for each wired in. The input to the callback `{ message, context }` is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middleware or supplied to the publish function.
 
 
 ## API Docs
