@@ -45,7 +45,7 @@ describe('RabbitMQ publisher', () => {
 
 	let transport: ITransport;
 
-	before(async () => {
+	beforeAll(async () => {
 
 		transport = new Transport({
 			url: 'amqp://localhost'
@@ -53,7 +53,7 @@ describe('RabbitMQ publisher', () => {
 
 	});
 
-	after(async () => {
+	afterAll(async () => {
 		await transport.close();
 	});
 

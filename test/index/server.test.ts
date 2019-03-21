@@ -25,6 +25,7 @@
  */
 
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
@@ -37,6 +38,7 @@ import { RouteValidator } from '../../src/index/validator/route';
 
 import { Options, Publisher, Server } from '../../src';
 
+chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 const expect = chai.expect;
@@ -424,7 +426,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 
@@ -447,7 +449,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -473,7 +475,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -518,7 +520,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			await server.listen();
@@ -543,7 +545,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -571,7 +573,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
@@ -601,7 +603,7 @@ describe('index/server', () => {
 
 			// express extends the http server so stub the createServer function,
 			// return a listen stub
-			sinon.stub(http, 'createServer').returns(httpServerStub as http.Server);
+			sinon.stub(http, 'createServer').returns(httpServerStub as unknown as http.Server);
 
 			const server = new Server(defaultOptions);
 			sinon.spy(server, 'info');
