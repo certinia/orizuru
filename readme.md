@@ -15,7 +15,7 @@ npm install @financialforcedev/orizuru
 
 ### Configuration
 
-All Orizuru classes require reference to a transport layer. The transport layer governs how messages are published and 
+All Orizuru classes require reference to a transport layer. The transport layer governs how messages are published and
 subscribed. We inject this as a class constructor configuration parameter.
 
 ```typescript
@@ -166,7 +166,6 @@ Promise.all([
 ```
 
 The handler can handle multiple events, with callbacks for each wired in. The input to the callback `{ message, context }` is auto deserialized, so you get the JS object represention of the API post body or the JS object published, along with the context added by server middleware or supplied to the publish function.
-
 
 ## API Docs
 
