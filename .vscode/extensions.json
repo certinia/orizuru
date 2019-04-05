@@ -1,6 +1,7 @@
 {
 	"recommendations": [
 		"alexdima.vscode-lcov",
+		"DavidAnson.vscode-markdownlint",
 		"ms-vscode.vscode-typescript-tslint-plugin"
 	]
 }
