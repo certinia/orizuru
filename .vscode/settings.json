@@ -17,6 +17,9 @@
 	},
 	"files.insertFinalNewline": true,
 	"lcov.path": "coverage/lcov.info",
+	"markdownlint.config": {
+		"MD024": false
+	},
 	"terminal.integrated.scrollback": 10000,
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"workbench.colorCustomizations": {
