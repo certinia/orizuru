@@ -11,8 +11,7 @@
 		"**/.hg": true,
 		"**/.nyc_output": true,
 		"**/.svn": true,
-		"**/coverage": true,
-		"**/coverage-systemtests": true,
+		"**/coverage*": true,
 		"**/CVS": true
 	},
 	"files.insertFinalNewline": true,
